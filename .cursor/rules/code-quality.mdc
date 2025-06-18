@@ -1,0 +1,26 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Code Quality Standards
+
+## Implementation Confidence
+- High Confidence (90%+): Implement immediately
+- Medium Confidence (70-89%): Research and validate
+- Low Confidence (<70%): Create detailed proposal
+
+## Code Standards
+- Use strict TypeScript
+- Follow ESLint rules
+- Maintain proper documentation
+- Write unit tests
+- Follow DRY principle
+
+## Review Process
+- Review existing code
+- Understand dependencies
+- Document changes
+- Test thoroughly
+- Update documentation
+

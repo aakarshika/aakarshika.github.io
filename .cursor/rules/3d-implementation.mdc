@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 3D Implementation Rules
+
+## Scene Management
+- Use proper scene graph organization
+- Implement efficient model loading
+- Handle WebGL context properly
+- Manage memory and resources
+- Implement proper camera controls
+
+## Performance
+- Optimize model loading and caching
+- Use proper level of detail (LOD)
+- Implement proper frustum culling
+- Handle WebGL context loss
+- Monitor frame rate and performance
+
+## Best Practices
+- Use proper Three.js patterns
+- Implement proper cleanup
+- Handle errors gracefully
+- Document complex scenes
+- Test across different devices
+

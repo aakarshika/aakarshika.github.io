@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# AI Interaction Guidelines
+
+## Code Changes
+- Only implement when confidence is high
+- Check for existing solutions
+- Follow project patterns
+- Document decisions
+- Implement incrementally
+
+## Problem Solving
+- Understand the problem
+- Research solutions
+- Evaluate trade-offs
+- Document findings
+- Implement best solution
+
+## Communication
+- Be clear and specific
+- Keep the explanations short and bulleted
+- Explain the changes in 1-2 lines
+- Provide context
+- Explain technical concepts
+- Ask for clarification
+- Document decisions
+
+

@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Architecture Rules
+
+## Core Structure
+- Use feature-based folder structure
+- Implement strict TypeScript configuration
+- Follow React best practices
+- Maintain clear separation of concerns
+
+## Technology Stack
+- React Three Fiber + Drei for 3D
+- Zustand for state management
+- React Hook Form + Zod for forms
+- Framer Motion for animations
+- Jest + React Testing Library for testing
+
+## Code Organization
+- Keep components small and focused
+- Use proper TypeScript types
+- Implement proper error boundaries
+- Follow React hooks best practices
+- Maintain consistent naming conventions
+
