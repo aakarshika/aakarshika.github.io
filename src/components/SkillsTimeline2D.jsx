@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import useSkillsTimelineData from '../hooks/useSkillsTimelineData';
+import SkillsTimeline3D from './SkillsTimeline3D';
 
 
 
@@ -18,11 +19,102 @@ const MAX_Y_ZOOM = 2000;
 
 const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
   const [hoveredSegment, setHoveredSegment] = useState(null);
-  const [xZoom, setXZoom] = useState(80);
   const [yZoom, setYZoom] = useState(initialYZoom);
+  const [zoomValue, setZoomValue] = useState(1); // 1 = most detailed, higher = more clubbed
+  const [categoryLevel, setCategoryLevel] = useState(null);
+  const svgContainerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(800);
+  const [use3D, setUse3D] = useState(false);
+
+  console.log('SkillsTimeline2D mounted, initial ref:', svgContainerRef.current);
+
+  // Log when ref gets attached
+  useEffect(() => {
+    console.log('Ref changed:', svgContainerRef.current);
+  }, [svgContainerRef.current]);
+
+  // Update containerWidth on resize
+  useEffect(() => {
+    function updateWidth() {
+      console.log('updateWidth called, ref:', svgContainerRef.current);
+      if (svgContainerRef.current) {
+        const width = svgContainerRef.current.offsetWidth;
+        console.log('Container width:', width);
+        setContainerWidth(width);
+      }
+    }
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   // Use external data if provided, otherwise use the hook
-  const data = externalData || useSkillsTimelineData({ yZoom });
+  const data = externalData || useSkillsTimelineData({ yZoom, categoryLevel });
+
+  // Compute maxCategoryLevel from the current data's categoryTree
+  const maxCategoryLevel = React.useMemo(() => {
+    const getMaxDepth = (tree, depth = 1) => {
+      if (!tree || typeof tree !== 'object') return depth;
+      let max = depth;
+      for (const key in tree) {
+        max = Math.max(max, getMaxDepth(tree[key], depth + 1));
+      }
+      return max;
+    };
+    const result = getMaxDepth(data.categoryTree);
+    console.log('maxCategoryLevel calculated:', result, 'from categoryTree:', data.categoryTree);
+    return result;
+  }, [data.categoryTree]);
+
+  // Handle horizontal scroll for smooth zoom
+  useEffect(() => {
+    const handleWheel = (e) => {
+      console.log('Wheel event detected:', {
+        deltaX: e.deltaX,
+        deltaY: e.deltaY,
+        ctrlKey: e.ctrlKey,
+        deltaXAbs: Math.abs(e.deltaX),
+        deltaYAbs: Math.abs(e.deltaY),
+        isHorizontal: Math.abs(e.deltaX) > Math.abs(e.deltaY)
+      });
+      
+      if (e.ctrlKey || Math.abs(e.deltaX) < Math.abs(e.deltaY)) {
+        console.log('Scroll ignored - ctrlKey or not horizontal enough');
+        return; // Only horizontal scroll
+      }
+      
+      console.log('Processing horizontal scroll, current zoomValue:', zoomValue);
+      e.preventDefault();
+      const delta = e.deltaX * 0.1; // Increased sensitivity from 0.01 to 0.1
+      const newZoomValue = Math.max(0.1, Math.min(maxCategoryLevel + 1, zoomValue + delta));
+      console.log('Delta:', delta, 'New zoomValue:', newZoomValue, 'maxCategoryLevel:', maxCategoryLevel);
+      setZoomValue(newZoomValue);
+    };
+    
+    const ref = svgContainerRef.current;
+    console.log('Setting up wheel listener on ref:', ref);
+    if (ref) {
+      ref.addEventListener('wheel', handleWheel, { passive: false });
+      console.log('Wheel listener added successfully');
+    }
+    return () => { 
+      if (ref) {
+        ref.removeEventListener('wheel', handleWheel);
+        console.log('Wheel listener removed');
+      }
+    };
+  }, [maxCategoryLevel, zoomValue]);
+
+  // Dynamically set categoryLevel based on zoomValue and maxCategoryLevel
+  useEffect(() => {
+    // The most detailed (zoomValue=1) is leaf nodes, then each integer up is one level up
+    // If maxCategoryLevel=4, then zoomValue=1 (skills), 2 (level 4), 3 (level 3), 4 (level 2), etc.
+    // So categoryLevel = maxCategoryLevel - Math.floor(zoomValue) + 1
+    const level = Math.max(1, maxCategoryLevel - Math.floor(zoomValue) + 1);
+    const finalLevel = level === maxCategoryLevel ? null : level;
+    console.log('Category level calculation:', { zoomValue, maxCategoryLevel, calculatedLevel: level, finalLevel });
+    setCategoryLevel(finalLevel);
+  }, [zoomValue, maxCategoryLevel]);
 
   // Y ticks for time
   const yTicks = React.useMemo(() => {
@@ -36,17 +128,18 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
     return ticks;
   }, [data.startTime, data.endTime, yZoom]);
 
-  // Handlers for zoom controls
-  const handleXZoom = (delta) => {
-    setXZoom(x => Math.max(MIN_X_ZOOM, Math.min(MAX_X_ZOOM, x + delta)));
-  };
-  const handleYZoom = (delta) => {
-    setYZoom(y => Math.max(MIN_Y_ZOOM, Math.min(MAX_Y_ZOOM, y + delta)));
-  };
-
-  // SVG width/height
-  const svgWidth = data.skills.length * xZoom + 100;
+  // Responsive gap between skills/categories
+  const nodeCount = data.skills.length;
+  const minGap = 40;
+  const maxGap = 200;
+  const gap = nodeCount > 1 ? Math.max(minGap, Math.min(maxGap, (containerWidth - 100) / (nodeCount - 1))) : 100;
+  const svgWidth = containerWidth;
   const svgHeight = yZoom;
+
+  if(use3D){
+    return <SkillsTimeline3D data={data} />
+  }
+
 
   return (
     <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-4">
@@ -54,43 +147,46 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
         <h1 className="text-4xl font-bold text-white mb-4 text-center">
           Skills Timeline Visualization
         </h1>
-        {/* Zoom Controls */}
+        {/* Time Axis Zoom Controls */}
         <div className="flex flex-wrap gap-4 justify-center mb-2">
           <div className="flex items-center gap-2 bg-black bg-opacity-60 px-3 py-2 rounded">
-            <span className="text-white text-xs">Skill Axis</span>
-            <button className="bg-gray-700 text-white px-2 rounded" onClick={() => handleXZoom(-20)}>-</button>
-            <span className="text-white text-xs">{xZoom}px</span>
-            <button className="bg-gray-700 text-white px-2 rounded" onClick={() => handleXZoom(20)}>+</button>
+            <span className="text-white text-xs">Time Axis</span>
+            <button className="bg-gray-700 text-white px-2 rounded" onClick={() => setYZoom(y => Math.max(200, y - 100))}>-</button>
+            <span className="text-white text-xs">{yZoom}px</span>
+            <button className="bg-gray-700 text-white px-2 rounded" onClick={() => setYZoom(y => Math.min(2000, y + 100))}>+</button>
           </div>
           <div className="flex items-center gap-2 bg-black bg-opacity-60 px-3 py-2 rounded">
-            <span className="text-white text-xs">Time Axis</span>
-            <button className="bg-gray-700 text-white px-2 rounded" onClick={() => handleYZoom(-100)}>-</button>
-            <span className="text-white text-xs">{yZoom}px</span>
-            <button className="bg-gray-700 text-white px-2 rounded" onClick={() => handleYZoom(100)}>+</button>
+            <span className="text-white text-xs">Skill Axis: <span className="font-bold">{categoryLevel === null ? 'Skills' : `Category Level ${categoryLevel}`}</span></span>
+            <span className="text-white text-xs">(Scroll horizontally to zoom)</span>
           </div>
         </div>
-        <div className="bg-white bg-opacity-80 rounded-lg p-2 relative overflow-auto" style={{ height: 'calc(100vh - 220px)', minHeight: 300 }}>
-          <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{ minWidth: 600, minHeight: 300 }}>
+        <div
+          ref={svgContainerRef}
+          tabIndex={0}
+          className="bg-white rounded-lg p-2 relative w-full"
+          style={{ height: 'calc(100vh - 220px)', minHeight: 300, outline: 'none', cursor: 'ew-resize' }}
+        >
+          <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight+50}`} style={{ minWidth: 650, minHeight: 400 }}>
             {/* Y axis (time) */}
             <line x1="40" y1="20" x2="40" y2={svgHeight - 20} stroke="#666" strokeWidth="2" />
             {/* Y ticks */}
             {yTicks.map((tick, i) => (
               <g key={i}>
                 <line x1="35" y1={tick.y} x2="45" y2={tick.y} stroke="#666" strokeWidth="2" />
-                <text x="30" y={tick.y + 3} textAnchor="end" fill="#ccc" fontSize="12">{tick.label}</text>
+                <text x="30" y={tick.y + 3} textAnchor="end" fill="#ccc" color="black" fontSize="12">{tick.label}</text>
               </g>
             ))}
             {/* Skill lanes */}
             {data.skills.map((skill, i) => (
-              <line key={skill} x1={i * xZoom + 70} y1="20" x2={i * xZoom + 70} y2={svgHeight - 20} stroke="#333" strokeWidth="1" />
+              <line key={skill} x1={i * gap + 70} y1="20" x2={i * gap + 70} y2={svgHeight - 20} stroke="#333" strokeWidth="1" />
             ))}
             {/* Segments */}
             {data.segments.map((segment, idx) => (
               <g key={idx}>
                 <line
-                  x1={segment.x * xZoom + 70}
+                  x1={segment.x * gap + 70}
                   y1={segment.y1}
-                  x2={segment.x * xZoom + 70}
+                  x2={segment.x * gap + 70}
                   y2={segment.y2}
                   stroke={segment.color}
                   strokeWidth={segment.thickness}
@@ -102,7 +198,7 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
                 {/* Hover effect */}
                 {hoveredSegment === segment && (
                   <rect
-                    x={segment.x * xZoom + 60}
+                    x={segment.x * gap + 60}
                     y={Math.min(segment.y1, segment.y2) - 8}
                     width={20}
                     height={Math.abs(segment.y2 - segment.y1) + 16}
@@ -113,13 +209,13 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
               </g>
             ))}
             {/* Gaps (dashed lines) */}
-            {data.gaps.map((gap, idx) => (
+            {data.gaps.map((gapObj, idx) => (
               <line
                 key={idx}
-                x1={gap.x * xZoom + 70}
-                y1={gap.y1}
-                x2={gap.x * xZoom + 70}
-                y2={gap.y2}
+                x1={gapObj.x * gap + 70}
+                y1={gapObj.y1}
+                x2={gapObj.x * gap + 70}
+                y2={gapObj.y2}
                 stroke="#aaa"
                 strokeWidth={2}
                 strokeDasharray="6,6"
@@ -130,7 +226,7 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
             {data.achievements.map((ach, idx) => (
               <g key={idx}>
                 <circle
-                  cx={ach.x * xZoom + 70}
+                  cx={ach.x * gap + 70}
                   cy={ach.y}
                   r="8"
                   fill="#FFD700"
@@ -138,10 +234,11 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
                   strokeWidth="2"
                 />
                 <text
-                  x={ach.x * xZoom + 70}
+                  x={ach.x * gap + 70}
                   y={ach.y - 15}
                   textAnchor="middle"
                   fill="#FFD700"
+                  color="black"
                   fontSize="10"
                   fontWeight="bold"
                 >
@@ -153,14 +250,15 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
             {data.skills.map((skill, i) => (
               <text
                 key={skill}
-                x={i * xZoom + 70}
-                y={svgHeight - 5}
-                fill="white"
+                x={i * gap + 70}
+                y={svgHeight }
+                fill="black"
                 fontSize="14"
                 fontWeight="bold"
                 textAnchor="middle"
+                transform={`rotate(-45 ${i * gap + 70} ${svgHeight - 5})`}
               >
-                {skill}
+                {(skill.substring(skill.lastIndexOf('.') + 1, skill.length)).split('_').join(' ')}
               </text>
             ))}
           </svg>

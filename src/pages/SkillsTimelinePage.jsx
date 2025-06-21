@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SkillsTimeline2D from '../components/SkillsTimeline2D';
+import SkillsTimeline3D from '../components/SkillsTimeline3D';
 
 const SkillsTimelinePage = () => {
   const [use3D, setUse3D] = useState(false);
@@ -39,6 +40,7 @@ const SkillsTimelinePage = () => {
     <div className="w-full h-screen">
       {use3D ? (
         <div>
+          <SkillsTimeline3D />
           {/* Toggle button */}
           <button
             onClick={() => setUse3D(false)}
