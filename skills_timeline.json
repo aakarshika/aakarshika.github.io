@@ -64,6 +64,14 @@
     "Where Tag": "Neuron"
   },
   {
+    "Skill": "MySQL",
+    "Start Date": "2024-01-01 00:00:00",
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Intermediate",
+    "1 line Description on how I used it": "Used as a primary database in chatbot project",
+    "Where Tag": "Twirly"
+  },
+  {
     "Skill": "MongoDB",
     "Start Date": "2016-05-01 00:00:00",
     "End Date": "2017-05",
@@ -118,6 +126,30 @@
     "Expertise Level Achieved": "Expert",
     "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
     "Where Tag": "Delhivery"
+  },
+  {
+    "Skill": "AWS",
+    "Start Date": "2014-06-01 00:00:00",
+    "End Date": "2016-06",
+    "Expertise Level Achieved": "Expert",
+    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
+    "Where Tag": "Delhivery"
+  },
+  {
+    "Skill": "AWS",
+    "Start Date": "2020-06-01 00:00:00",
+    "End Date": "2024-06",
+    "Expertise Level Achieved": "Expert",
+    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
+    "Where Tag": "GoDaddy"
+  },
+  {
+    "Skill": "Airflow",
+    "Start Date": "2020-06-01 00:00:00",
+    "End Date": "2024-06",
+    "Expertise Level Achieved": "Expert",
+    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
+    "Where Tag": "GoDaddy"
   },
   {
     "Skill": "Redshift",
@@ -184,7 +216,7 @@
     "Where Tag": "USF"
   },
   {
-    "Skill": "Software Engineering",
+    "Skill": "API",
     "Start Date": "2021-06-01 00:00:00",
     "End Date": "2025-06",
     "Expertise Level Achieved": "Expert",

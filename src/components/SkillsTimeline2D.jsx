@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useSkillsTimelineData from '../hooks/useSkillsTimelineData';
-import SkillsTimeline3D from './SkillsTimeline3D';
 
 
 
@@ -136,9 +135,6 @@ const SkillsTimeline2D = ({ data: externalData, initialYZoom = 600 }) => {
   const svgWidth = containerWidth;
   const svgHeight = yZoom;
 
-  if(use3D){
-    return <SkillsTimeline3D data={data} />
-  }
 
 
   return (

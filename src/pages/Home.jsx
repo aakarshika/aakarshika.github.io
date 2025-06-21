@@ -24,7 +24,7 @@ const Home = () => {
         </p>
         
         {/* Navigation to 3D Timeline */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg shadow-lg">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-lg shadow-lg mb-6">
           <h3 className="text-2xl font-bold text-white mb-4">
             🚀 Interactive 3D Skills Timeline
           </h3>
@@ -37,6 +37,23 @@ const Home = () => {
             className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200 shadow-md"
           >
             View 3D Timeline →
+          </Link>
+        </div>
+
+        {/* Navigation to Animated Skills Chart */}
+        <div className="bg-gradient-to-r from-green-500 to-teal-600 p-6 rounded-lg shadow-lg">
+          <h3 className="text-2xl font-bold text-white mb-4">
+            🎯 Animated Skills Chart
+          </h3>
+          <p className="text-green-100 mb-6">
+            Watch your skills merge and evolve with smooth animations. 
+            Scroll to see skills combine into categories in real-time.
+          </p>
+          <Link 
+            to="/animated-skills"
+            className="inline-block bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors duration-200 shadow-md"
+          >
+            View Animated Chart →
           </Link>
         </div>
       </main>
