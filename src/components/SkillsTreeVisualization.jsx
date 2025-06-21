@@ -121,6 +121,7 @@ const SkillsTreeVisualization = ({
                   fill={COLORS.timeline.background}
                   stroke={COLORS.timeline.stroke}
                   strokeWidth={1}
+                  opacity={node.isPreview ? 0.6 : 1}
                   className="transition-all duration-300"
                 />
               )}
@@ -129,9 +130,10 @@ const SkillsTreeVisualization = ({
                 cx={transformX(node.x)}
                 cy={transformY(node.y)}
                 r={size}
-                fill={node.isHighlighted ? COLORS.highlighted.node : COLORS.normal.node}
-                stroke={node.isHighlighted ? COLORS.highlighted.stroke : COLORS.normal.stroke}
-                strokeWidth={node.isHighlighted ? 2 : 1}
+                fill={node.isPreview ? '#8b5cf6' : (node.isHighlighted ? COLORS.highlighted.node : COLORS.normal.node)}
+                stroke={node.isPreview ? '#a78bfa' : (node.isHighlighted ? COLORS.highlighted.stroke : COLORS.normal.stroke)}
+                strokeWidth={node.isPreview ? 3 : (node.isHighlighted ? 2 : 1)}
+                opacity={node.isPreview ? 0.8 : 1}
                 className="transition-all duration-300 cursor-pointer"
                 onClick={() => onNodeClick && onNodeClick(node)}
               />
@@ -140,11 +142,17 @@ const SkillsTreeVisualization = ({
                 x={transformX(node.x)}
                 y={transformY(node.y) + 20}
                 textAnchor="middle"
-                fill={node.isHighlighted ? COLORS.highlighted.text : COLORS.normal.text}
+                fill={node.isPreview ? '#a78bfa' : (node.isHighlighted ? COLORS.highlighted.text : COLORS.normal.text)}
                 fontSize="12px"
+                opacity={node.isPreview ? 0.8 : 1}
                 transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 20})`}
               >
                 {node.name}
+                {node.isPreview && (
+                  <tspan x={transformX(node.x)} dy="12" fill="#fbbf24" fontSize="10px">
+                    (Next)
+                  </tspan>
+                )}
               </text>
               
               {/* Timeline data count and index display */}
@@ -156,6 +164,7 @@ const SkillsTreeVisualization = ({
                   fill={COLORS.timeline.text}
                   fontSize="10px"
                   fontWeight="bold"
+                  opacity={node.isPreview ? 0.8 : 1}
                   transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 35})`}
                 >
                   {node.timelineData.length} periods
@@ -176,6 +185,7 @@ const SkillsTreeVisualization = ({
                   fill="white"
                   fontSize="10px"
                   fontWeight="bold"
+                  opacity={node.isPreview ? 0.8 : 1}
                   transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 35})`}
                 >
                   #{unhighlightedLeafIndices[node.name]}

@@ -23,6 +23,9 @@ const SkillsTreeControls = ({
   const toggleStyle = showOnlyWithData ? TOGGLE_STATES.active : TOGGLE_STATES.inactive;
   const scaleUpToggleStyle = scaleUpLeafNodes ? TOGGLE_STATES.scaleUp.active : TOGGLE_STATES.scaleUp.inactive;
 
+  // Find the next node to be highlighted
+  const nextNode = treeNodes.find(node => node.isPreview);
+
   return (
     <div className="mb-6">
       <h1 className="text-2xl font-bold mb-2">Visual Tree Structure</h1>
@@ -52,7 +55,7 @@ const SkillsTreeControls = ({
             onClick={onToggleScaleUpLeafNodes}
             className={`px-4 py-2 rounded font-medium transition-colors ${scaleUpToggleStyle.background} ${scaleUpToggleStyle.hover} ${scaleUpToggleStyle.text}`}
           >
-            🔍 View leaves Only
+            🔍 Scale Up Leaf Nodes
           </button>
           <span className="ml-3 text-sm text-gray-400">
             {scaleUpLeafNodes 
@@ -78,6 +81,11 @@ const SkillsTreeControls = ({
           {scaleUpLeafNodes && (
             <p className="text-purple-400 mt-2">
               <span className="font-semibold">Scaled View:</span> Leaf nodes and completed branches are larger
+            </p>
+          )}
+          {nextNode && (
+            <p className="text-yellow-400 mt-2">
+              <span className="font-semibold">Next Node:</span> "{nextNode.name}" (preview active)
             </p>
           )}
         </div>

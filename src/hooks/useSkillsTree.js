@@ -17,7 +17,7 @@ export function useSkillsTree() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [showOnlyWithData, setShowOnlyWithData] = useState(true);
-  const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(true);
+  const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(false);
 
   // Build hierarchy data
   const { tree: hierarchyTree } = useMemo(() => buildHierarchy(), []);
@@ -201,6 +201,7 @@ export function useSkillsTree() {
    */
   const buildTreeData = () => {
     const filteredHierarchy = getFilteredHierarchy();
+    const nextNode = pickNextNode();
     
     const convertToD3Format = (node, name = 'root', path = []) => {
       const children = Object.entries(node).map(([key, child]) => {
@@ -252,6 +253,7 @@ export function useSkillsTree() {
         children: node.children ? node.children.map(child => child.data.path || child.data.name) : [],
         childCount: node.children ? node.children.length : 0,
         isHighlighted: highlightedNodes.has(nodeName),
+        isPreview: nextNode === nodeName,
         timelineData: nodeTimelineData
       });
       
