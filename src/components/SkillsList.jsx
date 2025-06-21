@@ -47,10 +47,25 @@ const SkillsList = ({
     }
   };
 
-  // Show nodes that are currently visible or will be visible
+  // Find parent nodes for nodes that will be removed
+  const findParentNode = (nodeName) => {
+    const node = treeNodes.find(n => n.name === nodeName);
+    if (!node) return null;
+    
+    // Find parent by checking which node has this node as a child
+    const parent = treeNodes.find(n => n.children.includes(node.id));
+    return parent;
+  };
+
+  // Get nodes that will be removed and their parents
+  const removingNodes = treeNodes.filter(node => getNodeState(node) === 'removing');
+  const parentNodes = removingNodes.map(node => findParentNode(node.name)).filter(Boolean);
+
+  // Show nodes that are currently visible, will be visible, or are parents of removing nodes
   const visibleNodes = treeNodes.filter(node => {
     const state = getNodeState(node);
-    return state !== 'hidden';
+    const isParentOfRemoving = parentNodes.some(parent => parent.name === node.name);
+    return state !== 'hidden' || isParentOfRemoving;
   });
 
   if (visibleNodes.length === 0) return null;
@@ -101,10 +116,12 @@ const SkillsList = ({
           const y = 50; // Fixed vertical position
           const state = getNodeState(node);
           const isPreview = node.isPreview;
+          const isParentOfRemoving = parentNodes.some(parent => parent.name === node.name);
           
           // Determine styling based on state
           let boxClasses = 'absolute rounded-lg p-3 shadow-lg transition-all duration-300';
           let opacity = 1;
+          let scale = 1;
           
           switch (state) {
             case 'adding':
@@ -119,12 +136,35 @@ const SkillsList = ({
               boxClasses += ' bg-gray-700 border-2 border-purple-400 hover:bg-gray-600 hover:border-purple-300';
               opacity = 1; // Normal
               break;
+            case 'hidden':
+              // This is a parent node that's not normally visible
+              boxClasses += ' bg-blue-600 border-2 border-blue-400 hover:bg-blue-500';
+              opacity = 0.8;
+              scale = 1.2; // Larger size for parent nodes
+              break;
           }
           
           // Override with preview styling if this is the preview node
           if (isPreview) {
             boxClasses = 'absolute rounded-lg p-3 shadow-lg transition-all duration-300 bg-purple-600 border-2 border-yellow-400 hover:bg-purple-500';
             opacity = 0.8;
+          }
+          
+          // Override with parent styling if this is a parent of a removing node
+          if (isParentOfRemoving && state !== 'removing' && !isPreview) {
+            boxClasses = 'absolute rounded-lg p-3 shadow-lg transition-all duration-300 bg-blue-600 border-2 border-blue-400 hover:bg-blue-500';
+            opacity = 0.9;
+            scale = 1.2; // Larger size for parent nodes
+          }
+          
+          // Find parent index for removing nodes
+          let parentIndex = null;
+          if (state === 'removing') {
+            const parent = findParentNode(node.name);
+            if (parent) {
+              const parentVisibleIndex = visibleNodes.findIndex(n => n.name === parent.name);
+              parentIndex = parentVisibleIndex >= 0 ? parentVisibleIndex + 1 : null;
+            }
           }
           
           return (
@@ -136,7 +176,7 @@ const SkillsList = ({
                 top: `${y}px`,
                 width: `${adjustedBoxWidth}px`,
                 height: `${boxHeight}px`,
-                transform: 'translateX(-50%)', // Center the box on its position
+                transform: `translateX(-50%) scale(${scale})`, // Center the box and apply scale
                 opacity: opacity
               }}
             >
@@ -145,6 +185,7 @@ const SkillsList = ({
                   isPreview ? 'text-yellow-300' : 
                   state === 'adding' ? 'text-green-300' :
                   state === 'removing' ? 'text-gray-400' :
+                  isParentOfRemoving ? 'text-blue-300' :
                   'text-white'
                 }`}>
                   #{index + 1}
@@ -157,11 +198,15 @@ const SkillsList = ({
                   {state === 'removing' && (
                     <span className="ml-1 text-xs">(Removing)</span>
                   )}
+                  {isParentOfRemoving && (
+                    <span className="ml-1 text-xs">(Parent)</span>
+                  )}
                 </div>
                 <div className={`text-xs leading-tight ${
                   isPreview ? 'text-purple-200' :
                   state === 'adding' ? 'text-green-200' :
                   state === 'removing' ? 'text-gray-500' :
+                  isParentOfRemoving ? 'text-blue-200' :
                   'text-gray-300'
                 }`}>
                   {node.name}
@@ -169,6 +214,11 @@ const SkillsList = ({
                 {node.timelineData && node.timelineData.length > 0 && (
                   <div className="text-xs text-yellow-400 mt-1">
                     {node.timelineData.length} periods
+                  </div>
+                )}
+                {state === 'removing' && parentIndex && (
+                  <div className="text-xs text-blue-400 mt-1">
+                    Parent: #{parentIndex}
                   </div>
                 )}
               </div>
@@ -190,8 +240,19 @@ const SkillsList = ({
         <p className="mt-1">
           <span className="text-green-400">Green</span> = Adding, 
           <span className="text-gray-400"> Gray</span> = Removing, 
-          <span className="text-purple-400"> Purple</span> = Next
+          <span className="text-purple-400"> Purple</span> = Next,
+          <span className="text-blue-400"> Blue</span> = Parent
         </p>
+        {removingNodes.length > 0 && (
+          <p className="mt-1 text-blue-400">
+            Removing nodes: {removingNodes.map(n => n.name).join(', ')}
+          </p>
+        )}
+        {parentNodes.length > 0 && (
+          <p className="mt-1 text-blue-400">
+            Parent nodes: {parentNodes.map(n => n.name).join(', ')}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -59,7 +59,7 @@ const AnimatedSkillsChart = () => {
       />
       
       {/* Tree Visualization */}
-      <SkillsTreeVisualization
+      {!scaleUpLeafNodes && (<SkillsTreeVisualization
         treeNodes={treeNodes}
         treeBounds={treeBounds}
         treeWidth={treeWidth}
@@ -67,7 +67,7 @@ const AnimatedSkillsChart = () => {
         scaleUpLeafNodes={scaleUpLeafNodes}
         highlightedNodes={highlightedNodes}
         onNodeClick={setHoveredNode}
-      />
+      />)}
       
       {/* Timeline Information Panel */}
       <TimelineInfoPanel hoveredNode={hoveredNode} />
