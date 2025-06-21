@@ -11,30 +11,31 @@ const TimelineBox = ({
   state,
   isPreview,
   isParentOfRemoving,
+  rainbowColor,
   getRemovingNodeOpacity
 }) => {
   // Determine styling based on state
-  let boxClasses = 'absolute rounded shadow-sm border';
+  let boxClasses = 'absolute rounded shadow-sm ';
   let opacity = 1;
   let zIndex = 10;
   switch (state) {
     case 'adding':
-      boxClasses += ' bg-green-500 border-green-400';
-      opacity = 0.6; // Lightened
+      boxClasses += '';
+      opacity =0.51; // Lightened
       zIndex = 11;
       break;
     case 'removing':
-      boxClasses += ' bg-gray-600 border-gray-500';
-      opacity = getRemovingNodeOpacity ? getRemovingNodeOpacity() : 0.4; // Dynamic opacity based on scroll
+      boxClasses += '';
+      opacity = getRemovingNodeOpacity ? getRemovingNodeOpacity() : 1; // Dynamic opacity based on scroll
       zIndex = 9;
       break;
     case 'staying':
-      boxClasses += ' bg-blue-500 border-blue-400';
+      boxClasses += '';
       opacity = 1; // Normal
       zIndex = 8;
       break;
     case 'hidden':
-      boxClasses += ' bg-purple-500 border-purple-400';
+      boxClasses += '';
       opacity = 0.8;
       zIndex = 7;
       break;
@@ -42,14 +43,14 @@ const TimelineBox = ({
   
   // Override with preview styling if this is the preview node
   if (isPreview) {
-    boxClasses = 'absolute rounded shadow-sm border bg-purple-600 border-yellow-400';
+    boxClasses = 'absolute rounded shadow-sm   ';
     opacity = 0.8;
     zIndex = 7;
   }
   
   // Override with parent styling if this is a parent of a removing node
   if (isParentOfRemoving && state !== 'removing' && !isPreview) {
-    boxClasses = 'absolute rounded shadow-sm border bg-blue-600 border-blue-400';
+    boxClasses = 'absolute rounded shadow-sm  ';
     opacity = 0.9;
     zIndex = 11;
   }
@@ -70,7 +71,8 @@ const TimelineBox = ({
         top: `${timelineBox.y}px`,
         width: `${width}px`,
         height: `${timelineBox.height}px`,
-        opacity: opacity,
+        opacity: state === 'adding' ? 0.5 : 1,
+        backgroundColor: rainbowColor,
         zIndex: zIndex,
         // transform: 'translateX(-50%)', // Center the box
         transition: state === 'removing' ? 'none' : 'all 0.3s ease'
@@ -79,15 +81,15 @@ const TimelineBox = ({
     >
       {/* Show content only if box is tall enough */}
       {timelineBox.height > 20 && (
-        <div className="flex flex-col h-full justify-center items-center text-center p-1">
+        <div className="flex flex-col h-full justify-center items-center text-center">
           <div className="text-xs font-semibold text-white leading-tight">
             {timelineBox.name}
           </div>
-          {timelineBox.height > 30 && (
+          {/* {timelineBox.height > 30 && (
             <div className="text-xs text-white opacity-80 leading-tight">
               {timelineBox.company}
             </div>
-          )}
+          )} */}
         </div>
       )}
     </div>

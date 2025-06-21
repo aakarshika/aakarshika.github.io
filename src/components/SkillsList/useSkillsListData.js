@@ -13,7 +13,9 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
         removingNodes: [],
         parentNodes: [],
         nextNode: null,
-        positioning: null
+        positioning: null,
+        getNodeState: () => 'hidden',
+        findParentNode: () => null
       };
     }
 
@@ -35,10 +37,22 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
       return isLeaf && !nextHighlightedNodes.has(node.name);
     });
 
+    // Find parent nodes for nodes that will be removed
+    const findParentNode = (nodeName) => {
+      const node = treeNodes.find(n => n.name === nodeName);
+      if (!node) return null;
+      
+      // Find parent by checking which node has this node as a child
+      const parent = treeNodes.find(n => n.children && n.children.includes(node.id));
+      return parent;
+    };
+
     // Determine node states
     const getNodeState = (node) => {
-      const isCurrentlyVisible = currentUnhighlightedLeafNodes.some(n => n.name === node.name);
-      const willBeVisible = nextUnhighlightedLeafNodes.some(n => n.name === node.name);
+      if (!node || !node.name) return 'hidden';
+      
+      const isCurrentlyVisible = currentUnhighlightedLeafNodes.some(n => n && n.name === node.name);
+      const willBeVisible = nextUnhighlightedLeafNodes.some(n => n && n.name === node.name);
       
       if (isCurrentlyVisible && !willBeVisible) {
         return 'removing'; // Will be removed - darken
@@ -51,16 +65,6 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
       }
     };
 
-    // Find parent nodes for nodes that will be removed
-    const findParentNode = (nodeName) => {
-      const node = treeNodes.find(n => n.name === nodeName);
-      if (!node) return null;
-      
-      // Find parent by checking which node has this node as a child
-      const parent = treeNodes.find(n => n.children.includes(node.id));
-      return parent;
-    };
-
     // Get nodes that will be removed and their parents
     const removingNodes = treeNodes.filter(node => getNodeState(node) === 'removing');
     const parentNodes = removingNodes.map(node => findParentNode(node.name)).filter(Boolean);
@@ -68,7 +72,7 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
     // Show nodes that are currently visible, will be visible, or are parents of removing nodes
     const visibleNodes = treeNodes.filter(node => {
       const state = getNodeState(node);
-      const isParentOfRemoving = parentNodes.some(parent => parent.name === node.name);
+      const isParentOfRemoving = parentNodes.some(parent => parent && parent.name === node.name);
       return state !== 'hidden' || isParentOfRemoving;
     });
 

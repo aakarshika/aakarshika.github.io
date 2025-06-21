@@ -55,6 +55,36 @@ export const COLORS = {
   }
 };
 
+/**
+ * Generates a rainbow color based on index
+ * @param {number} index - The index of the node (0-based)
+ * @param {number} total - Total number of nodes
+ * @returns {string} CSS color string
+ */
+export function getRainbowColor(index, total) {
+  if (total === 0) return '#6b7280'; // Default gray if no nodes
+  
+  // Generate hue based on index (0-360 degrees)
+  const hue = (360 * index) / total;
+  
+  // Use high saturation and medium lightness for vibrant colors
+  const saturation = 85;
+  const lightness = 50;
+  
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+/**
+ * Generates a rainbow color palette for a given number of items
+ * @param {number} count - Number of colors needed
+ * @returns {string[]} Array of CSS color strings
+ */
+export function generateRainbowPalette(count) {
+  return Array.from({ length: count }, (_, index) => 
+    getRainbowColor(index, count)
+  );
+}
+
 // Timeline entry colors
 export const TIMELINE_COLORS = {
   duration: 'text-yellow-300',

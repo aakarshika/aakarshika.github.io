@@ -1,10 +1,11 @@
 import React from 'react';
 import TimelineBox from './TimelineBox';
+import { getRainbowColor } from '../../utils/constants';
 
 /**
  * Individual skill list node component
  * Renders a single node box with appropriate styling based on its state
- * Now includes timeline boxes for time periods
+ * Now includes timeline boxes for time periods and rainbow coloring
  */
 const SkillsListNode = ({
   node,
@@ -23,27 +24,40 @@ const SkillsListNode = ({
   visibleNodes,
   timelineBoxes = [] // New prop for timeline boxes
 }) => {
+  // Generate rainbow color based on index
+  const rainbowColor = getRainbowColor(index, visibleNodes.length);
+  
   // Determine styling based on state
   let boxClasses = 'absolute rounded-lg p-3 shadow-lg';
   let opacity = 1;
   let scale = 1;
+  let backgroundColor = rainbowColor;
+  let borderColor = rainbowColor;
   
   switch (state) {
     case 'adding':
-      boxClasses += ' bg-green-600 border-2 border-green-400 hover:bg-green-500';
-      opacity = 0.6; // Lightened
+      boxClasses += ' border-2 hover:opacity-80';
+      backgroundColor = rainbowColor;
+      borderColor = rainbowColor;
+      opacity = 0.8; // Lightened
       break;
     case 'removing':
-      boxClasses += ' bg-gray-900 border-2 border-gray-600 hover:bg-gray-800';
+      boxClasses += ' border-2 hover:opacity-60';
+      backgroundColor = '#1f2937'; // Dark gray for removing
+      borderColor = '#4b5563';
       opacity = getRemovingNodeOpacity(node); // Dynamic opacity based on scroll
       break;
     case 'staying':
-      boxClasses += ' bg-gray-700 border-2 border-purple-400 hover:bg-gray-600 hover:border-purple-300';
+      boxClasses += ' border-2 hover:opacity-90';
+      backgroundColor = rainbowColor;
+      borderColor = rainbowColor;
       opacity = 1; // Normal
       break;
     case 'hidden':
       // This is a parent node that's not normally visible
-      boxClasses += ' bg-blue-600 border-2 border-blue-400 hover:bg-blue-500';
+      boxClasses += ' border-2 hover:opacity-80';
+      backgroundColor = '#2563eb'; // Blue for parent nodes
+      borderColor = '#3b82f6';
       opacity = 0.8;
       scale = 1.2; // Larger size for parent nodes
       break;
@@ -51,16 +65,22 @@ const SkillsListNode = ({
   
   // Override with preview styling if this is the preview node
   if (isPreview) {
-    boxClasses = 'absolute rounded-lg p-3 shadow-lg bg-purple-600 border-2 border-yellow-400 hover:bg-purple-500';
+    boxClasses = 'absolute rounded-lg p-3 shadow-lg border-2 hover:opacity-80';
+    backgroundColor = '#8b5cf6'; // Purple for preview
+    borderColor = '#fbbf24'; // Yellow border
     opacity = 0.8;
   }
   
   // Override with parent styling if this is a parent of a removing node
   if (isParentOfRemoving && state !== 'removing' && !isPreview) {
-    boxClasses = 'absolute rounded-lg p-3 shadow-lg bg-blue-600 border-2 border-blue-400 hover:bg-blue-500';
+    boxClasses = 'absolute rounded-lg p-3 shadow-lg border-2 hover:opacity-80';
+    backgroundColor = '#2563eb'; // Blue for parent of removing
+    borderColor = '#3b82f6';
     opacity = 0.9;
     scale = 1.2; // Larger size for parent nodes
   }
+  const minY = timelineBoxes.reduce((min, box) => Math.min(min, box.y), Infinity);
+  const maxY = timelineBoxes.reduce((max, box) => Math.max(max, box.y + box.height), 0);
 
   return (
     <>
@@ -74,6 +94,8 @@ const SkillsListNode = ({
           height: `${boxHeight}px`,
           transform: `translateX(-50%) scale(${scale})`, // Center the box and apply scale
           opacity: opacity,
+          backgroundColor: backgroundColor,
+          borderColor: borderColor,
           // Remove all transitions for removing nodes to make movement immediate
           transition: state === 'removing' ? 'none' : 'all 0.3s ease'
         }}
@@ -81,7 +103,7 @@ const SkillsListNode = ({
         <div className="flex flex-col h-full justify-center items-center text-center">
           <div className={`text-sm font-semibold mb-1 ${
             isPreview ? 'text-yellow-300' : 
-            state === 'adding' ? 'text-green-300' :
+            state === 'adding' ? 'text-white' :
             state === 'removing' ? 'text-gray-400' :
             isParentOfRemoving ? 'text-blue-300' :
             'text-white'
@@ -102,10 +124,10 @@ const SkillsListNode = ({
           </div>
           <div className={`text-xs leading-tight ${
             isPreview ? 'text-purple-200' :
-            state === 'adding' ? 'text-green-200' :
+            state === 'adding' ? 'text-white' :
             state === 'removing' ? 'text-gray-500' :
             isParentOfRemoving ? 'text-blue-200' :
-            'text-gray-300'
+            'text-white'
           }`}>
             {node.name}
           </div>
@@ -114,27 +136,32 @@ const SkillsListNode = ({
               {node.timelineData.length} periods
             </div>
           )}
-          {state === 'removing' && parentIndex && (
-            <div className="text-xs text-blue-400 mt-1">
-              Parent: #{parentIndex}
-            </div>
-          )}
         </div>
-      </div> */}
-
+      </div>
+       */}
       {/* Timeline boxes */}
-      {timelineBoxes.map((timelineBox) => (
+      {timelineBoxes.map((timelineBox, boxIndex) => (
         <TimelineBox
           key={timelineBox.id}
           timelineBox={timelineBox}
           x={animatedX}
-          width={adjustedBoxWidth} // Slightly narrower than main box
+          width={adjustedBoxWidth}
           state={state}
           isPreview={isPreview}
+          rainbowColor={rainbowColor}
           isParentOfRemoving={isParentOfRemoving}
-          getRemovingNodeOpacity={() => getRemovingNodeOpacity(node)}
+          getRemovingNodeOpacity={getRemovingNodeOpacity}
         />
       ))}
+      <div className="absolute top-0 left-0" 
+      style={{ 
+        height: `100%`,
+        opacity: state === 'adding' ? 0.25 : 1,
+        width: `12px`,
+        left: `${(animatedX+adjustedBoxWidth/2)-6 }px`,
+        top: `${minY}px`,
+        backgroundColor: rainbowColor,
+      }}></div>
     </>
   );
 };

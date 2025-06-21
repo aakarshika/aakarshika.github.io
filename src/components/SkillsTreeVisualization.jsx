@@ -1,5 +1,5 @@
 import React from 'react';
-import { SVG_MARGIN, COLORS, NODE_SIZES } from '../utils/constants';
+import { SVG_MARGIN, COLORS, NODE_SIZES, getRainbowColor } from '../utils/constants';
 import { shouldScaleNode } from '../utils/skillDataUtils';
 
 /**
@@ -108,8 +108,10 @@ const SkillsTreeVisualization = ({
         ))}
         
         {/* Nodes */}
-        {treeNodes.map(node => {
+        {treeNodes.map((node, index) => {
           const size = getNodeSize(node, node.isHighlighted);
+          const rainbowColor = getRainbowColor(index, treeNodes.length);
+          
           return size > 0 && (
             <g key={node.id}>
               {/* Background circle for nodes with timeline data */}
@@ -130,8 +132,8 @@ const SkillsTreeVisualization = ({
                 cx={transformX(node.x)}
                 cy={transformY(node.y)}
                 r={size}
-                fill={node.isPreview ? '#8b5cf6' : (node.isHighlighted ? COLORS.highlighted.node : COLORS.normal.node)}
-                stroke={node.isPreview ? '#a78bfa' : (node.isHighlighted ? COLORS.highlighted.stroke : COLORS.normal.stroke)}
+                fill={node.isPreview ? '#8b5cf6' : (node.isHighlighted ? COLORS.highlighted.node : rainbowColor)}
+                stroke={node.isPreview ? '#a78bfa' : (node.isHighlighted ? COLORS.highlighted.stroke : rainbowColor)}
                 strokeWidth={node.isPreview ? 3 : (node.isHighlighted ? 2 : 1)}
                 opacity={node.isPreview ? 0.8 : 1}
                 className="transition-all duration-300 cursor-pointer"
@@ -142,7 +144,7 @@ const SkillsTreeVisualization = ({
                 x={transformX(node.x)}
                 y={transformY(node.y) + 20}
                 textAnchor="middle"
-                fill={node.isPreview ? '#a78bfa' : (node.isHighlighted ? COLORS.highlighted.text : COLORS.normal.text)}
+                fill={node.isPreview ? '#a78bfa' : (node.isHighlighted ? COLORS.highlighted.text : 'white')}
                 fontSize="12px"
                 opacity={node.isPreview ? 0.8 : 1}
                 transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 20})`}
