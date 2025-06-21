@@ -5,7 +5,7 @@
  */
 export const skillCategoryPaths = [
   // Backend Technologies
-  'tech.backend.python.python',
+  'tech.backend.python',
   'tech.backend.python.django',
   'tech.backend.python.django_rest_framework',
   'tech.backend.python.pytest',

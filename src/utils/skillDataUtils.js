@@ -11,6 +11,31 @@ export function normalizeName(name) {
 }
 
 /**
+ * Determines if a node should be scaled up (is a leaf node)
+ * @param {Object} node - Node object
+ * @param {Array} treeNodes - All tree nodes for reference
+ * @param {Set} highlightedNodes - Set of highlighted node names
+ * @param {boolean} scaleUpLeafNodes - Whether scaling is enabled
+ * @returns {boolean} True if node should be scaled up
+ */
+export function shouldScaleNode(node, treeNodes, highlightedNodes, scaleUpLeafNodes) {
+  if (!scaleUpLeafNodes) return false;
+  
+  // If it's a literal leaf node (no children)
+  if (!node.children || node.children.length === 0) {
+    return true;
+  }
+  
+  // If all children are highlighted, treat it as a leaf
+  const allChildrenHighlighted = node.children.some(childId => {
+    const childNode = treeNodes.find(n => n.id === childId);
+    return childNode && highlightedNodes.has(childNode.name);
+  });
+  
+  return allChildrenHighlighted;
+}
+
+/**
  * Maps skill names to their timeline data
  * @returns {Object} Mapping of skill names to their timeline entries
  */

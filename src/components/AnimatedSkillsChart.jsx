@@ -3,6 +3,7 @@ import { useSkillsTree } from '../hooks/useSkillsTree';
 import SkillsTreeControls from './SkillsTreeControls';
 import SkillsTreeVisualization from './SkillsTreeVisualization';
 import TimelineInfoPanel from './TimelineInfoPanel';
+import SkillsList from './SkillsList';
 
 /**
  * Visual Tree Component
@@ -70,6 +71,13 @@ const AnimatedSkillsChart = () => {
       
       {/* Timeline Information Panel */}
       <TimelineInfoPanel hoveredNode={hoveredNode} />
+      
+      {/* Skills List */}
+      <SkillsList
+        treeNodes={treeNodes}
+        highlightedNodes={highlightedNodes}
+        scaleUpLeafNodes={scaleUpLeafNodes}
+      />
     </div>
   );
 };

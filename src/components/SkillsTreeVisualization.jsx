@@ -1,5 +1,6 @@
 import React from 'react';
 import { SVG_MARGIN, COLORS, NODE_SIZES } from '../utils/constants';
+import { shouldScaleNode } from '../utils/skillDataUtils';
 
 /**
  * Skills Tree Visualization Component
@@ -27,35 +28,13 @@ const SkillsTreeVisualization = ({
   };
 
   /**
-   * Determines if a node should be scaled up (is a leaf node)
-   * @param {Object} node - Node object
-   * @returns {boolean} True if node should be scaled up
-   */
-  const shouldScaleNode = (node) => {
-    if (!scaleUpLeafNodes) return false;
-    
-    // If it's a literal leaf node (no children)
-    if (!node.children || node.children.length === 0) {
-      return true;
-    }
-    
-    // If all children are highlighted, treat it as a leaf
-    const allChildrenHighlighted = node.children.some(childId => {
-      const childNode = treeNodes.find(n => n.id === childId);
-      return childNode && highlightedNodes.has(childNode.name);
-    });
-    
-    return allChildrenHighlighted;
-  };
-
-  /**
    * Gets the appropriate node size based on scaling state
    * @param {Object} node - Node object
    * @param {boolean} isHighlighted - Whether node is highlighted
    * @returns {number} Radius size
    */
   const getNodeSize = (node, isHighlighted) => {
-    const isConsideredLeaf = shouldScaleNode(node);    
+    const isConsideredLeaf = shouldScaleNode(node, treeNodes, highlightedNodes, scaleUpLeafNodes);    
     
     if(scaleUpLeafNodes) {
       if(isConsideredLeaf && !isHighlighted){
@@ -76,7 +55,7 @@ const SkillsTreeVisualization = ({
     if (!scaleUpLeafNodes) return {};
     
     const unhighlightedLeafNodes = treeNodes.filter(node => {
-      const isLeaf = shouldScaleNode(node);
+      const isLeaf = shouldScaleNode(node, treeNodes, highlightedNodes, scaleUpLeafNodes);
       return isLeaf && !node.isHighlighted;
     });
     
