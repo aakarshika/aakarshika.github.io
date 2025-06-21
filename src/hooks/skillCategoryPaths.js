@@ -13,7 +13,7 @@ export const skillCategoryPaths = [
 
   'tech.machine_learning',
   'tech.machine_learning.pandas',
-  'tech.machine_learning.machine_learning',
+  'tech.machine_learning.ml',
   'tech.machine_learning.computer_vision',
   'tech.machine_learning.nlp',
 

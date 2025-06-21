@@ -120,6 +120,16 @@ export function getNodeTimelineData(nodeName, node, skillToTimeline, categoryToS
   const timelineData = [];
   const normalizedNodeName = normalizeName(nodeName);
   
+  // Debug for tech node
+  if (nodeName === 'tech') {
+    console.log('🔍 Processing tech node:', {
+      nodeName,
+      hasChildren: !!node.children,
+      childrenKeys: node.children ? Object.keys(node.children) : [],
+      childrenCount: node.children ? Object.keys(node.children).length : 0
+    });
+  }
+  
   // If this is a leaf node (has no children), get direct skill data
   if (!node.children || Object.keys(node.children).length === 0) {
     // Direct normalized match
@@ -154,8 +164,15 @@ export function getNodeTimelineData(nodeName, node, skillToTimeline, categoryToS
     });
   } else {
     // This is a parent node, collect data from all children
+    if (nodeName === 'tech') {
+      console.log('🔍 Tech node collecting from children:', Object.keys(node.children));
+    }
+    
     Object.values(node.children).forEach(child => {
       const childData = getNodeTimelineData(child.name, child, skillToTimeline, categoryToSkills);
+      if (nodeName === 'tech') {
+        console.log(`🔍 Tech node child ${child.name} returned ${childData.length} entries`);
+      }
       timelineData.push(...childData);
     });
   }
@@ -171,6 +188,14 @@ export function getNodeTimelineData(nodeName, node, skillToTimeline, categoryToS
       uniqueData.push(entry);
     }
   });
+  
+  if (nodeName === 'tech') {
+    console.log('🔍 Tech node final result:', {
+      totalEntries: timelineData.length,
+      uniqueEntries: uniqueData.length,
+      sampleEntries: uniqueData.slice(0, 3)
+    });
+  }
   
   return uniqueData;
 }

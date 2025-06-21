@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useSkillsListData } from './useSkillsListData';
 import { useScrollAnimation } from './useScrollAnimation';
+import { useTimelineData } from './useTimelineData';
 import SkillsListHeader from './SkillsListHeader';
 import SkillsListNode from './SkillsListNode';
 import SkillsListDebug from './SkillsListDebug';
@@ -9,7 +10,7 @@ import SkillsListDebug from './SkillsListDebug';
  * Skills List Component
  * 
  * Displays unhighlighted leaf nodes in a horizontal list with evenly spaced boxes
- * Now refactored into smaller, focused components
+ * Now refactored into smaller, focused components with timeline visualization
  */
 const SkillsList = ({ 
   treeNodes, 
@@ -29,6 +30,12 @@ const SkillsList = ({
     getNodeState,
     findParentNode
   } = useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNodes });
+
+  // Get timeline data using custom hook
+  const {
+    nodeTimelineBoxes,
+    yZoom
+  } = useTimelineData({ treeNodes, yZoom: 600 });
 
   // Get scroll animation logic using custom hook
   const {
@@ -58,27 +65,39 @@ const SkillsList = ({
       onWheel={handleWheel}
       style={{ cursor: removingNodes.length > 0 ? 'ns-resize' : 'default' }}
     >
-      <SkillsListHeader
+      {/* <SkillsListHeader
         visibleNodes={visibleNodes}
         nextNode={nextNode}
         removingNodes={removingNodes}
         scrollProgress={scrollProgress}
-      />
+      /> */}
       
       <div 
         className="relative"
         style={{ 
-          height: '500px',
+          height: `${yZoom}px`, // Use timeline height instead of fixed 500px
           width: '100%',
           overflow: 'hidden'
         }}
       >
         {visibleNodes.map((node, index) => {
-          const baseX = positioning.startX + index * (positioning.adjustedBoxWidth + positioning.boxMargin);
+          // Find the node position from the new positioning structure
+          const nodePosition = positioning.nodePositions.find(np => np.node.id === node.id);
+          const baseX = nodePosition ? positioning.startX + nodePosition.x : 0;
           const animatedX = getAnimatedPosition(node, baseX);
           const state = getNodeState(node);
           const isPreview = node.isPreview;
           const isParentOfRemoving = parentNodes.some(parent => parent.name === node.name);
+          
+          // Find timeline boxes for this node
+          const nodeTimelineData = nodeTimelineBoxes.find(td => td.nodeId === node.id);
+          const timelineBoxes = nodeTimelineData ? nodeTimelineData.timelineBoxes.map(
+            (box, index) => ({
+              ...box,
+              name: `${node.name.split('_').join(' ')}`,
+              children: node.childrenHighlighted
+            })
+          ) : [];
           
           // Find parent index for removing nodes
           let parentIndex = null;
@@ -102,17 +121,18 @@ const SkillsList = ({
               isPreview={isPreview}
               isParentOfRemoving={isParentOfRemoving}
               parentIndex={parentIndex}
-              adjustedBoxWidth={positioning.adjustedBoxWidth}
+              adjustedBoxWidth={nodePosition ? nodePosition.width : 50}
               boxHeight={positioning.boxHeight}
               getRemovingNodeOpacity={getRemovingNodeOpacity}
               findParentNode={findParentNode}
               visibleNodes={visibleNodes}
+              timelineBoxes={timelineBoxes}
             />
           );
         })}
       </div>
       
-      <SkillsListDebug
+      {/* <SkillsListDebug
         positioning={positioning}
         visibleNodes={visibleNodes}
         nextNode={nextNode}
@@ -120,7 +140,7 @@ const SkillsList = ({
         parentNodes={parentNodes}
         scrollProgress={scrollProgress}
         scrollSpeed={scrollSpeed}
-      />
+      /> */}
     </div>
   );
 };

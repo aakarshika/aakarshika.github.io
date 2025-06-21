@@ -1,46 +1,47 @@
+# some instructions for ai .
+Do not run testing and npm run commands after doing changes. if needed, i will do them otherwise my server will automatically refresh. only when npm install is needed, let me know.
+NEVER run npm run build.
+i will run npm run dev myself. just let me know.
+
 # Skills Tree Components
 
 This directory contains the modular components for the Skills Tree visualization.
 
-## Architecture Overview
-
-The original monolithic `AnimatedSkillsChart.jsx` has been refactored into a modular architecture with clear separation of concerns:
-
-### 📁 File Structure
+## 📁 File Structure
 
 ```
 src/
 ├── components/
-│   ├── AnimatedSkillsChart.jsx      # Main component (orchestrator)
+│   ├── AnimatedSkillsChart.jsx      # Main orchestrator component
 │   ├── SkillsTreeControls.jsx       # Header, controls, and data summary
 │   ├── SkillsTreeVisualization.jsx  # SVG tree visualization
 │   ├── TimelineInfoPanel.jsx        # Timeline details panel
 │   └── README.md                    # This file
 ├── hooks/
-│   ├── useSkillsTree.js             # Custom hook for tree state management
+│   ├── useSkillsTree.js             # Tree state management
 │   └── skillCategoryPaths.js        # Skill category paths data
 ├── utils/
 │   ├── skillDataUtils.js            # Data manipulation utilities
 │   └── constants.js                 # Shared constants and configuration
 ```
 
-### 🔧 Components
+## 🔧 Components
 
-#### `AnimatedSkillsChart.jsx`
+### `AnimatedSkillsChart.jsx`
 - **Purpose**: Main orchestrator component
 - **Responsibilities**: 
-  - Uses the `useSkillsTree` hook for state management
+  - Uses `useSkillsTree` hook for state management
   - Renders child components with appropriate props
   - Maintains clean separation between data and view
 
-#### `SkillsTreeControls.jsx`
+### `SkillsTreeControls.jsx`
 - **Purpose**: Header section with controls and data summary
 - **Responsibilities**:
   - Displays title and description
-  - Shows data statistics (total nodes, timeline entries, etc.)
+  - Shows data statistics (total nodes, timeline entries)
   - Renders control buttons (Highlight Next, Reset)
 
-#### `SkillsTreeVisualization.jsx`
+### `SkillsTreeVisualization.jsx`
 - **Purpose**: SVG-based tree visualization
 - **Responsibilities**:
   - Renders tree nodes and connections
@@ -48,16 +49,16 @@ src/
   - Manages SVG coordinate transformations
   - Uses constants for consistent styling
 
-#### `TimelineInfoPanel.jsx`
+### `TimelineInfoPanel.jsx`
 - **Purpose**: Detailed timeline information display
 - **Responsibilities**:
   - Shows timeline data for selected nodes
   - Displays period details (dates, duration, company, expertise)
   - Handles sorted timeline data presentation
 
-### 🎣 Hooks
+## 🎣 Hooks
 
-#### `useSkillsTree.js`
+### `useSkillsTree.js`
 - **Purpose**: Custom hook for tree state management
 - **Responsibilities**:
   - Manages highlighting state and logic
@@ -65,9 +66,9 @@ src/
   - Provides tree statistics and bounds calculations
   - Exposes actions for highlighting and resetting
 
-### 🛠️ Utilities
+## 🛠️ Utilities
 
-#### `skillDataUtils.js`
+### `skillDataUtils.js`
 - **Purpose**: Data manipulation and processing functions
 - **Responsibilities**:
   - Building skill-to-timeline mappings
@@ -76,40 +77,13 @@ src/
   - Calculating hierarchy and tree structures
   - Formatting and sorting timeline data
 
-#### `constants.js`
+### `constants.js`
 - **Purpose**: Shared constants and configuration
 - **Responsibilities**:
   - SVG margins and layout settings
   - Color schemes for different states
   - Special skill mappings
   - Timeline entry styling constants
-
-## 🎯 Benefits of Modular Structure
-
-### 1. **Separation of Concerns**
-- Data manipulation is separated from UI components
-- Each component has a single, clear responsibility
-- State management is centralized in custom hooks
-
-### 2. **Reusability**
-- Components can be easily reused in other parts of the application
-- Utilities can be imported and used independently
-- Constants provide consistent configuration across components
-
-### 3. **Maintainability**
-- Smaller, focused files are easier to understand and modify
-- Changes to data logic don't affect UI components
-- Styling changes can be made in constants without touching components
-
-### 4. **Testability**
-- Each component can be tested in isolation
-- Utilities can be unit tested independently
-- Hooks can be tested with React Testing Library
-
-### 5. **Performance**
-- Components only re-render when their specific props change
-- Data processing is memoized in the custom hook
-- Tree layout calculations are optimized
 
 ## 🔄 Data Flow
 
@@ -121,10 +95,17 @@ skillCategoryPaths.js → skillDataUtils.js → useSkillsTree.js → Components
 constants.js → All Components (styling and configuration)
 ```
 
+## 🎯 Benefits
+
+- **Separation of Concerns**: Data manipulation separated from UI components
+- **Reusability**: Components can be easily reused in other parts of the application
+- **Maintainability**: Smaller, focused files are easier to understand and modify
+- **Testability**: Each component can be tested in isolation
+- **Performance**: Components only re-render when their specific props change
+
 ## 🚀 Usage
 
-The main component can be used exactly as before:
-
+### Main Component
 ```jsx
 import AnimatedSkillsChart from './components/AnimatedSkillsChart';
 
@@ -133,8 +114,7 @@ function App() {
 }
 ```
 
-Individual components can also be used independently:
-
+### Individual Components
 ```jsx
 import { useSkillsTree } from './hooks/useSkillsTree';
 import SkillsTreeVisualization from './components/SkillsTreeVisualization';

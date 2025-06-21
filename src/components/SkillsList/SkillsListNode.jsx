@@ -1,8 +1,10 @@
 import React from 'react';
+import TimelineBox from './TimelineBox';
 
 /**
  * Individual skill list node component
  * Renders a single node box with appropriate styling based on its state
+ * Now includes timeline boxes for time periods
  */
 const SkillsListNode = ({
   node,
@@ -18,7 +20,8 @@ const SkillsListNode = ({
   boxHeight,
   getRemovingNodeOpacity,
   findParentNode,
-  visibleNodes
+  visibleNodes,
+  timelineBoxes = [] // New prop for timeline boxes
 }) => {
   // Determine styling based on state
   let boxClasses = 'absolute rounded-lg p-3 shadow-lg';
@@ -60,62 +63,79 @@ const SkillsListNode = ({
   }
 
   return (
-    <div
-      className={boxClasses}
-      style={{
-        left: `${animatedX}px`,
-        top: `${y}px`,
-        width: `${adjustedBoxWidth}px`,
-        height: `${boxHeight}px`,
-        transform: `translateX(-50%) scale(${scale})`, // Center the box and apply scale
-        opacity: opacity,
-        // Remove all transitions for removing nodes to make movement immediate
-        transition: state === 'removing' ? 'none' : 'all 0.3s ease'
-      }}
-    >
-      <div className="flex flex-col h-full justify-center items-center text-center">
-        <div className={`text-sm font-semibold mb-1 ${
-          isPreview ? 'text-yellow-300' : 
-          state === 'adding' ? 'text-green-300' :
-          state === 'removing' ? 'text-gray-400' :
-          isParentOfRemoving ? 'text-blue-300' :
-          'text-white'
-        }`}>
-          #{index + 1}
-          {isPreview && (
-            <span className="ml-1 text-xs">(Next)</span>
+    <>
+      {/* Main node box */}
+      {/* <div
+        className={boxClasses}
+        style={{
+          left: `${animatedX}px`,
+          top: `${y}px`,
+          width: `${adjustedBoxWidth}px`,
+          height: `${boxHeight}px`,
+          transform: `translateX(-50%) scale(${scale})`, // Center the box and apply scale
+          opacity: opacity,
+          // Remove all transitions for removing nodes to make movement immediate
+          transition: state === 'removing' ? 'none' : 'all 0.3s ease'
+        }}
+      >
+        <div className="flex flex-col h-full justify-center items-center text-center">
+          <div className={`text-sm font-semibold mb-1 ${
+            isPreview ? 'text-yellow-300' : 
+            state === 'adding' ? 'text-green-300' :
+            state === 'removing' ? 'text-gray-400' :
+            isParentOfRemoving ? 'text-blue-300' :
+            'text-white'
+          }`}>
+            #{index + 1}
+            {isPreview && (
+              <span className="ml-1 text-xs">(Next)</span>
+            )}
+            {state === 'adding' && (
+              <span className="ml-1 text-xs">(Adding)</span>
+            )}
+            {state === 'removing' && (
+              <span className="ml-1 text-xs">(Removing)</span>
+            )}
+            {isParentOfRemoving && (
+              <span className="ml-1 text-xs">(Parent)</span>
+            )}
+          </div>
+          <div className={`text-xs leading-tight ${
+            isPreview ? 'text-purple-200' :
+            state === 'adding' ? 'text-green-200' :
+            state === 'removing' ? 'text-gray-500' :
+            isParentOfRemoving ? 'text-blue-200' :
+            'text-gray-300'
+          }`}>
+            {node.name}
+          </div>
+          {node.timelineData && node.timelineData.length > 0 && (
+            <div className="text-xs text-yellow-400 mt-1">
+              {node.timelineData.length} periods
+            </div>
           )}
-          {state === 'adding' && (
-            <span className="ml-1 text-xs">(Adding)</span>
-          )}
-          {state === 'removing' && (
-            <span className="ml-1 text-xs">(Removing)</span>
-          )}
-          {isParentOfRemoving && (
-            <span className="ml-1 text-xs">(Parent)</span>
+          {state === 'removing' && parentIndex && (
+            <div className="text-xs text-blue-400 mt-1">
+              Parent: #{parentIndex}
+            </div>
           )}
         </div>
-        <div className={`text-xs leading-tight ${
-          isPreview ? 'text-purple-200' :
-          state === 'adding' ? 'text-green-200' :
-          state === 'removing' ? 'text-gray-500' :
-          isParentOfRemoving ? 'text-blue-200' :
-          'text-gray-300'
-        }`}>
-          {node.name}
-        </div>
-        {node.timelineData && node.timelineData.length > 0 && (
-          <div className="text-xs text-yellow-400 mt-1">
-            {node.timelineData.length} periods
-          </div>
-        )}
-        {state === 'removing' && parentIndex && (
-          <div className="text-xs text-blue-400 mt-1">
-            Parent: #{parentIndex}
-          </div>
-        )}
-      </div>
-    </div>
+      </div> */}
+
+      {/* Timeline boxes */}
+      {timelineBoxes.map((timelineBox) => (
+        <TimelineBox
+          key={timelineBox.id}
+          timelineBox={timelineBox}
+          x={animatedX}
+          width={adjustedBoxWidth} // Slightly narrower than main box
+          state={state}
+          isPreview={isPreview}
+          isParentOfRemoving={isParentOfRemoving}
+          getRemovingNodeOpacity={() => getRemovingNodeOpacity(node)}
+        />
+      ))}
+    </>
   );
 };
 

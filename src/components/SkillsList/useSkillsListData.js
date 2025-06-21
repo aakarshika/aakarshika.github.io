@@ -72,40 +72,83 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
       return state !== 'hidden' || isParentOfRemoving;
     });
 
-    // Calculate positioning
+    // Calculate positioning based on expertise levels and highlighted children
     const screenWidth = window.innerWidth;
-    const containerPadding = 40; // 20px padding on each side
+    const containerPadding = 10; // 20px padding on each side
     const availableWidth = screenWidth - containerPadding;
-    const boxWidth = 200; // Fixed box width
     const boxHeight = 80; // Fixed box height
-    const boxMargin = 20; // Margin between boxes
+    const boxMargin = 10; // Gap between boxes
     
-    // Calculate total width needed and spacing
-    const totalBoxesWidth = visibleNodes.length * boxWidth;
+    // Calculate box width for each visible node based on expertise and highlighted children
+    const calculateNodeWidth = (node) => {
+      // Base width based on highest expertise level in timeline data
+      let baseWidth = 45; // Default for Beginner
+      
+      if (node.timelineData && node.timelineData.length > 0) {
+        const expertiseLevels = node.timelineData.map(entry => entry.expertise);
+        if (expertiseLevels.includes('Expert')) {
+          baseWidth = 65;
+        } else if (expertiseLevels.includes('Intermediate')) {
+          baseWidth = 55;
+        }
+      }
+      
+      // Add width for each highlighted child
+      const highlightedChildrenCount = node.children ? 
+        node.children.filter(childId => {
+          const childNode = treeNodes.find(n => n.id === childId);
+          return childNode && highlightedNodes.has(childNode.name);
+        }).length : 0;
+      
+      const additionalWidth = highlightedChildrenCount * 25;
+      
+      return baseWidth + additionalWidth;
+    };
+    
+    // Calculate individual box widths for each visible node
+    const nodeWidths = visibleNodes.map(node => ({
+      node,
+      width: calculateNodeWidth(node)
+    }));
+    
+    // Calculate total width needed
+    const totalBoxesWidth = nodeWidths.reduce((sum, { width }) => sum + width, 0);
     const totalMarginsWidth = (visibleNodes.length - 1) * boxMargin;
     const totalWidthNeeded = totalBoxesWidth + totalMarginsWidth;
     
-    // If we need more space than available, adjust box width
-    const adjustedBoxWidth = totalWidthNeeded > availableWidth 
-      ? (availableWidth - totalMarginsWidth) / visibleNodes.length
-      : boxWidth;
+    // Calculate scaling factor to fit all boxes within available width
+    const scaleFactor = totalWidthNeeded > availableWidth ? 
+      (availableWidth - totalMarginsWidth) / totalBoxesWidth : 1;
     
-    // Calculate spacing to center the boxes
-    const actualTotalWidth = visibleNodes.length * adjustedBoxWidth + totalMarginsWidth;
+    // Calculate final positions
+    let currentX = 0;
+    const nodePositions = nodeWidths.map(({ node, width }, index) => {
+      const scaledWidth = width * scaleFactor;
+      const position = {
+        node,
+        x: currentX,
+        width: scaledWidth
+      };
+      currentX += scaledWidth + boxMargin;
+      return position;
+    });
+    
+    // Center the entire layout
+    const actualTotalWidth = currentX - boxMargin; // Remove last margin
     const startX = (availableWidth - actualTotalWidth) / 2;
 
     const positioning = {
       screenWidth,
       availableWidth,
-      boxWidth,
       boxHeight,
       boxMargin,
       totalBoxesWidth,
       totalMarginsWidth,
       totalWidthNeeded,
-      adjustedBoxWidth,
+      scaleFactor,
       actualTotalWidth,
-      startX
+      startX,
+      nodePositions
     };
 
     return {

@@ -15,11 +15,17 @@ const SkillsListDebug = ({
 }) => {
   if (!positioning) return null;
 
+  // Calculate average box width from node positions
+  const avgBoxWidth = positioning.nodePositions.length > 0 
+    ? positioning.nodePositions.reduce((sum, np) => sum + np.width, 0) / positioning.nodePositions.length
+    : 0;
+
   return (
     <div className="mt-4 text-xs text-gray-400">
       <p>Screen width: {positioning.screenWidth}px | Available width: {positioning.availableWidth}px</p>
-      <p>Box width: {positioning.adjustedBoxWidth.toFixed(1)}px | Total boxes: {visibleNodes.length}</p>
+      <p>Avg box width: {avgBoxWidth.toFixed(1)}px | Total boxes: {visibleNodes.length}</p>
       <p>Total width needed: {positioning.totalWidthNeeded}px | Actual total width: {positioning.actualTotalWidth.toFixed(1)}px</p>
+      <p>Scale factor: {positioning.scaleFactor.toFixed(3)}</p>
       {nextNode && (
         <p className="text-yellow-400 mt-1">
           Preview mode: Next node will be "{nextNode.name}"

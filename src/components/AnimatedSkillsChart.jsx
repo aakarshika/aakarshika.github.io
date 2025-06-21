@@ -43,7 +43,7 @@ const AnimatedSkillsChart = () => {
   return (
     <div className="w-auto h-screen bg-gray-900 text-white p-6">
       {/* Header and Controls */}
-      <SkillsTreeControls
+      {/* <SkillsTreeControls
         highlightedNodes={highlightedNodes}
         isProcessing={isProcessing}
         totalTimelineEntries={totalTimelineEntries}
@@ -56,7 +56,7 @@ const AnimatedSkillsChart = () => {
         onReset={resetHighlighting}
         onToggleShowOnlyWithData={toggleShowOnlyWithData}
         onToggleScaleUpLeafNodes={toggleScaleUpLeafNodes}
-      />
+      /> */}
       
       {/* Tree Visualization */}
       {!scaleUpLeafNodes && (<SkillsTreeVisualization
@@ -70,7 +70,7 @@ const AnimatedSkillsChart = () => {
       />)}
       
       {/* Timeline Information Panel */}
-      <TimelineInfoPanel hoveredNode={hoveredNode} />
+      {/* <TimelineInfoPanel hoveredNode={hoveredNode} /> */}
       
       {/* Skills List */}
       <SkillsList

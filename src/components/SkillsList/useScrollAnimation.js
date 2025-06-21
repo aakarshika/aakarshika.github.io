@@ -45,14 +45,17 @@ export function useScrollAnimation({
         const parent = findParentNode(node.name);
         if (!parent) return false;
         
-        const parentIndex = visibleNodes.findIndex(n => n.name === parent.name);
-        if (parentIndex === -1) return false;
+        // Find parent position using new positioning structure
+        const parentPosition = positioning.nodePositions.find(np => np.node.name === parent.name);
+        if (!parentPosition) return false;
         
-        const parentX = positioning.startX + parentIndex * (positioning.adjustedBoxWidth + positioning.boxMargin);
-        const childIndex = visibleNodes.findIndex(n => n.name === node.name);
-        if (childIndex === -1) return false;
+        const parentX = positioning.startX + parentPosition.x;
         
-        const childX = positioning.startX + childIndex * (positioning.adjustedBoxWidth + positioning.boxMargin);
+        // Find child position using new positioning structure
+        const childPosition = positioning.nodePositions.find(np => np.node.name === node.name);
+        if (!childPosition) return false;
+        
+        const childX = positioning.startX + childPosition.x;
         const currentX = childX + (parentX - childX) * newProgress;
         
         // Check if positions are close enough (within 1px tolerance)
@@ -82,10 +85,11 @@ export function useScrollAnimation({
     const parent = findParentNode(node.name);
     if (!parent) return baseX;
     
-    const parentIndex = visibleNodes.findIndex(n => n.name === parent.name);
-    if (parentIndex === -1) return baseX;
+    // Find parent position using new positioning structure
+    const parentPosition = positioning.nodePositions.find(np => np.node.name === parent.name);
+    if (!parentPosition) return baseX;
     
-    const parentX = positioning.startX + parentIndex * (positioning.adjustedBoxWidth + positioning.boxMargin);
+    const parentX = positioning.startX + parentPosition.x;
     const childX = baseX;
     
     // Direct interpolation between child and parent position based on scroll progress

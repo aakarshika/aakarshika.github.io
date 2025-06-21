@@ -235,10 +235,29 @@ export function useSkillsTree() {
       const skillToTimeline = buildSkillToTimelineMapping();
       const categoryToSkills = buildCategoryToSkillsMapping();
       
-      // Create a mock node object for getNodeTimelineData
+      // Create a mock node object for getNodeTimelineData with proper children structure
       const mockNode = {
         children: node.children ? Object.fromEntries(
-          node.children.map(child => [child.data.name, { name: child.data.name, children: {} }])
+          node.children.map(child => {
+            // Recursively build the children structure for this child
+            const buildChildStructure = (childNode) => {
+              if (!childNode.children || childNode.children.length === 0) {
+                return { name: childNode.data.name, children: {} };
+              }
+              
+              return {
+                name: childNode.data.name,
+                children: Object.fromEntries(
+                  childNode.children.map(grandChild => [
+                    grandChild.data.name,
+                    buildChildStructure(grandChild)
+                  ])
+                )
+              };
+            };
+            
+            return [child.data.name, buildChildStructure(child)];
+          })
         ) : {}
       };
       
@@ -251,6 +270,7 @@ export function useSkillsTree() {
         x: node.x,
         y: node.y,
         children: node.children ? node.children.map(child => child.data.path || child.data.name) : [],
+        childrenHighlighted: node.children ? node.children.filter(child => child.data.isHighlighted).length : 0,
         childCount: node.children ? node.children.length : 0,
         isHighlighted: highlightedNodes.has(nodeName),
         isPreview: nextNode === nodeName,
@@ -302,6 +322,18 @@ export function useSkillsTree() {
   // Debug: Show all node names
   console.log('All node names:', treeNodes.map(node => node.name));
   console.log('Available normalized skill names:', Object.keys(skillToTimeline));
+
+  // Debug: Specifically check the tech node
+  const techNode = treeNodes.find(node => node.name === 'tech');
+  if (techNode) {
+    console.log('🔍 Tech node debug:', {
+      name: techNode.name,
+      timelineDataLength: techNode.timelineData ? techNode.timelineData.length : 0,
+      children: techNode.children,
+      childCount: techNode.childCount,
+      sampleTimelineData: techNode.timelineData ? techNode.timelineData.slice(0, 3) : []
+    });
+  }
 
   return {
     // State
