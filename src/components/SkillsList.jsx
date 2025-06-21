@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { shouldScaleNode } from '../utils/skillDataUtils';
 
 /**
@@ -9,8 +9,13 @@ import { shouldScaleNode } from '../utils/skillDataUtils';
 const SkillsList = ({ 
   treeNodes, 
   highlightedNodes, 
-  scaleUpLeafNodes
+  scaleUpLeafNodes,
+  onAnimationComplete
 }) => {
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const containerRef = useRef(null);
+
   if (!scaleUpLeafNodes) return null;
 
   // Get current unhighlighted leaf nodes
@@ -92,13 +97,94 @@ const SkillsList = ({
   const actualTotalWidth = visibleNodes.length * adjustedBoxWidth + totalMarginsWidth;
   const startX = (availableWidth - actualTotalWidth) / 2;
 
+  // Handle mouse wheel scroll for animation
+  const handleWheel = (e) => {
+    if (removingNodes.length === 0) return;
+    
+    e.preventDefault();
+    
+    const delta = e.deltaY > 0 ? 1 : -1; // Positive for scroll down, negative for scroll up
+    const tickSize = 1 / 50; // 20 ticks to complete the animation
+    
+    setScrollProgress(prev => {
+      const newProgress = Math.max(0, Math.min(1, prev + (delta * tickSize)));
+      
+      // Check if any removing node has reached its parent's position
+      const hasReachedParent = removingNodes.some(node => {
+        const parent = findParentNode(node.name);
+        if (!parent) return false;
+        
+        const parentIndex = visibleNodes.findIndex(n => n.name === parent.name);
+        if (parentIndex === -1) return false;
+        
+        const parentX = startX + parentIndex * (adjustedBoxWidth + boxMargin);
+        const childIndex = visibleNodes.findIndex(n => n.name === node.name);
+        if (childIndex === -1) return false;
+        
+        const childX = startX + childIndex * (adjustedBoxWidth + boxMargin);
+        const currentX = childX + (parentX - childX) * newProgress;
+        
+        // Check if positions are close enough (within 1px tolerance)
+        return Math.abs(currentX - parentX) < 1;
+      });
+      
+      // If any node has reached its parent, trigger the highlight immediately
+      if (hasReachedParent && !isAnimating) {
+        setIsAnimating(true);
+        if (onAnimationComplete) {
+          onAnimationComplete();
+        }
+        // Reset immediately
+        setScrollProgress(0);
+        setIsAnimating(false);
+        return 0;
+      }
+      
+      return newProgress;
+    });
+  };
+
+  // Calculate animated position for removing nodes
+  const getAnimatedPosition = (node, baseX) => {
+    if (getNodeState(node) !== 'removing') return baseX;
+    
+    const parent = findParentNode(node.name);
+    if (!parent) return baseX;
+    
+    const parentIndex = visibleNodes.findIndex(n => n.name === parent.name);
+    if (parentIndex === -1) return baseX;
+    
+    const parentX = startX + parentIndex * (adjustedBoxWidth + boxMargin);
+    const childX = baseX;
+    
+    // Direct interpolation between child and parent position based on scroll progress
+    // This makes the position immediately responsive to scroll input
+    return childX + (parentX - childX) * scrollProgress;
+  };
+
+  // Calculate opacity for removing nodes based on scroll progress
+  const getRemovingNodeOpacity = (node) => {
+    if (getNodeState(node) !== 'removing') return 0.4;
+    return 0.4 * (1 - scrollProgress); // Fade out as it moves toward parent
+  };
+
   return (
-    <div className="mt-4 bg-gray-800 rounded-lg p-4 border border-gray-600">
+    <div 
+      ref={containerRef}
+      className="mt-4 bg-gray-800 rounded-lg p-4 border border-gray-600"
+      onWheel={handleWheel}
+      style={{ cursor: removingNodes.length > 0 ? 'ns-resize' : 'default' }}
+    >
       <h3 className="text-lg font-semibold mb-4 text-purple-300">
         Leaf Nodes Preview ({visibleNodes.length})
         {nextNode && (
           <span className="ml-2 text-yellow-400 text-sm">
             • Next: {nextNode.name}
+          </span>
+        )}
+        {removingNodes.length > 0 && (
+          <span className="ml-2 text-blue-400 text-sm">
+            • Scroll to animate ({Math.round(scrollProgress * 100)}%)
           </span>
         )}
       </h3>
@@ -112,14 +198,15 @@ const SkillsList = ({
         }}
       >
         {visibleNodes.map((node, index) => {
-          const x = startX + index * (adjustedBoxWidth + boxMargin);
+          const baseX = startX + index * (adjustedBoxWidth + boxMargin);
+          const animatedX = getAnimatedPosition(node, baseX);
           const y = 50; // Fixed vertical position
           const state = getNodeState(node);
           const isPreview = node.isPreview;
           const isParentOfRemoving = parentNodes.some(parent => parent.name === node.name);
           
           // Determine styling based on state
-          let boxClasses = 'absolute rounded-lg p-3 shadow-lg transition-all duration-300';
+          let boxClasses = 'absolute rounded-lg p-3 shadow-lg';
           let opacity = 1;
           let scale = 1;
           
@@ -130,7 +217,7 @@ const SkillsList = ({
               break;
             case 'removing':
               boxClasses += ' bg-gray-900 border-2 border-gray-600 hover:bg-gray-800';
-              opacity = 0.4; // Darkened
+              opacity = getRemovingNodeOpacity(node); // Dynamic opacity based on scroll
               break;
             case 'staying':
               boxClasses += ' bg-gray-700 border-2 border-purple-400 hover:bg-gray-600 hover:border-purple-300';
@@ -146,13 +233,13 @@ const SkillsList = ({
           
           // Override with preview styling if this is the preview node
           if (isPreview) {
-            boxClasses = 'absolute rounded-lg p-3 shadow-lg transition-all duration-300 bg-purple-600 border-2 border-yellow-400 hover:bg-purple-500';
+            boxClasses = 'absolute rounded-lg p-3 shadow-lg bg-purple-600 border-2 border-yellow-400 hover:bg-purple-500';
             opacity = 0.8;
           }
           
           // Override with parent styling if this is a parent of a removing node
           if (isParentOfRemoving && state !== 'removing' && !isPreview) {
-            boxClasses = 'absolute rounded-lg p-3 shadow-lg transition-all duration-300 bg-blue-600 border-2 border-blue-400 hover:bg-blue-500';
+            boxClasses = 'absolute rounded-lg p-3 shadow-lg bg-blue-600 border-2 border-blue-400 hover:bg-blue-500';
             opacity = 0.9;
             scale = 1.2; // Larger size for parent nodes
           }
@@ -172,12 +259,14 @@ const SkillsList = ({
               key={node.id}
               className={boxClasses}
               style={{
-                left: `${x}px`,
+                left: `${animatedX}px`,
                 top: `${y}px`,
                 width: `${adjustedBoxWidth}px`,
                 height: `${boxHeight}px`,
                 transform: `translateX(-50%) scale(${scale})`, // Center the box and apply scale
-                opacity: opacity
+                opacity: opacity,
+                // Remove all transitions for removing nodes to make movement immediate
+                transition: state === 'removing' ? 'none' : 'all 0.3s ease'
               }}
             >
               <div className="flex flex-col h-full justify-center items-center text-center">
@@ -251,6 +340,11 @@ const SkillsList = ({
         {parentNodes.length > 0 && (
           <p className="mt-1 text-blue-400">
             Parent nodes: {parentNodes.map(n => n.name).join(', ')}
+          </p>
+        )}
+        {removingNodes.length > 0 && (
+          <p className="mt-1 text-orange-400">
+            Scroll progress: {Math.round(scrollProgress * 100)}% ({Math.round(scrollProgress * 20)}/20 ticks)
           </p>
         )}
       </div>

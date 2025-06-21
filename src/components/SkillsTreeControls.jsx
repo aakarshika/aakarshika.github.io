@@ -55,7 +55,7 @@ const SkillsTreeControls = ({
             onClick={onToggleScaleUpLeafNodes}
             className={`px-4 py-2 rounded font-medium transition-colors ${scaleUpToggleStyle.background} ${scaleUpToggleStyle.hover} ${scaleUpToggleStyle.text}`}
           >
-            🔍 Scale Up Leaf Nodes
+            🔍 View leaves
           </button>
           <span className="ml-3 text-sm text-gray-400">
             {scaleUpLeafNodes 

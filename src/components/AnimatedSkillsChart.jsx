@@ -77,6 +77,7 @@ const AnimatedSkillsChart = () => {
         treeNodes={treeNodes}
         highlightedNodes={highlightedNodes}
         scaleUpLeafNodes={scaleUpLeafNodes}
+        onAnimationComplete={handleHighlightNext}
       />
     </div>
   );

@@ -17,7 +17,7 @@ export function useSkillsTree() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [showOnlyWithData, setShowOnlyWithData] = useState(true);
-  const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(false);
+  const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(true);
 
   // Build hierarchy data
   const { tree: hierarchyTree } = useMemo(() => buildHierarchy(), []);
