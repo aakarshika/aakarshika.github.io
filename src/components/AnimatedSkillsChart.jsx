@@ -18,6 +18,8 @@ const AnimatedSkillsChart = () => {
     isProcessing,
     hoveredNode,
     setHoveredNode,
+    showOnlyWithData,
+    scaleUpLeafNodes,
     
     // Data
     treeNodes,
@@ -32,7 +34,9 @@ const AnimatedSkillsChart = () => {
     
     // Actions
     handleHighlightNext,
-    resetHighlighting
+    resetHighlighting,
+    toggleShowOnlyWithData,
+    toggleScaleUpLeafNodes
   } = useSkillsTree();
 
   return (
@@ -45,8 +49,12 @@ const AnimatedSkillsChart = () => {
         treeNodes={treeNodes}
         skillToTimeline={skillToTimeline}
         categoryToSkills={categoryToSkills}
+        showOnlyWithData={showOnlyWithData}
+        scaleUpLeafNodes={scaleUpLeafNodes}
         onHighlightNext={handleHighlightNext}
         onReset={resetHighlighting}
+        onToggleShowOnlyWithData={toggleShowOnlyWithData}
+        onToggleScaleUpLeafNodes={toggleScaleUpLeafNodes}
       />
       
       {/* Tree Visualization */}
@@ -55,6 +63,8 @@ const AnimatedSkillsChart = () => {
         treeBounds={treeBounds}
         treeWidth={treeWidth}
         treeHeight={treeHeight}
+        scaleUpLeafNodes={scaleUpLeafNodes}
+        highlightedNodes={highlightedNodes}
         onNodeClick={setHoveredNode}
       />
       

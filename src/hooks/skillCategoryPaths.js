@@ -12,7 +12,7 @@ export const skillCategoryPaths = [
   'tech.backend.python.flask',
 
   'tech.machine_learning',
-  'tech.machine_learning.python',
+  'tech.machine_learning.pandas',
   'tech.machine_learning.machine_learning',
   'tech.machine_learning.computer_vision',
   'tech.machine_learning.nlp',

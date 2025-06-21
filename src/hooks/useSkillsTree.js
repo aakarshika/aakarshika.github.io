@@ -16,21 +16,108 @@ export function useSkillsTree() {
   const [highlightedNodes, setHighlightedNodes] = useState(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
+  const [showOnlyWithData, setShowOnlyWithData] = useState(true);
+  const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(false);
 
   // Build hierarchy data
   const { tree: hierarchyTree } = useMemo(() => buildHierarchy(), []);
+
+  /**
+   * Filters nodes to only include those with timeline data
+   * @param {Object} node - Node to filter
+   * @param {string} nodeName - Name of the node
+   * @returns {Object|null} Filtered node or null if no data
+   */
+  const filterNodeWithData = (node, nodeName) => {
+    const skillToTimeline = buildSkillToTimelineMapping();
+    const categoryToSkills = buildCategoryToSkillsMapping();
+    
+    // Create a mock node object for getNodeTimelineData
+    const mockNode = {
+      children: node.children ? Object.fromEntries(
+        Object.entries(node.children).map(([childName, childNode]) => [
+          childName, 
+          { name: childName, children: childNode.children || {} }
+        ])
+      ) : {}
+    };
+    
+    const timelineData = getNodeTimelineData(nodeName, mockNode, skillToTimeline, categoryToSkills);
+    
+    // If no timeline data, return null
+    if (timelineData.length === 0) {
+      return null;
+    }
+    
+    // Filter children recursively
+    const filteredChildren = {};
+    if (node.children) {
+      Object.entries(node.children).forEach(([childName, childNode]) => {
+        const filteredChild = filterNodeWithData(childNode, childName);
+        if (filteredChild) {
+          filteredChildren[childName] = filteredChild;
+        }
+      });
+    }
+    
+    return {
+      ...node,
+      children: filteredChildren,
+      timelineData
+    };
+  };
+
+  /**
+   * Gets the filtered hierarchy based on the toggle state
+   * @returns {Object} Filtered hierarchy tree
+   */
+  const getFilteredHierarchy = () => {
+    if (!showOnlyWithData) {
+      return hierarchyTree;
+    }
+    
+    const filteredTree = {};
+    Object.entries(hierarchyTree).forEach(([rootName, rootNode]) => {
+      const filteredRoot = filterNodeWithData(rootNode, rootName);
+      if (filteredRoot) {
+        filteredTree[rootName] = filteredRoot;
+      }
+    });
+    
+    return filteredTree;
+  };
 
   /**
    * Picks the next node to highlight in level-by-level order
    * @returns {string|null} Next node name to highlight, or null if all done
    */
   const pickNextNode = () => {
+    const filteredHierarchy = getFilteredHierarchy();
+    
     // Group nodes by level (deepest level first)
     const nodesByLevel = {};
     
     const findNodesByLevel = (node, level = 1) => {
       if (!nodesByLevel[level]) {
         nodesByLevel[level] = [];
+      }
+      
+      // Only add nodes that have timeline data when toggle is on
+      if (showOnlyWithData) {
+        const skillToTimeline = buildSkillToTimelineMapping();
+        const categoryToSkills = buildCategoryToSkillsMapping();
+        const mockNode = {
+          children: node.children ? Object.fromEntries(
+            Object.entries(node.children).map(([childName, childNode]) => [
+              childName, 
+              { name: childName, children: childNode.children || {} }
+            ])
+          ) : {}
+        };
+        const timelineData = getNodeTimelineData(node.name, mockNode, skillToTimeline, categoryToSkills);
+        if (timelineData.length === 0) {
+          return; // Skip nodes without timeline data
+        }
       }
       
       nodesByLevel[level].push(node.name);
@@ -43,7 +130,7 @@ export function useSkillsTree() {
     };
     
     // Build level groups
-    Object.values(hierarchyTree).forEach(rootNode => {
+    Object.values(filteredHierarchy).forEach(rootNode => {
       findNodesByLevel(rootNode);
     });
     
@@ -93,10 +180,28 @@ export function useSkillsTree() {
   };
 
   /**
+   * Toggles the "show only with data" filter
+   */
+  const toggleShowOnlyWithData = () => {
+    setShowOnlyWithData(prev => !prev);
+    // Reset highlighting when toggling to avoid highlighting non-existent nodes
+    setHighlightedNodes(new Set());
+  };
+
+  /**
+   * Toggles the "scale up leaf nodes" feature
+   */
+  const toggleScaleUpLeafNodes = () => {
+    setScaleUpLeafNodes(prev => !prev);
+  };
+
+  /**
    * Builds tree data for D3 visualization
    * @returns {Array} Array of tree nodes with positioning data
    */
   const buildTreeData = () => {
+    const filteredHierarchy = getFilteredHierarchy();
+    
     const convertToD3Format = (node, name = 'root', path = []) => {
       const children = Object.entries(node).map(([key, child]) => {
         const childPath = [...path, key];
@@ -112,7 +217,7 @@ export function useSkillsTree() {
       };
     };
     
-    const root = hierarchy(convertToD3Format(hierarchyTree));
+    const root = hierarchy(convertToD3Format(filteredHierarchy));
     
     // Use layout settings from constants
     const treeLayout = tree()
@@ -159,7 +264,7 @@ export function useSkillsTree() {
     return nodes;
   };
 
-  const treeNodes = useMemo(() => buildTreeData(), [highlightedNodes]);
+  const treeNodes = useMemo(() => buildTreeData(), [highlightedNodes, showOnlyWithData]);
 
   // Calculate tree bounds
   const treeBounds = treeNodes.length > 0 ? {
@@ -202,6 +307,8 @@ export function useSkillsTree() {
     isProcessing,
     hoveredNode,
     setHoveredNode,
+    showOnlyWithData,
+    scaleUpLeafNodes,
     
     // Data
     treeNodes,
@@ -218,6 +325,8 @@ export function useSkillsTree() {
     
     // Actions
     handleHighlightNext,
-    resetHighlighting
+    resetHighlighting,
+    toggleShowOnlyWithData,
+    toggleScaleUpLeafNodes
   };
 } 

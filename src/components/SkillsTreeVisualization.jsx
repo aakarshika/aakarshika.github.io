@@ -1,5 +1,5 @@
 import React from 'react';
-import { SVG_MARGIN, COLORS } from '../utils/constants';
+import { SVG_MARGIN, COLORS, NODE_SIZES } from '../utils/constants';
 
 /**
  * Skills Tree Visualization Component
@@ -12,6 +12,8 @@ const SkillsTreeVisualization = ({
   treeWidth, 
   treeHeight, 
   margin = SVG_MARGIN,
+  scaleUpLeafNodes = false,
+  highlightedNodes = new Set(),
   onNodeClick 
 }) => {
   const transformX = (x) => {
@@ -24,10 +26,80 @@ const SkillsTreeVisualization = ({
     return y - treeBounds.minY + margin.top + 50; // Add extra padding
   };
 
+  /**
+   * Determines if a node should be scaled up (is a leaf node)
+   * @param {Object} node - Node object
+   * @returns {boolean} True if node should be scaled up
+   */
+  const shouldScaleNode = (node) => {
+    if (!scaleUpLeafNodes) return false;
+    
+    // If it's a literal leaf node (no children)
+    if (!node.children || node.children.length === 0) {
+      return true;
+    }
+    
+    // If all children are highlighted, treat it as a leaf
+    const allChildrenHighlighted = node.children.some(childId => {
+      const childNode = treeNodes.find(n => n.id === childId);
+      return childNode && highlightedNodes.has(childNode.name);
+    });
+    
+    return allChildrenHighlighted;
+  };
+
+  /**
+   * Gets the appropriate node size based on scaling state
+   * @param {Object} node - Node object
+   * @param {boolean} isHighlighted - Whether node is highlighted
+   * @returns {number} Radius size
+   */
+  const getNodeSize = (node, isHighlighted) => {
+    const isConsideredLeaf = shouldScaleNode(node);    
+    
+    if(scaleUpLeafNodes) {
+      if(isConsideredLeaf && !isHighlighted){
+        return NODE_SIZES.scaled.radius;
+      }
+      return 0;
+    }
+    if (!scaleUpLeafNodes) {
+      return isHighlighted ? NODE_SIZES.normal.highlightedRadius : NODE_SIZES.normal.radius;
+    }
+  };
+
+  /**
+   * Gets the index of unhighlighted leaf nodes for display
+   * @returns {Object} Mapping of node names to their indices
+   */
+  const getUnhighlightedLeafIndices = () => {
+    if (!scaleUpLeafNodes) return {};
+    
+    const unhighlightedLeafNodes = treeNodes.filter(node => {
+      const isLeaf = shouldScaleNode(node);
+      return isLeaf && !node.isHighlighted;
+    });
+    
+    const indices = {};
+    unhighlightedLeafNodes.forEach((node, index) => {
+      indices[node.name] = index + 1; // 1-based indexing
+    });
+    
+    return indices;
+  };
+
+  const unhighlightedLeafIndices = getUnhighlightedLeafIndices();
+  const totalUnhighlightedLeaves = Object.keys(unhighlightedLeafIndices).length;
+
   return (
     <div className="bg-gray-800 rounded-lg p-4 border border-gray-600">
       <div className="text-sm text-gray-400 mb-4">
         Tree: {treeNodes.length} nodes
+        {scaleUpLeafNodes && (
+          <span className="ml-2 text-purple-400">
+            • Showing {totalUnhighlightedLeaves} unhighlighted leaf nodes
+          </span>
+        )}
       </div>
       
       <svg 
@@ -36,7 +108,7 @@ const SkillsTreeVisualization = ({
         className="w-full"
       >
         {/* Connections */}
-        {treeNodes.map(node => (
+        {!scaleUpLeafNodes && treeNodes.map(node => (
           node.children.length > 0 && node.children.map(childId => {
             const child = treeNodes.find(n => n.id === childId);
             if (!child) return null;
@@ -57,59 +129,82 @@ const SkillsTreeVisualization = ({
         ))}
         
         {/* Nodes */}
-        {treeNodes.map(node => (
-          <g key={node.id}>
-            {/* Background circle for nodes with timeline data */}
-            {node.timelineData && node.timelineData.length > 0 && (
+        {treeNodes.map(node => {
+          const size = getNodeSize(node, node.isHighlighted);
+          return size > 0 && (
+            <g key={node.id}>
+              {/* Background circle for nodes with timeline data */}
+              {node.timelineData && node.timelineData.length > 0 && (
+                <circle
+                  cx={transformX(node.x)}
+                  cy={transformY(node.y)}
+                  r={size}
+                  fill={COLORS.timeline.background}
+                  stroke={COLORS.timeline.stroke}
+                  strokeWidth={1}
+                  className="transition-all duration-300"
+                />
+              )}
+              
               <circle
                 cx={transformX(node.x)}
                 cy={transformY(node.y)}
-                r={node.isHighlighted ? 12 : 10}
-                fill={COLORS.timeline.background}
-                stroke={COLORS.timeline.stroke}
-                strokeWidth={1}
-                className="transition-all duration-300"
+                r={size}
+                fill={node.isHighlighted ? COLORS.highlighted.node : COLORS.normal.node}
+                stroke={node.isHighlighted ? COLORS.highlighted.stroke : COLORS.normal.stroke}
+                strokeWidth={node.isHighlighted ? 2 : 1}
+                className="transition-all duration-300 cursor-pointer"
+                onClick={() => onNodeClick && onNodeClick(node)}
               />
-            )}
-            
-            <circle
-              cx={transformX(node.x)}
-              cy={transformY(node.y)}
-              r={node.isHighlighted ? 8 : 6}
-              fill={node.isHighlighted ? COLORS.highlighted.node : COLORS.normal.node}
-              stroke={node.isHighlighted ? COLORS.highlighted.stroke : COLORS.normal.stroke}
-              strokeWidth={node.isHighlighted ? 2 : 1}
-              className="transition-all duration-300 cursor-pointer"
-              onClick={() => onNodeClick && onNodeClick(node)}
-            />
-            
-            <text
-              x={transformX(node.x)}
-              y={transformY(node.y) + 20}
-              textAnchor="middle"
-              fill={node.isHighlighted ? COLORS.highlighted.text : COLORS.normal.text}
-              fontSize="12px"
-              transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 20})`}
-            >
-              {node.name}
-            </text>
-            
-            {/* Timeline data count display */}
-            {node.timelineData && node.timelineData.length > 0 && (
+              
               <text
                 x={transformX(node.x)}
-                y={transformY(node.y) + 35}
+                y={transformY(node.y) + 20}
                 textAnchor="middle"
-                fill={COLORS.timeline.text}
-                fontSize="10px"
-                fontWeight="bold"
-                transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 35})`}
+                fill={node.isHighlighted ? COLORS.highlighted.text : COLORS.normal.text}
+                fontSize="12px"
+                transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 20})`}
               >
-                {node.timelineData.length} periods
+                {node.name}
               </text>
-            )}
-          </g>
-        ))}
+              
+              {/* Timeline data count and index display */}
+              {node.timelineData && node.timelineData.length > 0 && (
+                <text
+                  x={transformX(node.x)}
+                  y={transformY(node.y) + 35}
+                  textAnchor="middle"
+                  fill={COLORS.timeline.text}
+                  fontSize="10px"
+                  fontWeight="bold"
+                  transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 35})`}
+                >
+                  {node.timelineData.length} periods
+                  {scaleUpLeafNodes && unhighlightedLeafIndices[node.name] && (
+                    <tspan x={transformX(node.x)} dy="12" fill="white">
+                      #{unhighlightedLeafIndices[node.name]}
+                    </tspan>
+                  )}
+                </text>
+              )}
+              
+              {/* Index display for nodes without timeline data */}
+              {scaleUpLeafNodes && unhighlightedLeafIndices[node.name] && (!node.timelineData || node.timelineData.length === 0) && (
+                <text
+                  x={transformX(node.x)}
+                  y={transformY(node.y) + 35}
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="10px"
+                  fontWeight="bold"
+                  transform={`rotate(-45 ${transformX(node.x)} ${transformY(node.y) + 35})`}
+                >
+                  #{unhighlightedLeafIndices[node.name]}
+                </text>
+              )}
+            </g>
+          )
+        })}
       </svg>
     </div>
   );

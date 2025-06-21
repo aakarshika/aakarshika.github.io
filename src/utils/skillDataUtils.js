@@ -1,6 +1,5 @@
 import skillsData from '../../skills_timeline.json';
 import { skillCategoryPaths } from '../hooks/skillCategoryPaths';
-import { SPECIAL_SKILL_MAPPINGS } from './constants';
 
 /**
  * Helper to normalize names for matching
@@ -8,7 +7,7 @@ import { SPECIAL_SKILL_MAPPINGS } from './constants';
  * @returns {string} Normalized name
  */
 export function normalizeName(name) {
-  return name.toLowerCase().replace(/[_\s]+/g, '');
+  return name.toLowerCase().replace(/\s+/g, '_');
 }
 
 /**
@@ -72,11 +71,6 @@ export function buildCategoryToSkillsMapping() {
         matchingSkills.push(...normalizedSkillMap[normalizedName]);
       }
     });
-    
-    // Special cases for common mappings
-    if (SPECIAL_SKILL_MAPPINGS[lastPart]) {
-      matchingSkills.push(...SPECIAL_SKILL_MAPPINGS[lastPart]);
-    }
     
     // Remove duplicates
     const uniqueSkills = [...new Set(matchingSkills)];

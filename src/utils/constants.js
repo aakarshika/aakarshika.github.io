@@ -16,28 +16,20 @@ export const TREE_LAYOUT = {
   separation: (a, b) => (a.parent === b.parent ? 1 : 1.1)
 };
 
-// Special skill mappings for better matching
-export const SPECIAL_SKILL_MAPPINGS = {
-  'python': ['Python'],
-  'django': ['Django'],
-  'django_rest_framework': ['Django REST Framework'],
-  'reactjs': ['ReactJS'],
-  'angularjs': ['AngularJS'],
-  'mysql': ['MySQL'],
-  'mongodb': ['MongoDB'],
-  'redshift': ['Redshift'],
-  'aws': ['AWS'],
-  'jenkins': ['Jenkins'],
-  'airflow': ['Airflow'],
-  'apache_kafka': ['Apache Kafka'],
-  'apache_spark': ['Apache Spark'],
-  'pytest': ['Pytest'],
-  'localstack': ['Localstack'],
-  'machine_learning': ['Machine Learning'],
-  'computer_vision': ['Computer Vision'],
-  'nlp': ['NLP'],
-  'api': ['API'],
-  'teaching': ['Teaching']
+// Node scaling sizes
+export const NODE_SIZES = {
+  normal: {
+    radius: 6,
+    highlightedRadius: 8,
+    timelineBackgroundRadius: 10,
+    timelineBackgroundHighlightedRadius: 12
+  },
+  scaled: {
+    radius: 10,
+    highlightedRadius: 12,
+    timelineBackgroundRadius: 14,
+    timelineBackgroundHighlightedRadius: 16
+  }
 };
 
 // Colors for different states
@@ -69,4 +61,30 @@ export const TIMELINE_COLORS = {
   company: 'text-blue-300',
   level: 'text-green-300',
   description: 'text-gray-400'
+};
+
+// Toggle button states
+export const TOGGLE_STATES = {
+  active: {
+    background: 'bg-green-600',
+    hover: 'hover:bg-green-700',
+    text: 'text-white'
+  },
+  inactive: {
+    background: 'bg-gray-600',
+    hover: 'hover:bg-gray-700',
+    text: 'text-white'
+  },
+  scaleUp: {
+    active: {
+      background: 'bg-purple-600',
+      hover: 'hover:bg-purple-700',
+      text: 'text-white'
+    },
+    inactive: {
+      background: 'bg-gray-600',
+      hover: 'hover:bg-gray-700',
+      text: 'text-white'
+    }
+  }
 }; 
