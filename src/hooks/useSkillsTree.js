@@ -7,17 +7,25 @@ import {
   getNodeTimelineData 
 } from '../utils/skillDataUtils';
 import { TREE_LAYOUT } from '../utils/constants';
+import { 
+  calculateTreeBounds, 
+  calculateTreeDimensions, 
+  calculateTotalTimelineEntries,
+  getNodesWithTimelineData 
+} from '../utils/treeUtils';
 
 /**
  * Custom hook for managing skills tree data and highlighting
  * @returns {Object} Tree data, highlighting state, and related functions
  */
 export function useSkillsTree() {
-  const [highlightedNodes, setHighlightedNodes] = useState(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [showOnlyWithData, setShowOnlyWithData] = useState(true);
   const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(true);
+  
+  // Remove highlightedNodes state - we'll derive it from treeNodes.isHighlighted
+  const [highlightedNodeNames, setHighlightedNodeNames] = useState(new Set());
 
   // Build hierarchy data
   const { tree: hierarchyTree } = useMemo(() => buildHierarchy(), []);
@@ -88,8 +96,8 @@ export function useSkillsTree() {
   };
 
   /**
-   * Picks the next node to highlight in level-by-level order
-   * @returns {string|null} Next node name to highlight, or null if all done
+   * Picks the next node to be highlighted based on level priority
+   * @returns {string|null} Name of the next node to highlight
    */
   const pickNextNode = () => {
     const filteredHierarchy = getFilteredHierarchy();
@@ -139,16 +147,16 @@ export function useSkillsTree() {
     
     for (const level of levels) {
       const levelNodes = nodesByLevel[level];
-      const nextNode = levelNodes.find(node => !highlightedNodes.has(node));
+      const nextNode = levelNodes.find(node => !highlightedNodeNames.has(node));
       
       if (nextNode) {
         const totalNodes = Object.values(nodesByLevel).flat().length;
-        console.log(`🎯 ${nextNode} (Level ${level}) (${highlightedNodes.size + 1}/${totalNodes})`);
+        // console.log(`🎯 ${nextNode} (Level ${level}) (${highlightedNodeNames.size + 1}/${totalNodes})`);
         return nextNode;
       }
     }
     
-    console.log('🏁 All nodes highlighted!');
+    // console.log('🏁 All nodes highlighted!');
     return null;
   };
 
@@ -163,10 +171,31 @@ export function useSkillsTree() {
     try {
       const nextNode = pickNextNode();
       if (nextNode) {
-        setHighlightedNodes(prev => new Set([...prev, nextNode]));
+        setHighlightedNodeNames(prev => new Set([...prev, nextNode]));
       }
     } catch (error) {
-      console.error('❌ Error:', error);
+      // console.error('❌ Error:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  /**
+   * Handles button click to unhighlight the last highlighted node
+   */
+  const handleUnhighlightLast = () => {
+    if (isProcessing || highlightedNodeNames.size === 0) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      setHighlightedNodeNames(prev => {
+        const nodesArray = Array.from(prev);
+        const newSet = new Set(nodesArray.slice(0, -1)); // Remove the last node
+        return newSet;
+      });
+    } catch (error) {
+      // console.error('❌ Error:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -176,7 +205,7 @@ export function useSkillsTree() {
    * Resets all highlighted nodes
    */
   const resetHighlighting = () => {
-    setHighlightedNodes(new Set());
+    setHighlightedNodeNames(new Set());
   };
 
   /**
@@ -185,7 +214,7 @@ export function useSkillsTree() {
   const toggleShowOnlyWithData = () => {
     setShowOnlyWithData(prev => !prev);
     // Reset highlighting when toggling to avoid highlighting non-existent nodes
-    setHighlightedNodes(new Set());
+    setHighlightedNodeNames(new Set());
   };
 
   /**
@@ -213,7 +242,7 @@ export function useSkillsTree() {
         name,
         path: path.join('.'),
         children: children.length > 0 ? children : undefined,
-        isHighlighted: highlightedNodes.has(name),
+        isHighlighted: highlightedNodeNames.has(name),
         timelineData: node.timelineData || []
       };
     };
@@ -272,7 +301,7 @@ export function useSkillsTree() {
         children: node.children ? node.children.map(child => child.data.path || child.data.name) : [],
         childrenHighlighted: node.children ? node.children.filter(child => child.data.isHighlighted).length : 0,
         childCount: node.children ? node.children.length : 0,
-        isHighlighted: highlightedNodes.has(nodeName),
+        isHighlighted: highlightedNodeNames.has(nodeName),
         isPreview: nextNode === nodeName,
         timelineData: nodeTimelineData
       });
@@ -286,58 +315,30 @@ export function useSkillsTree() {
     return nodes;
   };
 
-  const treeNodes = useMemo(() => buildTreeData(), [highlightedNodes, showOnlyWithData]);
+  const treeNodes = useMemo(() => buildTreeData(), [highlightedNodeNames, showOnlyWithData]);
 
-  // Calculate tree bounds
-  const treeBounds = treeNodes.length > 0 ? {
-    minX: Math.min(...treeNodes.map(n => n.x)),
-    maxX: Math.max(...treeNodes.map(n => n.x)),
-    minY: Math.min(...treeNodes.map(n => n.y)),
-    maxY: Math.max(...treeNodes.map(n => n.y))
-  } : { minX: 0, maxX: 400, minY: 0, maxY: 300 };
-  
-  const treeWidth = treeBounds.maxX - treeBounds.minX + 200;
-  const treeHeight = treeBounds.maxY - treeBounds.minY + 200;
+  // Calculate tree bounds and dimensions using shared utilities
+  const treeBounds = calculateTreeBounds(treeNodes);
+  const { width: treeWidth, height: treeHeight } = calculateTreeDimensions(treeBounds);
 
   // Debug information
   const skillToTimeline = buildSkillToTimelineMapping();
   const categoryToSkills = buildCategoryToSkillsMapping();
   
-  console.log('Skill to Timeline Mapping:', Object.keys(skillToTimeline));
-  console.log('Category to Skills Mapping:', categoryToSkills);
-  
-  // Calculate total timeline entries across all nodes
-  const totalTimelineEntries = treeNodes.reduce((total, node) => {
-    return total + (node.timelineData ? node.timelineData.length : 0);
-  }, 0);
+  // Calculate total timeline entries across all nodes using shared utility
+  const totalTimelineEntries = calculateTotalTimelineEntries(treeNodes);
 
-  // Debug: Show nodes with timeline data
-  const nodesWithData = treeNodes.filter(node => node.timelineData && node.timelineData.length > 0);
-  console.log('Nodes with timeline data:', nodesWithData.map(node => ({
-    name: node.name,
-    entries: node.timelineData.length,
-    sampleData: node.timelineData.slice(0, 2)
-  })));
+  // Debug: Show nodes with timeline data using shared utility
+  const nodesWithData = getNodesWithTimelineData(treeNodes);
 
-  // Debug: Show all node names
-  console.log('All node names:', treeNodes.map(node => node.name));
-  console.log('Available normalized skill names:', Object.keys(skillToTimeline));
-
-  // Debug: Specifically check the tech node
-  const techNode = treeNodes.find(node => node.name === 'tech');
-  if (techNode) {
-    console.log('🔍 Tech node debug:', {
-      name: techNode.name,
-      timelineDataLength: techNode.timelineData ? techNode.timelineData.length : 0,
-      children: techNode.children,
-      childCount: techNode.childCount,
-      sampleTimelineData: techNode.timelineData ? techNode.timelineData.slice(0, 3) : []
-    });
-  }
+  // Helper function to get highlighted nodes from treeNodes
+  const getHighlightedNodes = () => {
+    return new Set(treeNodes.filter(node => node.isHighlighted).map(node => node.name));
+  };
 
   return {
     // State
-    highlightedNodes,
+    highlightedNodes: getHighlightedNodes(), // Computed from treeNodes for backward compatibility
     isProcessing,
     hoveredNode,
     setHoveredNode,
@@ -359,6 +360,7 @@ export function useSkillsTree() {
     
     // Actions
     handleHighlightNext,
+    handleUnhighlightLast,
     resetHighlighting,
     toggleShowOnlyWithData,
     toggleScaleUpLeafNodes

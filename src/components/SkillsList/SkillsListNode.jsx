@@ -10,17 +10,14 @@ import { getRainbowColor } from '../../utils/constants';
 const SkillsListNode = ({
   node,
   index,
-  baseX,
   animatedX,
   y,
+  highlightedCount,
   state,
   isPreview,
   isParentOfRemoving,
-  parentIndex,
   adjustedBoxWidth,
-  boxHeight,
   getRemovingNodeOpacity,
-  findParentNode,
   visibleNodes,
   timelineBoxes = [] // New prop for timeline boxes
 }) => {

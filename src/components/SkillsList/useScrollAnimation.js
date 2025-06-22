@@ -1,4 +1,83 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { 
+  getNodeCurrentPosition, 
+  getNodeTargetPosition, 
+  interpolatePosition 
+} from '../../utils/treeUtils';
+
+/**
+ * Position calculation utilities
+ */
+export const PositionCalculator = {
+  /**
+   * Get the current position of a node from the positioning data
+   */
+  getNodeCurrentPosition,
+
+  /**
+   * Get the target position of a node (parent position for removing nodes)
+   */
+  getNodeTargetPosition,
+
+  /**
+   * Calculate the interpolated position between start and target based on progress
+   */
+  interpolatePosition,
+
+  /**
+   * Calculate all node positions for animation (start and target)
+   */
+  getTargetAndStartPosition: (removingNodes, positioning, findParentNode) => {
+    const nodePositions = new Map();
+    
+    removingNodes.forEach(node => {
+      const startPosition = PositionCalculator.getNodeCurrentPosition(node, positioning);
+      const targetPosition = PositionCalculator.getNodeTargetPosition(node, positioning, findParentNode);
+      
+      nodePositions.set(node.id, {
+        startPosition,
+        targetPosition,
+        node
+      });
+    });
+    
+    return nodePositions;
+  },
+
+  // /**
+  //  * Get the animated position for a node based on cached positions, scroll progress, and direction
+  //  */
+  // getAnimatedPosition: (nodeId, nodePositions, scrollProgress, direction = 'forward') => {
+  //   const positionData = nodePositions.get(nodeId);
+  //   if (!positionData) return null;
+    
+  //   const { startPosition, targetPosition } = positionData;
+    
+  //   // For backward direction, swap start and target positions
+  //   const actualStart = direction === 'backward' ? targetPosition : startPosition;
+  //   const actualTarget = direction === 'backward' ? startPosition : targetPosition;
+    
+  //   return PositionCalculator.interpolatePosition(actualStart, actualTarget, scrollProgress);
+  // },
+
+  // /**
+  //  * Check if a node has reached its target position based on direction
+  //  */
+  // hasReachedTarget: (nodeId, nodePositions, progress, direction = 'forward') => {
+  //   const positionData = nodePositions.get(nodeId);
+  //   if (!positionData) return false;
+    
+  //   const { startPosition, targetPosition } = positionData;
+  //   if (startPosition === null || targetPosition === null) return false;
+    
+  //   // For backward direction, swap start and target positions
+  //   const actualStart = direction === 'backward' ? targetPosition : startPosition;
+  //   const actualTarget = direction === 'backward' ? startPosition : targetPosition;
+    
+  //   const interpolatedPosition = PositionCalculator.interpolatePosition(actualStart, actualTarget, progress);
+  //   return Math.abs(interpolatedPosition - actualTarget) < 1;
+  // }
+};
 
 /**
  * Custom hook for scroll animation in SkillsList
@@ -10,105 +89,163 @@ export function useScrollAnimation({
   positioning, 
   findParentNode,
   getNodeState,
+  containerRef,
+  highlightedNodes,
   onAnimationComplete 
 }) {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollDirection, setScrollDirection] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const lastScrollTime = useRef(0);
-  const scrollSpeed = useRef(1);
+  const [completionTrigger, setCompletionTrigger] = useState(null);
+  const [bla, setBla] = useState(false);
+  const blaRef = useRef(false); // Add ref to track bla state immediately
+  // Cache node positions when removingNodes or positioning changes
+  const nodePositions = useMemo(() => {
+    if (removingNodes.length === 0 || !positioning) {
+      return new Map();
+    }
+    return PositionCalculator.getTargetAndStartPosition(removingNodes, positioning, findParentNode);
+  }, [removingNodes]);
 
-  // Handle mouse wheel scroll for animation
-  const handleWheel = (e) => {
-    if (removingNodes.length === 0 || !positioning) return;
-    
-    e.preventDefault();
-    
-    const currentTime = Date.now();
-    const timeDelta = currentTime - lastScrollTime.current;
-    lastScrollTime.current = currentTime;
-    
-    // Calculate scroll speed based on time between scroll events
-    // Faster scrolling = smaller time delta = higher speed multiplier
-    const baseSpeed = 1;
-    const speedMultiplier = timeDelta > 0 ? Math.min(5, Math.max(0.1, 100 / timeDelta)) : baseSpeed;
-    scrollSpeed.current = speedMultiplier;
-    
-    const delta = e.deltaY > 0 ? 1 : -1; // Positive for scroll down, negative for scroll up
-    const baseTickSize = 1 / 200; // Much smaller base tick size for slower movement
-    const tickSize = baseTickSize * speedMultiplier; // Adjust tick size based on speed
-    
-    setScrollProgress(prev => {
-      const newProgress = Math.max(0, Math.min(1, prev + (delta * tickSize)));
+  // Handle animation completion
+  useEffect(() => {
+    if (completionTrigger && onAnimationComplete) {
+      onAnimationComplete(completionTrigger);
+      setCompletionTrigger(null);
+    }
+  }, [completionTrigger, onAnimationComplete]);
+
+  // Sync bla ref with bla state
+  useEffect(() => {
+    blaRef.current = bla;
+  }, [bla]);
+
+  // Set up wheel event listener with passive: false
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+
+    const wheelHandler = (e) => {
+      console.log("wheelHandler", e.pageY);
+        // if((e.pageY > 500  && e.pageY < 600)){
+        //   e.preventDefault();
+        // } else {
+        //   return;
+        // }
+      console.log("doing stuff");
+      e.preventDefault();
       
-      // Check if any removing node has reached its parent's position
-      const hasReachedParent = removingNodes.some(node => {
-        const parent = findParentNode(node.name);
-        if (!parent) return false;
-        
-        // Find parent position using new positioning structure
-        const parentPosition = positioning.nodePositions.find(np => np.node.name === parent.name);
-        if (!parentPosition) return false;
-        
-        const parentX = positioning.startX + parentPosition.x;
-        
-        // Find child position using new positioning structure
-        const childPosition = positioning.nodePositions.find(np => np.node.name === node.name);
-        if (!childPosition) return false;
-        
-        const childX = positioning.startX + childPosition.x;
-        const currentX = childX + (parentX - childX) * newProgress;
-        
-        // Check if positions are close enough (within 1px tolerance)
-        return Math.abs(currentX - parentX) < 1;
-      });
+      // Direct correlation between deltaY and scroll progress
+      const delta = e.deltaY;
+      const scrollSensitivity = 0.01; // Adjust this value to control scroll sensitivity
+      const progressChange = delta * scrollSensitivity;
       
-      // If any node has reached its parent, trigger the highlight immediately
-      if (hasReachedParent && !isAnimating) {
-        setIsAnimating(true);
-        if (onAnimationComplete) {
-          onAnimationComplete();
+      // Set scroll direction based on delta
+      const newDirection = delta > 0 ? 'merging' : 'splitting';
+      setScrollDirection(newDirection);
+      setScrollProgress(prev => {
+        const newProgress = prev + progressChange;
+        // console.log(newDirection==='merging'? "<<<------" : "------>>>", newProgress);
+        if (newDirection === 'merging' && removingNodes.length === 0 && newProgress>=1.0) {
+          // console.log("************<<<");
+          setBla(true);
+          blaRef.current = true;
+          return 1;
         }
-        // Reset immediately
-        setScrollProgress(0);
-        setIsAnimating(false);
-        return 0;
-      }
-      
-      return newProgress;
-    });
-  };
+        if (newDirection === 'splitting' && highlightedNodes.length === 0 && newProgress<=0.0) {
+          // console.log(">>>-====-=-=-=--====-");
+          setBla(true);
+          blaRef.current = true;
+          return 0;
+        }
+        setBla(false);
+        blaRef.current = false;
 
-  // Calculate animated position for removing nodes
-  const getAnimatedPosition = (node, baseX) => {
-    if (getNodeState(node) !== 'removing') return baseX;
+        // Check for forward completion (progress reaches 1.0)
+        if (newDirection === 'merging' && newProgress >= 1.0) {
+          // setIsAnimating(true);
+          setCompletionTrigger("forward");
+          return 0; // Keep at 1 to maintain the completed state
+        }
+        
+        // Check for backward completion (progress reaches 0.0)
+        if (newDirection === 'splitting' && newProgress <= 0.0) {
+          // setIsAnimating(true);
+          setCompletionTrigger("backward");
+          return 1; // Keep at 0 to maintain the completed state
+        }
+        return newProgress;
+      });
+    };
+
+    // Add event listener with passive: false to allow preventDefault
+    container.addEventListener('wheel', wheelHandler, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', wheelHandler);
+    };
+  }, [removingNodes, positioning, nodePositions, onAnimationComplete, bla]);
+
+  // Calculate animated position for removing nodes using cached positions
+  // const getAnimatedPosition = (node) => {
+  //   if (getNodeState(node) !== 'removing') {
+  //     // For non-removing nodes, return their current position
+  //     return PositionCalculator.getNodeCurrentPosition(node, positioning);
+  //   }
     
-    const parent = findParentNode(node.name);
-    if (!parent) return baseX;
+  //   // Determine direction based on current scroll direction
+  //   const direction = scrollDirection === 'splitting' ? 'backward' : 'forward';
     
-    // Find parent position using new positioning structure
-    const parentPosition = positioning.nodePositions.find(np => np.node.name === parent.name);
-    if (!parentPosition) return baseX;
-    
-    const parentX = positioning.startX + parentPosition.x;
-    const childX = baseX;
-    
-    // Direct interpolation between child and parent position based on scroll progress
-    // This makes the position immediately responsive to scroll input
-    return childX + (parentX - childX) * scrollProgress;
-  };
+  //   return PositionCalculator.getAnimatedPosition(node.id, nodePositions, scrollProgress, direction);
+  // };
 
   // Calculate opacity for removing nodes based on scroll progress
   const getRemovingNodeOpacity = (node) => {
     if (getNodeState(node) !== 'removing') return 0.4;
-    return 0.4 * (1 - scrollProgress); // Fade out as it moves toward parent
+    
+    // Determine direction based on current scroll direction
+    const direction = scrollDirection === 'splitting' ? 'backward' : 'forward';
+    
+    if (direction === 'backward') {
+      // For backward direction, opacity increases as progress decreases (node becomes more visible)
+      return 0.4 * scrollProgress;
+    } else {
+      // For forward direction, opacity decreases as progress increases (node fades out)
+      return 0.4 * (1 - scrollProgress);
+    }
+  };
+
+  const getAnimatedPosition = (node) => {
+    if (removingNodes.length === 0) {
+      return positioning.startX + positioning.nodePositions.find(np => np.node.id === node.id)?.x;
+    }
+    if (node.id !== removingNodes[0].id) {
+      const nodePositionIndex = positioning.nodePositions.findIndex(np => np.node.id === node.id);
+      return positioning.startX + positioning.nodePositions[nodePositionIndex]?.x;
+    }
+    const nodePositionIndex = positioning.nodePositions.findIndex(np => np.node.id === node.id);
+    
+    var widthA = positioning.nodePositions[nodePositionIndex]?.width;
+    var widthB = positioning.nodePositions[nodePositionIndex - 1]?.width;
+    if (nodePositionIndex <= 0) {
+      widthB = widthA;
+    }
+    // console.log(positioning.nodePositions.map(np => np.node.name + ' ' + np.x));
+    // console.log(positioning.nodePositions[nodePositionIndex].node.name, positioning.startX ,positioning.nodePositions[nodePositionIndex]?.x, scrollProgress* (widthA/2 + widthB/2) );
+    return positioning.startX + positioning.nodePositions[nodePositionIndex]?.x 
+    - scrollProgress* (widthA/2 + widthB/2) 
+    ;
   };
 
   return {
     scrollProgress,
+    scrollDirection,
     isAnimating,
-    scrollSpeed: scrollSpeed.current,
-    handleWheel,
     getAnimatedPosition,
-    getRemovingNodeOpacity
+    getRemovingNodeOpacity,
+    containerRef,
+    PositionCalculator, // Export for use in other components
+    nodePositions // Export for debugging/inspection
   };
 } 

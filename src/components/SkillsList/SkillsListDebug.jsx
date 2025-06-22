@@ -11,7 +11,8 @@ const SkillsListDebug = ({
   removingNodes,
   parentNodes,
   scrollProgress,
-  scrollSpeed
+  scrollSpeed = 0,
+  scrollDirection
 }) => {
   if (!positioning) return null;
 
@@ -49,7 +50,8 @@ const SkillsListDebug = ({
       )}
       {removingNodes.length > 0 && (
         <p className="mt-1 text-orange-400">
-          Scroll progress: {Math.round(scrollProgress * 100)}% | Speed: {scrollSpeed.toFixed(2)}x
+        Scroll direction: {scrollDirection}
+        Scroll progress: {Math.round(scrollProgress * 100)}% | Speed: {scrollSpeed.toFixed(2)}x 
         </p>
       )}
     </div>

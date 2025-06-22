@@ -50,8 +50,8 @@ const TimelineBox = ({
   
   // Override with parent styling if this is a parent of a removing node
   if (isParentOfRemoving && state !== 'removing' && !isPreview) {
-    boxClasses = 'absolute rounded shadow-sm  ';
-    opacity = 0.9;
+    boxClasses = 'absolute rounded shadow-lg shadow-red-800  bg-gray-800';
+    opacity = 0.1;
     zIndex = 11;
   }
 
@@ -71,7 +71,7 @@ const TimelineBox = ({
         top: `${timelineBox.y}px`,
         width: `${width}px`,
         height: `${timelineBox.height}px`,
-        opacity: opacity,
+        opacity: 1,
         backgroundColor: rainbowColor,
         zIndex: zIndex,
         // transform: 'translateX(-50%)', // Center the box

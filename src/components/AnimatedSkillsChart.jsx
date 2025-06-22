@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSkillsTree } from '../hooks/useSkillsTree';
 import SkillsTreeControls from './SkillsTreeControls';
 import SkillsTreeVisualization from './SkillsTreeVisualization';
@@ -13,9 +13,9 @@ import SkillsList from './SkillsList';
  * Each node shows accumulated start and end dates from all its children.
  */
 const AnimatedSkillsChart = () => {
+  const containerRef = useRef(null);
   const {
     // State
-    highlightedNodes,
     isProcessing,
     hoveredNode,
     setHoveredNode,
@@ -36,6 +36,7 @@ const AnimatedSkillsChart = () => {
     
     // Actions
     handleHighlightNext,
+    handleUnhighlightLast,
     handleHighlightDirection,
     resetHighlighting,
     toggleShowOnlyWithData,
@@ -61,15 +62,27 @@ const AnimatedSkillsChart = () => {
   // };
 
   const handleDirectionChange = (newDirection) => {
-    console.log('handleDirectionChange', newDirection);
+    // console.log('handleDirectionChange', newDirection);
     setDirection(newDirection);
   };
 
+  // Handle animation completion for both forward and backward directions
+  const handleAnimationComplete = (direction) => {
+    // console.log('onAnimationComplete *******************', direction);
+    
+    if (direction === 'forward') {
+      handleHighlightNext();
+    } else if (direction === 'backward') {
+      handleUnhighlightLast();
+    }
+  };
+
   return (
-    <div className="w-auto h-screen bg-gray-900 text-white p-6">
+    <div
+      ref={containerRef}
+      className="w-auto h-screen bg-gray-900 text-white p-6">
       {/* Header and Controls */}
       <SkillsTreeControls
-        highlightedNodes={highlightedNodes}
         isProcessing={isProcessing}
         totalTimelineEntries={totalTimelineEntries}
         treeNodes={treeNodes}
@@ -78,7 +91,7 @@ const AnimatedSkillsChart = () => {
         showOnlyWithData={showOnlyWithData}
         scaleUpLeafNodes={scaleUpLeafNodes}
         onHighlightNext={handleHighlightNext}
-        // onUnhighlightLast={handleUnhighlightLast}
+        onUnhighlightLast={handleUnhighlightLast}
         onReset={resetHighlighting}
         onToggleShowOnlyWithData={toggleShowOnlyWithData}
         onToggleScaleUpLeafNodes={toggleScaleUpLeafNodes}
@@ -87,11 +100,7 @@ const AnimatedSkillsChart = () => {
       {/* Tree Visualization */}
       {!scaleUpLeafNodes && (<SkillsTreeVisualization
         treeNodes={treeNodes}
-        treeBounds={treeBounds}
-        treeWidth={treeWidth}
-        treeHeight={treeHeight}
         scaleUpLeafNodes={scaleUpLeafNodes}
-        highlightedNodes={highlightedNodes}
         onNodeClick={setHoveredNode}
       />)}
       
@@ -101,12 +110,107 @@ const AnimatedSkillsChart = () => {
       {/* Skills List */}
       <SkillsList
         treeNodes={treeNodes}
-        highlightedNodes={highlightedNodes}
+        containerRef={containerRef}
         scaleUpLeafNodes={scaleUpLeafNodes}
-        onAnimationComplete={handleHighlightNext}
+        onAnimationComplete={handleAnimationComplete}
         direction={direction}
         onDirectionChange={handleDirectionChange}
       />
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-2">Visual Tree Structure</h1>
+        <p className="text-gray-400 text-sm mb-4">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.      
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+        </p>
+      </div>
     </div>
   );
 };

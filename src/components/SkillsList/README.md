@@ -113,17 +113,6 @@ import SkillsList from './components/SkillsList';
 
 <SkillsList
   treeNodes={treeNodes}
-  highlightedNodes={highlightedNodes}
   scaleUpLeafNodes={scaleUpLeafNodes}
   onAnimationComplete={handleAnimationComplete}
 />
-```
-
-## 🧪 Testing Strategy
-
-Each component can now be tested independently:
-
-- **Unit tests** for custom hooks
-- **Component tests** for individual UI components
-- **Integration tests** for the main SkillsList component
-- **Mock data** for different node states and scenarios 

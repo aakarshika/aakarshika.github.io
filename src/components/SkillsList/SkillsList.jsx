@@ -14,12 +14,10 @@ import SkillsListDebug from './SkillsListDebug';
  */
 const SkillsList = ({ 
   treeNodes, 
-  highlightedNodes, 
   scaleUpLeafNodes,
+  containerRef,
   onAnimationComplete
 }) => {
-  const containerRef = useRef(null);
-
   // Get processed data using custom hook
   const {
     visibleNodes,
@@ -29,28 +27,28 @@ const SkillsList = ({
     positioning,
     getNodeState,
     findParentNode
-  } = useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNodes });
+  } = useSkillsListData({ treeNodes, scaleUpLeafNodes });
 
   // Get timeline data using custom hook
   const {
     nodeTimelineBoxes,
     yZoom
   } = useTimelineData({ treeNodes, yZoom: 600 });
-
+  const highlightedNodes = treeNodes.filter(n => n.isHighlighted);
   // Get scroll animation logic using custom hook
   const {
-    scrollProgress,
-    isAnimating,
-    scrollSpeed,
-    handleWheel,
     getAnimatedPosition,
-    getRemovingNodeOpacity
+    getRemovingNodeOpacity,
+    scrollProgress,
+    scrollDirection
   } = useScrollAnimation({
     removingNodes,
     visibleNodes,
+    containerRef,
     positioning,
     findParentNode,
     getNodeState,
+    highlightedNodes,
     onAnimationComplete
   });
 
@@ -60,9 +58,7 @@ const SkillsList = ({
 
   return (
     <div 
-      ref={containerRef}
       className="mt-4 bg-gray-800 rounded-lg p-4 border border-gray-600"
-      onWheel={handleWheel}
       style={{ cursor: removingNodes.length > 0 ? 'ns-resize' : 'default' }}
     >
       {/* <SkillsListHeader
@@ -81,10 +77,11 @@ const SkillsList = ({
         }}
       >
         {visibleNodes.map((node, index) => {
-          // Find the node position from the new positioning structure
+          // Use the modularized position calculator
+          const animatedX = getAnimatedPosition(node);
           const nodePosition = positioning.nodePositions.find(np => np.node.id === node.id);
-          const baseX = nodePosition ? positioning.startX + nodePosition.x : 0;
-          const animatedX = getAnimatedPosition(node, baseX);
+          const adjustedBoxWidth = nodePosition ? nodePosition.width : 50;
+          
           const state = getNodeState(node);
           const isPreview = node.isPreview;
           const isParentOfRemoving = parentNodes.some(parent => parent.name === node.name);
@@ -99,32 +96,18 @@ const SkillsList = ({
             })
           ) : [];
           
-          // Find parent index for removing nodes
-          let parentIndex = null;
-          if (state === 'removing') {
-            const parent = findParentNode(node.name);
-            if (parent) {
-              const parentVisibleIndex = visibleNodes.findIndex(n => n.name === parent.name);
-              parentIndex = parentVisibleIndex >= 0 ? parentVisibleIndex + 1 : null;
-            }
-          }
-          
           return (
             <SkillsListNode
               key={node.id}
               node={node}
               index={index}
-              baseX={baseX}
               animatedX={animatedX}
               y={y}
               state={state}
               isPreview={isPreview}
               isParentOfRemoving={isParentOfRemoving}
-              parentIndex={parentIndex}
-              adjustedBoxWidth={nodePosition ? nodePosition.width : 50}
-              boxHeight={positioning.boxHeight}
+              adjustedBoxWidth={adjustedBoxWidth}
               getRemovingNodeOpacity={getRemovingNodeOpacity}
-              findParentNode={findParentNode}
               visibleNodes={visibleNodes}
               timelineBoxes={timelineBoxes}
             />
@@ -132,15 +115,15 @@ const SkillsList = ({
         })}
       </div>
       
-      {/* <SkillsListDebug
+      <SkillsListDebug
         positioning={positioning}
         visibleNodes={visibleNodes}
         nextNode={nextNode}
         removingNodes={removingNodes}
         parentNodes={parentNodes}
         scrollProgress={scrollProgress}
-        scrollSpeed={scrollSpeed}
-      /> */}
+        scrollDirection={scrollDirection}
+      />
     </div>
   );
 };

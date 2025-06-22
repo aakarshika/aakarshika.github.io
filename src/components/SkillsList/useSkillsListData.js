@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { shouldScaleNode } from '../../utils/skillDataUtils';
+import { calculateInitialNodePositions } from '../../utils/treeUtils';
 
 /**
  * Custom hook for SkillsList data processing
  * Handles node filtering, state calculation, and positioning logic
  */
-export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNodes }) {
+export function useSkillsListData({ treeNodes, scaleUpLeafNodes }) {
   return useMemo(() => {
     if (!scaleUpLeafNodes) {
       return {
@@ -19,9 +20,14 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
       };
     }
 
+    // Derive highlighted nodes from treeNodes.isHighlighted
+    const highlightedNodes = new Set(
+      treeNodes.filter(node => node.isHighlighted).map(node => node.name)
+    );
+
     // Get current unhighlighted leaf nodes
     const currentUnhighlightedLeafNodes = treeNodes.filter(node => {
-      const isLeaf = shouldScaleNode(node, treeNodes, highlightedNodes, scaleUpLeafNodes);
+      const isLeaf = shouldScaleNode(node, treeNodes, scaleUpLeafNodes);
       return isLeaf && !node.isHighlighted;
     });
 
@@ -33,7 +39,7 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
     }
 
     const nextUnhighlightedLeafNodes = treeNodes.filter(node => {
-      const isLeaf = shouldScaleNode(node, treeNodes, nextHighlightedNodes, scaleUpLeafNodes);
+      const isLeaf = shouldScaleNode(node, treeNodes, scaleUpLeafNodes);
       return isLeaf && !nextHighlightedNodes.has(node.name);
     });
 
@@ -53,6 +59,12 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
       
       const isCurrentlyVisible = currentUnhighlightedLeafNodes.some(n => n && n.name === node.name);
       const willBeVisible = nextUnhighlightedLeafNodes.some(n => n && n.name === node.name);
+      // if(node.name === 'django_rest_framework') {
+        // console.log(node.name, node.isHighlighted);
+      // }
+      // if (isCurrentlyVisible && nextUnhighlightedLeafNodes.length === 1 && nextUnhighlightedLeafNodes[0].name === node.name) {
+      //   return 'removing';
+      // }
       
       if (isCurrentlyVisible && !willBeVisible) {
         return 'removing'; // Will be removed - darken
@@ -64,7 +76,6 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
         return 'hidden'; // Not visible in either state
       }
     };
-
     // Get nodes that will be removed and their parents
     const removingNodes = treeNodes.filter(node => getNodeState(node) === 'removing');
     const parentNodes = removingNodes.map(node => findParentNode(node.name)).filter(Boolean);
@@ -76,84 +87,19 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
       return state !== 'hidden' || isParentOfRemoving;
     });
 
-    // Calculate positioning based on expertise levels and highlighted children
-    const screenWidth = window.innerWidth;
-    const containerPadding = 10; // 20px padding on each side
-    const availableWidth = screenWidth - containerPadding;
-    const boxHeight = 80; // Fixed box height
-    const boxMargin = 10; // Gap between boxes
-    
-    // Calculate box width for each visible node based on expertise and highlighted children
-    const calculateNodeWidth = (node) => {
-      // Base width based on highest expertise level in timeline data
-      let baseWidth = 45; // Default for Beginner
-      
-      if (node.timelineData && node.timelineData.length > 0) {
-        const expertiseLevels = node.timelineData.map(entry => entry.expertise);
-        if (expertiseLevels.includes('Expert')) {
-          baseWidth = 65;
-        } else if (expertiseLevels.includes('Intermediate')) {
-          baseWidth = 55;
-        }
+    // Calculate positioning using shared utility
+    const positioning = calculateInitialNodePositions(visibleNodes, treeNodes, {
+      screenWidth: window.innerWidth,
+      containerPadding: 10,
+      boxMargin: 10,
+      widthConfig: {
+        baseWidths: { beginner: 45, intermediate: 55, expert: 65 },
+        childWidthMultiplier: 25
       }
-      
-      // Add width for each highlighted child
-      const highlightedChildrenCount = node.children ? 
-        node.children.filter(childId => {
-          const childNode = treeNodes.find(n => n.id === childId);
-          return childNode && highlightedNodes.has(childNode.name);
-        }).length : 0;
-      
-      const additionalWidth = highlightedChildrenCount * 25;
-      
-      return baseWidth + additionalWidth;
-    };
-    
-    // Calculate individual box widths for each visible node
-    const nodeWidths = visibleNodes.map(node => ({
-      node,
-      width: calculateNodeWidth(node)
-    }));
-    
-    // Calculate total width needed
-    const totalBoxesWidth = nodeWidths.reduce((sum, { width }) => sum + width, 0);
-    const totalMarginsWidth = (visibleNodes.length - 1) * boxMargin;
-    const totalWidthNeeded = totalBoxesWidth + totalMarginsWidth;
-    
-    // Calculate scaling factor to fit all boxes within available width
-    const scaleFactor = totalWidthNeeded > availableWidth ? 
-      (availableWidth - totalMarginsWidth) / totalBoxesWidth : 1;
-    
-    // Calculate final positions
-    let currentX = 0;
-    const nodePositions = nodeWidths.map(({ node, width }, index) => {
-      const scaledWidth = width * scaleFactor;
-      const position = {
-        node,
-        x: currentX,
-        width: scaledWidth
-      };
-      currentX += scaledWidth + boxMargin;
-      return position;
     });
-    
-    // Center the entire layout
-    const actualTotalWidth = currentX - boxMargin; // Remove last margin
-    const startX = (availableWidth - actualTotalWidth) / 2;
 
-    const positioning = {
-      screenWidth,
-      availableWidth,
-      boxHeight,
-      boxMargin,
-      totalBoxesWidth,
-      totalMarginsWidth,
-      totalWidthNeeded,
-      scaleFactor,
-      actualTotalWidth,
-      startX,
-      nodePositions
-    };
+    // Add boxHeight to positioning object for backward compatibility
+    positioning.boxHeight = 80;
 
     return {
       visibleNodes,
@@ -164,5 +110,5 @@ export function useSkillsListData({ treeNodes, highlightedNodes, scaleUpLeafNode
       getNodeState,
       findParentNode
     };
-  }, [treeNodes, highlightedNodes, scaleUpLeafNodes]);
+  }, [treeNodes, scaleUpLeafNodes]);
 } 

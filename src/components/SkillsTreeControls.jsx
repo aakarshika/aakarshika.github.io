@@ -7,7 +7,6 @@ import { TOGGLE_STATES } from '../utils/constants';
  * Renders the header, data summary, and control buttons
  */
 const SkillsTreeControls = ({ 
-  highlightedNodes, 
   isProcessing, 
   totalTimelineEntries, 
   treeNodes, 
@@ -26,6 +25,9 @@ const SkillsTreeControls = ({
 
   // Find the next node to be highlighted
   const nextNode = treeNodes.find(node => node.isPreview);
+  
+  // Derive highlighted nodes count from treeNodes
+  const highlightedNodesCount = treeNodes.filter(node => node.isHighlighted).length;
 
   return (
     <div className="mb-6">
@@ -93,29 +95,51 @@ const SkillsTreeControls = ({
       </div>
       
       {/* Controls */}
-      <div className="flex gap-4">
-        <button 
-          onClick={onHighlightNext}
-          disabled={isProcessing}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-        >
-          Highlight Next ({highlightedNodes.size})
-        </button>
-        
-        <button
-          onClick={onUnhighlightLast}
-          disabled={isProcessing || highlightedNodes.size === 0}
-          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Unhighlight Last ({highlightedNodes.size > 0 ? highlightedNodes.size - 1 : 0})
-        </button>
-        
-        <button
-          onClick={onReset}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-        >
-          Reset
-        </button>
+      <div className="bg-gray-800 rounded-lg p-4 border border-gray-600">
+        <div className="flex flex-wrap gap-4 items-center">
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={onHighlightNext}
+              disabled={isProcessing}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+            >
+              Highlight Next ({highlightedNodesCount})
+            </button>
+            
+            <button
+              onClick={onUnhighlightLast}
+              disabled={isProcessing || highlightedNodesCount === 0}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+            >
+              Unhighlight Last ({highlightedNodesCount > 0 ? highlightedNodesCount - 1 : 0})
+            </button>
+            
+            <button
+              onClick={onReset}
+              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            >
+              Reset
+            </button>
+          </div>
+          
+          {/* Toggle Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={onToggleShowOnlyWithData}
+              className={`px-4 py-2 rounded-lg transition-colors ${toggleStyle}`}
+            >
+              {showOnlyWithData ? 'Show All' : 'Show With Data Only'}
+            </button>
+            
+            <button
+              onClick={onToggleScaleUpLeafNodes}
+              className={`px-4 py-2 rounded-lg transition-colors ${scaleUpToggleStyle}`}
+            >
+              {scaleUpLeafNodes ? 'Normal Size' : 'Scale Leaf Nodes'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

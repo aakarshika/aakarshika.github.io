@@ -1,112 +1,94 @@
 import React from 'react';
-import { SVG_MARGIN, COLORS, NODE_SIZES, getRainbowColor } from '../utils/constants';
+import { getRainbowColor, COLORS, NODE_SIZES } from '../utils/constants';
 import { shouldScaleNode } from '../utils/skillDataUtils';
+import { calculateTreeBounds, createTransformFunctions } from '../utils/treeUtils';
 
 /**
  * Skills Tree Visualization Component
  * 
- * Renders the hierarchical tree structure with nodes and connections
+ * Renders a hierarchical tree visualization of skills using D3
+ * Shows nodes with different sizes and colors based on highlighting state
  */
 const SkillsTreeVisualization = ({ 
-  treeNodes, 
-  treeBounds, 
-  treeWidth, 
-  treeHeight, 
-  margin = SVG_MARGIN,
+  treeNodes = [], 
   scaleUpLeafNodes = false,
-  highlightedNodes = new Set(),
   onNodeClick 
 }) => {
-  const transformX = (x) => {
-    if (treeNodes.length === 0) return margin.left;
-    return x - treeBounds.minX + margin.left + 100; // Add extra padding
-  };
-  
-  const transformY = (y) => {
-    if (treeNodes.length === 0) return margin.top;
-    return y - treeBounds.minY + margin.top + 50; // Add extra padding
-  };
+  // Calculate tree bounds and transform functions using shared utilities
+  const bounds = calculateTreeBounds(treeNodes);
+  const { width, height } = { width: bounds.maxX - bounds.minX + 200, height: bounds.maxY - bounds.minY + 200 };
+  const { transformX, transformY } = createTransformFunctions(bounds);
 
-  /**
-   * Gets the appropriate node size based on scaling state
-   * @param {Object} node - Node object
-   * @param {boolean} isHighlighted - Whether node is highlighted
-   * @returns {number} Radius size
-   */
-  const getNodeSize = (node, isHighlighted) => {
-    const isConsideredLeaf = shouldScaleNode(node, treeNodes, highlightedNodes, scaleUpLeafNodes);    
-    
-    if(scaleUpLeafNodes) {
-      if(isConsideredLeaf && !isHighlighted){
-        return NODE_SIZES.scaled.radius;
-      }
-      return 0;
-    }
-    if (!scaleUpLeafNodes) {
-      return isHighlighted ? NODE_SIZES.normal.highlightedRadius : NODE_SIZES.normal.radius;
-    }
-  };
-
-  /**
-   * Gets the index of unhighlighted leaf nodes for display
-   * @returns {Object} Mapping of node names to their indices
-   */
-  const getUnhighlightedLeafIndices = () => {
-    if (!scaleUpLeafNodes) return {};
-    
+  // Create index mapping for unhighlighted leaf nodes
+  const unhighlightedLeafIndices = {};
+  if (scaleUpLeafNodes) {
     const unhighlightedLeafNodes = treeNodes.filter(node => {
-      const isLeaf = shouldScaleNode(node, treeNodes, highlightedNodes, scaleUpLeafNodes);
+      const isLeaf = shouldScaleNode(node, treeNodes, scaleUpLeafNodes);
       return isLeaf && !node.isHighlighted;
     });
     
-    const indices = {};
     unhighlightedLeafNodes.forEach((node, index) => {
-      indices[node.name] = index + 1; // 1-based indexing
+      unhighlightedLeafIndices[node.name] = index + 1;
     });
+  }
+
+  /**
+   * Get node size based on highlighting state and leaf node scaling
+   * @param {Object} node - Node object
+   * @param {boolean} isHighlighted - Whether node is highlighted
+   * @returns {number} Node radius
+   */
+  const getNodeSize = (node, isHighlighted) => {
+    // Check if this node should be considered a leaf for scaling
+    const isConsideredLeaf = shouldScaleNode(node, treeNodes, scaleUpLeafNodes);
     
-    return indices;
+    // Scale up leaf nodes that are not highlighted
+    if(isConsideredLeaf && !isHighlighted){
+      return NODE_SIZES.scaled.radius;
+    }
+    
+    // Scale up nodes with highlighted children
+    if (node.childrenHighlighted > 0) {
+      return NODE_SIZES.normal.highlightedRadius;
+    }
+    
+    return isHighlighted ? NODE_SIZES.normal.highlightedRadius : NODE_SIZES.normal.radius;
   };
 
-  const unhighlightedLeafIndices = getUnhighlightedLeafIndices();
-  const totalUnhighlightedLeaves = Object.keys(unhighlightedLeafIndices).length;
-
   return (
-    <div className="bg-gray-800 rounded-lg p-4 border border-gray-600">
-      <div className="text-sm text-gray-400 mb-4">
-        Tree: {treeNodes.length} nodes
-        {scaleUpLeafNodes && (
-          <span className="ml-2 text-purple-400">
-            • Showing {totalUnhighlightedLeaves} unhighlighted leaf nodes
-          </span>
-        )}
-      </div>
-      
+    <div className="relative bg-gray-900 rounded-lg p-4 border border-gray-600">
       <svg 
-        width={treeWidth + margin.left + margin.right} 
-        height={treeHeight + margin.top + margin.bottom}
-        className="w-full"
+        width={width} 
+        height={height} 
+        className="w-full h-auto"
+        style={{ maxHeight: '600px' }}
       >
-        {/* Connections */}
-        {treeNodes.map(node => (
-          node.children.length > 0 && node.children.map(childId => {
-            const child = treeNodes.find(n => n.id === childId);
-            if (!child) return null;
-            
-            return (
-              <line
-                key={`${node.id}-${childId}`}
-                x1={transformX(node.x)}
-                y1={transformY(node.y)}
-                x2={transformX(child.x)}
-                y2={transformY(child.y)}
-                stroke={node.isHighlighted && child.isHighlighted ? COLORS.connection.highlighted : COLORS.connection.normal}
-                strokeWidth={node.isHighlighted && child.isHighlighted ? 2 : 1}
-                className="transition-all duration-300"
-              />
-            );
+        {/* Connections between nodes */}
+        {treeNodes
+          .filter(node => {
+            const isLeaf = shouldScaleNode(node, treeNodes, scaleUpLeafNodes);
+            return isLeaf && !node.isHighlighted && node.children && node.children.length > 0;
           })
-        ))}
-        
+          .map((node) => 
+            node.children.map((childId) => {
+              const child = treeNodes.find(n => n.id === childId);
+              if (!child) return null;
+              
+              return (
+                <line
+                  key={`${node.id}-${childId}`}
+                  x1={transformX(node.x)}
+                  y1={transformY(node.y)}
+                  x2={transformX(child.x)}
+                  y2={transformY(child.y)}
+                  stroke={node.isHighlighted && child.isHighlighted ? COLORS.connection.highlighted : COLORS.connection.normal}
+                  strokeWidth={node.isHighlighted && child.isHighlighted ? 2 : 1}
+                  opacity={0.6}
+                />
+              );
+            })
+          ).flat().filter(Boolean)}
+
         {/* Nodes */}
         {treeNodes.map((node, index) => {
           const size = getNodeSize(node, node.isHighlighted);
