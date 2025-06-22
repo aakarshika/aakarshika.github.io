@@ -7,6 +7,7 @@ import React from 'react';
 const TimelineBox = ({
   timelineBox,
   x,
+  nodeChildrenHighlighted,
   width,
   state,
   isPreview,
@@ -49,9 +50,9 @@ const TimelineBox = ({
   }
   
   // Override with parent styling if this is a parent of a removing node
-  if (isParentOfRemoving && state !== 'removing' && !isPreview) {
+  if (isParentOfRemoving && nodeChildrenHighlighted > 0) {
     boxClasses = 'absolute rounded shadow-lg shadow-red-800  bg-gray-800';
-    opacity = 0.1;
+    opacity = 1;
     zIndex = 11;
   }
 
@@ -71,11 +72,11 @@ const TimelineBox = ({
         top: `${timelineBox.y}px`,
         width: `${width}px`,
         height: `${timelineBox.height}px`,
-        opacity: 1,
+        opacity:isParentOfRemoving ? !(nodeChildrenHighlighted > 0) ? 0 : 1 : 1,
         backgroundColor: rainbowColor,
         zIndex: zIndex,
         // transform: 'translateX(-50%)', // Center the box
-        transition: state === 'removing' || state === 'adding' ? 'none' : 'all 0.3s ease'
+        transition: 'all 0.3s ease'
       }}
       title={`${timelineBox.company || 'Unknown Company'} - ${timelineBox.expertise} (${formatDate(timelineBox.startDate)} to ${formatDate(timelineBox.endDate)})`}
     >

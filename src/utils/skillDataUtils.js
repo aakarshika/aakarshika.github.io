@@ -26,7 +26,7 @@ export function shouldScaleNode(node, treeNodes, scaleUpLeafNodes) {
   }
   
   // If all children are highlighted, treat it as a leaf
-  const allChildrenHighlighted = node.children.every(childId => {
+  const allChildrenHighlighted = node.children.some(childId => {
     const childNode = treeNodes.find(n => n.id === childId);
     return childNode && childNode.isHighlighted;
   });

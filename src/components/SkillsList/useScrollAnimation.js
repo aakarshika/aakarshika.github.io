@@ -127,13 +127,13 @@ export function useScrollAnimation({
 
 
     const wheelHandler = (e) => {
-      console.log("wheelHandler", e.pageY);
+      // console.log("wheelHandler", e.pageY);
         // if((e.pageY > 500  && e.pageY < 600)){
         //   e.preventDefault();
         // } else {
         //   return;
         // }
-      console.log("doing stuff");
+      // console.log("doing stuff");
       e.preventDefault();
       
       // Direct correlation between deltaY and scroll progress

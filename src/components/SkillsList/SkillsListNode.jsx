@@ -78,7 +78,7 @@ const SkillsListNode = ({
   }
   const minY = timelineBoxes.reduce((min, box) => Math.min(min, box.y), Infinity);
   const maxY = timelineBoxes.reduce((max, box) => Math.max(max, box.y + box.height), 0);
-
+const nodeChildrenHighlighted = node.childrenHighlighted;
   return (
     <>
       {/* Main node box */}
@@ -144,6 +144,7 @@ const SkillsListNode = ({
           x={animatedX}
           width={adjustedBoxWidth}
           state={state}
+          nodeChildrenHighlighted={nodeChildrenHighlighted}
           isPreview={isPreview}
           rainbowColor={rainbowColor}
           isParentOfRemoving={isParentOfRemoving}
@@ -153,12 +154,12 @@ const SkillsListNode = ({
       <div className="absolute top-0 left-0" 
       style={{ 
         height: `100%`,
-        opacity: state === 'adding' || state === 'removing' ? getRemovingNodeOpacity(node) : 1,
+        opacity: isParentOfRemoving ? !(nodeChildrenHighlighted > 0) ? 0 : getRemovingNodeOpacity(node) : 1,
         width: `12px`,
         left: `${(animatedX+adjustedBoxWidth/2)-6 }px`,
         top: `${minY}px`,
         backgroundColor: rainbowColor,
-        transition: state === 'removing' || state === 'adding' ? 'none' : 'all 0.3s ease'
+        transition: 'all 0.3s ease'
       }}></div>
     </>
   );
