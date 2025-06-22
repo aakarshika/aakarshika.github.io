@@ -144,6 +144,14 @@
     "Where Tag": "GoDaddy"
   },
   {
+    "Skill": "Gym",
+    "Start Date": "2018-01-01 00:00:00",
+    "End Date": "2026-06",
+    "Expertise Level Achieved": "Expert",
+    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
+    "Where Tag": "GoDaddy"
+  },
+  {
     "Skill": "Airflow",
     "Start Date": "2020-06-01 00:00:00",
     "End Date": "2024-06",
@@ -168,6 +176,14 @@
     "Where Tag": "Delhivery"
   },
   {
+    "Skill": "Running",
+    "Start Date": "2017-06-01 00:00:00",
+    "End Date": "2019-06",
+    "Expertise Level Achieved": "Intermediate",
+    "1 line Description on how I used it": "Implemented unit testing for pipelines",
+    "Where Tag": "Delhivery"
+  },
+  {
     "Skill": "Localstack",
     "Start Date": "2017-06-01 00:00:00",
     "End Date": "2019-06",
@@ -184,6 +200,14 @@
     "Where Tag": "Delhivery"
   },
   {
+    "Skill": "Running",
+    "Start Date": "2017-06-01 00:00:00",
+    "End Date": "2019-06",
+    "Expertise Level Achieved": "Intermediate",
+    "1 line Description on how I used it": "Processed JSON to Parquet on AWS EMR",
+    "Where Tag": "Delhivery"
+  },
+  {
     "Skill": "Python",
     "Start Date": "2020-01-01 00:00:00",
     "End Date": "2021-05",
@@ -193,6 +217,14 @@
   },
   {
     "Skill": "Machine Learning",
+    "Start Date": "2020-01-01 00:00:00",
+    "End Date": "2021-05",
+    "Expertise Level Achieved": "Intermediate",
+    "1 line Description on how I used it": "Built emotion recognition models using ML",
+    "Where Tag": "USF"
+  },
+  {
+    "Skill": "Crafting",
     "Start Date": "2020-01-01 00:00:00",
     "End Date": "2021-05",
     "Expertise Level Achieved": "Intermediate",
@@ -225,6 +257,14 @@
   },
   {
     "Skill": "Python",
+    "Start Date": "2021-06-01 00:00:00",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Expert",
+    "1 line Description on how I used it": "Developed scalable APIs and backend systems",
+    "Where Tag": "GoDaddy"
+  },
+  {
+    "Skill": "Painting",
     "Start Date": "2021-06-01 00:00:00",
     "End Date": "2025-06",
     "Expertise Level Achieved": "Expert",

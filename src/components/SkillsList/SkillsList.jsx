@@ -1,10 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useSkillsListData } from './useSkillsListData';
 import { useScrollAnimation } from './useScrollAnimation';
 import { useTimelineData } from './useTimelineData';
-import SkillsListHeader from './SkillsListHeader';
 import SkillsListNode from './SkillsListNode';
-import SkillsListDebug from './SkillsListDebug';
 
 /**
  * Skills List Component
@@ -18,12 +16,14 @@ const SkillsList = ({
   containerRef,
   onAnimationComplete
 }) => {
+  const [containerWidth, setContainerWidth] = useState(0);
+  const timelineContainerRef = useRef(null);
+
   // Get processed data using custom hook
   const {
     visibleNodes,
     removingNodes,
     parentNodes,
-    nextNode,
     positioning,
     getNodeState,
     findParentNode
@@ -34,13 +34,13 @@ const SkillsList = ({
     nodeTimelineBoxes,
     yZoom
   } = useTimelineData({ treeNodes, yZoom: 600 });
+
   const highlightedNodes = treeNodes.filter(n => n.isHighlighted);
+  
   // Get scroll animation logic using custom hook
   const {
     getAnimatedPosition,
     getRemovingNodeOpacity,
-    scrollProgress,
-    scrollDirection
   } = useScrollAnimation({
     removingNodes,
     visibleNodes,
@@ -51,6 +51,19 @@ const SkillsList = ({
     highlightedNodes,
     onAnimationComplete
   });
+
+  // Update container width when component mounts or resizes
+  useEffect(() => {
+    const updateWidth = () => {
+      if (timelineContainerRef.current) {
+        setContainerWidth(timelineContainerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   if (!scaleUpLeafNodes || visibleNodes.length === 0) return null;
 
@@ -69,6 +82,7 @@ const SkillsList = ({
       /> */}
       
       <div 
+        ref={timelineContainerRef}
         className="relative"
         style={{ 
           height: `${yZoom}px`, // Use timeline height instead of fixed 500px
@@ -76,6 +90,7 @@ const SkillsList = ({
           overflow: 'hidden'
         }}
       >
+
         {visibleNodes.map((node, index) => {
           // Use the modularized position calculator
           const animatedX = getAnimatedPosition(node);
@@ -115,15 +130,6 @@ const SkillsList = ({
         })}
       </div>
       
-      <SkillsListDebug
-        positioning={positioning}
-        visibleNodes={visibleNodes}
-        nextNode={nextNode}
-        removingNodes={removingNodes}
-        parentNodes={parentNodes}
-        scrollProgress={scrollProgress}
-        scrollDirection={scrollDirection}
-      />
     </div>
   );
 };

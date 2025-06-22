@@ -82,60 +82,7 @@ const nodeChildrenHighlighted = node.childrenHighlighted;
   return (
     <>
       {/* Main node box */}
-      {/* <div
-        className={boxClasses}
-        style={{
-          left: `${animatedX}px`,
-          top: `${y}px`,
-          width: `${adjustedBoxWidth}px`,
-          height: `${boxHeight}px`,
-          transform: `translateX(-50%) scale(${scale})`, // Center the box and apply scale
-          opacity: opacity,
-          backgroundColor: backgroundColor,
-          borderColor: borderColor,
-          // Remove all transitions for removing nodes to make movement immediate
-          transition: state === 'removing' ? 'none' : 'all 0.3s ease'
-        }}
-      >
-        <div className="flex flex-col h-full justify-center items-center text-center">
-          <div className={`text-sm font-semibold mb-1 ${
-            isPreview ? 'text-yellow-300' : 
-            state === 'adding' ? 'text-white' :
-            state === 'removing' ? 'text-gray-400' :
-            isParentOfRemoving ? 'text-blue-300' :
-            'text-white'
-          }`}>
-            #{index + 1}
-            {isPreview && (
-              <span className="ml-1 text-xs">(Next)</span>
-            )}
-            {state === 'adding' && (
-              <span className="ml-1 text-xs">(Adding)</span>
-            )}
-            {state === 'removing' && (
-              <span className="ml-1 text-xs">(Removing)</span>
-            )}
-            {isParentOfRemoving && (
-              <span className="ml-1 text-xs">(Parent)</span>
-            )}
-          </div>
-          <div className={`text-xs leading-tight ${
-            isPreview ? 'text-purple-200' :
-            state === 'adding' ? 'text-white' :
-            state === 'removing' ? 'text-gray-500' :
-            isParentOfRemoving ? 'text-blue-200' :
-            'text-white'
-          }`}>
-            {node.name}
-          </div>
-          {node.timelineData && node.timelineData.length > 0 && (
-            <div className="text-xs text-yellow-400 mt-1">
-              {node.timelineData.length} periods
-            </div>
-          )}
-        </div>
-      </div>
-       */}
+      
       {/* Timeline boxes */}
       {timelineBoxes.map((timelineBox, boxIndex) => (
         <TimelineBox

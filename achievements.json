@@ -1,0 +1,77 @@
+[
+    {
+      "title": "Master of Science in Computer Science (Computer Vision)",
+      "date": "2021-08-01",
+      "description": "Completed graduate degree in Computer Science with specialization in Computer Vision from University of South Florida, Tampa, USA"
+    },
+    {
+      "title": "Bachelor of Technology in Computer Science and Engineering",
+      "date": "2016-08-01",
+      "description": "Graduated with 74% from JSS Academy of Technical Education, Noida, India"
+    },
+    {
+      "title": "Developer at Delhivery",
+      "date": "2019-06-01",
+      "description": "Led data warehousing initiatives in a team of three using AWS services and Redshift Database, created data pipelines for cleaning and structuring JSON data dumps, and integrated Apache Airflow for pipeline management"
+    },
+    {
+      "title": "Backend and DevOps at Neuron",
+      "date": "2017-05-01",
+      "description": "Developed personal assistant mobile app Genie for booking services, created AI-enabled Survey Chatbot, handled backend of developer platform offering NLP services, and built REST APIs with custom OTP authentication"
+    },
+    {
+      "title": "JSS Connect Web Application - High Traffic System",
+      "date": "2016-01-01",
+      "description": "Built Django-based web application serving 5,000+ daily requests for college administration-student interaction using Django and MySQL"
+    },
+    {
+      "title": "Smile and Eye Contact Detection System",
+      "date": "2015-12-01",
+      "description": "Developed real-time detection system for smile and eye contact on live webcam stream using linear SVM model for image training"
+    },
+    {
+      "title": "Food Genie - Restaurant Sentiment Analysis",
+      "date": "2015-11-01",
+      "description": "Built sentiment analysis system for user and critic restaurant reviews using web scraping and Zomato API to rate food items rather than restaurants"
+    },
+    {
+      "title": "Algoscale Summer Internship - YouTube Channel App",
+      "date": "2015-07-01",
+      "description": "Created application to fetch keyword-related channels from YouTube and developed admin portal using Python, MongoDB, and YouTube APIs"
+    },
+    {
+      "title": "Neuron Internship - Company Website Development",
+      "date": "2016-04-01",
+      "description": "Developed company website from scratch, integrated Hindi News and Ad Recommendation system with ML team, and created REST APIs using Django REST Framework"
+    },
+    {
+      "title": "Fratmart Client-side Development",
+      "date": "2014-12-01",
+      "description": "Developed online marketplace from scratch for used books, notes and accommodation using HTML5, CSS, and JavaScript"
+    },
+    {
+      "title": "Whatshere Mobile Navigation App",
+      "date": "2015-06-01",
+      "description": "Designed navigation tool for travelers visiting different cities using Java and Google Place API"
+    },
+    {
+      "title": "Skynet Browser Development",
+      "date": "2015-03-01",
+      "description": "Built web browser with interactive GUI, quick links, maps and mail support using C#"
+    },
+    {
+      "title": "PyURL Shortener Service",
+      "date": "2015-09-01",
+      "description": "Created URL shortening service with custom URL support using Django framework"
+    },
+    {
+      "title": "ReplyAll Facebook Automation Tool",
+      "date": "2015-01-01",
+      "description": "Built web application to automatically reply to Facebook birthday posts using Django and Facebook Graph API"
+    },
+    {
+      "title": "Google Developers Group JSS Website",
+      "date": "2014-10-01",
+      "description": "Developed website for college GDG society to display information and upcoming events using HTML5, CSS, and JavaScript"
+    }
+  ]

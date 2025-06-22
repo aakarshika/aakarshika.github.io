@@ -69,4 +69,10 @@ export const skillCategoryPaths = [
   
   // Education
   'tech.teaching.ta',
+
+
+  'mind_and_body.health.fitness.gym',
+  'mind_and_body.health.fitness.running',
+  'mind_and_body.leisure.art.crafting',
+  'mind_and_body.leisure.art.painting'
 ];

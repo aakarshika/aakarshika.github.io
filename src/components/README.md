@@ -12,10 +12,10 @@ This directory contains the modular components for the Skills Tree visualization
 ```
 src/
 ├── components/
-│   ├── AnimatedSkillsChart.jsx      # Main orchestrator component
-│   ├── SkillsTreeControls.jsx       # Header, controls, and data summary
-│   ├── SkillsTreeVisualization.jsx  # SVG tree visualization
-│   ├── TimelineInfoPanel.jsx        # Timeline details panel
+│   ├── AnimatedSkillsChar      # Main orchestrator component
+│   ├── SkillsTreeControl       # Header, controls, and data summary
+│   ├── SkillsTreeVisualizatio  # SVG tree visualization
+│   ├── TimelineInfoPane        # Timeline details panel
 │   └── README.md                    # This file
 ├── hooks/
 │   ├── useSkillsTree.js             # Tree state management
@@ -27,21 +27,21 @@ src/
 
 ## 🔧 Components
 
-### `AnimatedSkillsChart.jsx`
+### `AnimatedSkillsChar`
 - **Purpose**: Main orchestrator component
 - **Responsibilities**: 
   - Uses `useSkillsTree` hook for state management
   - Renders child components with appropriate props
   - Maintains clean separation between data and view
 
-### `SkillsTreeControls.jsx`
+### `SkillsTreeControl`
 - **Purpose**: Header section with controls and data summary
 - **Responsibilities**:
   - Displays title and description
   - Shows data statistics (total nodes, timeline entries)
   - Renders control buttons (Highlight Next, Reset)
 
-### `SkillsTreeVisualization.jsx`
+### `SkillsTreeVisualizatio`
 - **Purpose**: SVG-based tree visualization
 - **Responsibilities**:
   - Renders tree nodes and connections
@@ -49,7 +49,7 @@ src/
   - Manages SVG coordinate transformations
   - Uses constants for consistent styling
 
-### `TimelineInfoPanel.jsx`
+### `TimelineInfoPane`
 - **Purpose**: Detailed timeline information display
 - **Responsibilities**:
   - Shows timeline data for selected nodes
@@ -102,33 +102,3 @@ constants.js → All Components (styling and configuration)
 - **Maintainability**: Smaller, focused files are easier to understand and modify
 - **Testability**: Each component can be tested in isolation
 - **Performance**: Components only re-render when their specific props change
-
-## 🚀 Usage
-
-### Main Component
-```jsx
-import AnimatedSkillsChart from './components/AnimatedSkillsChart';
-
-function App() {
-  return <AnimatedSkillsChart />;
-}
-```
-
-### Individual Components
-```jsx
-import { useSkillsTree } from './hooks/useSkillsTree';
-import SkillsTreeVisualization from './components/SkillsTreeVisualization';
-
-function CustomTreeView() {
-  const { treeNodes, treeBounds, treeWidth, treeHeight } = useSkillsTree();
-  
-  return (
-    <SkillsTreeVisualization
-      treeNodes={treeNodes}
-      treeBounds={treeBounds}
-      treeWidth={treeWidth}
-      treeHeight={treeHeight}
-    />
-  );
-}
-``` 

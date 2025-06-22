@@ -7,20 +7,12 @@ import {
   getNodeTimelineData 
 } from '../utils/skillDataUtils';
 import { TREE_LAYOUT } from '../utils/constants';
-import { 
-  calculateTreeBounds, 
-  calculateTreeDimensions, 
-  calculateTotalTimelineEntries,
-  getNodesWithTimelineData 
-} from '../utils/treeUtils';
-
 /**
  * Custom hook for managing skills tree data and highlighting
  * @returns {Object} Tree data, highlighting state, and related functions
  */
 export function useSkillsTree() {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [hoveredNode, setHoveredNode] = useState(null);
   const [showOnlyWithData, setShowOnlyWithData] = useState(true);
   const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(true);
   
@@ -201,28 +193,7 @@ export function useSkillsTree() {
     }
   };
 
-  /**
-   * Resets all highlighted nodes
-   */
-  const resetHighlighting = () => {
-    setHighlightedNodeNames(new Set());
-  };
 
-  /**
-   * Toggles the "show only with data" filter
-   */
-  const toggleShowOnlyWithData = () => {
-    setShowOnlyWithData(prev => !prev);
-    // Reset highlighting when toggling to avoid highlighting non-existent nodes
-    setHighlightedNodeNames(new Set());
-  };
-
-  /**
-   * Toggles the "scale up leaf nodes" feature
-   */
-  const toggleScaleUpLeafNodes = () => {
-    setScaleUpLeafNodes(prev => !prev);
-  };
 
   /**
    * Builds tree data for D3 visualization
@@ -317,52 +288,16 @@ export function useSkillsTree() {
 
   const treeNodes = useMemo(() => buildTreeData(), [highlightedNodeNames, showOnlyWithData]);
 
-  // Calculate tree bounds and dimensions using shared utilities
-  const treeBounds = calculateTreeBounds(treeNodes);
-  const { width: treeWidth, height: treeHeight } = calculateTreeDimensions(treeBounds);
-
-  // Debug information
-  const skillToTimeline = buildSkillToTimelineMapping();
-  const categoryToSkills = buildCategoryToSkillsMapping();
-  
-  // Calculate total timeline entries across all nodes using shared utility
-  const totalTimelineEntries = calculateTotalTimelineEntries(treeNodes);
-
-  // Debug: Show nodes with timeline data using shared utility
-  const nodesWithData = getNodesWithTimelineData(treeNodes);
-
-  // Helper function to get highlighted nodes from treeNodes
-  const getHighlightedNodes = () => {
-    return new Set(treeNodes.filter(node => node.isHighlighted).map(node => node.name));
-  };
-
   return {
-    // State
-    highlightedNodes: getHighlightedNodes(), // Computed from treeNodes for backward compatibility
-    isProcessing,
-    hoveredNode,
-    setHoveredNode,
-    showOnlyWithData,
+
     scaleUpLeafNodes,
     
     // Data
     treeNodes,
-    hierarchyTree,
-    treeBounds,
-    treeWidth,
-    treeHeight,
-    
-    // Statistics
-    totalTimelineEntries,
-    nodesWithData,
-    skillToTimeline,
-    categoryToSkills,
     
     // Actions
     handleHighlightNext,
-    handleUnhighlightLast,
-    resetHighlighting,
-    toggleShowOnlyWithData,
-    toggleScaleUpLeafNodes
+    handleUnhighlightLast
   };
 } 
+
