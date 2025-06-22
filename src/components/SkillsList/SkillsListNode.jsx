@@ -39,7 +39,7 @@ const SkillsListNode = ({
       boxClasses += ' border-2 hover:opacity-80';
       backgroundColor = rainbowColor;
       borderColor = rainbowColor;
-      opacity = 0.8; // Lightened
+      opacity = getRemovingNodeOpacity(node); // Dynamic opacity based on scroll
       break;
     case 'removing':
       boxClasses += ' border-2 hover:opacity-60';
@@ -156,11 +156,12 @@ const SkillsListNode = ({
       <div className="absolute top-0 left-0" 
       style={{ 
         height: `100%`,
-        opacity: state === 'adding' ? 0.25 : 1,
+        opacity: state === 'adding' || state === 'removing' ? getRemovingNodeOpacity(node) : 1,
         width: `12px`,
         left: `${(animatedX+adjustedBoxWidth/2)-6 }px`,
         top: `${minY}px`,
         backgroundColor: rainbowColor,
+        transition: state === 'removing' || state === 'adding' ? 'none' : 'all 0.3s ease'
       }}></div>
     </>
   );

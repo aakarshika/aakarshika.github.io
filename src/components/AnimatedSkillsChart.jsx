@@ -21,6 +21,7 @@ const AnimatedSkillsChart = () => {
     setHoveredNode,
     showOnlyWithData,
     scaleUpLeafNodes,
+    direction,
     
     // Data
     treeNodes,
@@ -35,15 +36,39 @@ const AnimatedSkillsChart = () => {
     
     // Actions
     handleHighlightNext,
+    handleHighlightDirection,
     resetHighlighting,
     toggleShowOnlyWithData,
-    toggleScaleUpLeafNodes
+    toggleScaleUpLeafNodes,
+    toggleDirection,
+    setDirection
   } = useSkillsTree();
+
+  // // Create a function to handle unhighlighting the last node
+  // const handleUnhighlightLast = () => {
+  //   console.log('handleUnhighlightLast');
+  //   handleHighlightDirection('backward');
+  // };
+
+  // // const handleHighlightNext = () => {
+  // //   console.log('handleHighlightNext');
+  // //   handleHighlightDirection('forward');
+  // // };
+
+  // const handleHighlightDirectionAnimationComplete = (e) => {
+  //   console.log('handleHighlightDirectionAnimationComplete', e);
+  //   handleHighlightDirection(e);
+  // };
+
+  const handleDirectionChange = (newDirection) => {
+    console.log('handleDirectionChange', newDirection);
+    setDirection(newDirection);
+  };
 
   return (
     <div className="w-auto h-screen bg-gray-900 text-white p-6">
       {/* Header and Controls */}
-      {/* <SkillsTreeControls
+      <SkillsTreeControls
         highlightedNodes={highlightedNodes}
         isProcessing={isProcessing}
         totalTimelineEntries={totalTimelineEntries}
@@ -53,10 +78,11 @@ const AnimatedSkillsChart = () => {
         showOnlyWithData={showOnlyWithData}
         scaleUpLeafNodes={scaleUpLeafNodes}
         onHighlightNext={handleHighlightNext}
+        // onUnhighlightLast={handleUnhighlightLast}
         onReset={resetHighlighting}
         onToggleShowOnlyWithData={toggleShowOnlyWithData}
         onToggleScaleUpLeafNodes={toggleScaleUpLeafNodes}
-      /> */}
+      />
       
       {/* Tree Visualization */}
       {!scaleUpLeafNodes && (<SkillsTreeVisualization
@@ -78,6 +104,8 @@ const AnimatedSkillsChart = () => {
         highlightedNodes={highlightedNodes}
         scaleUpLeafNodes={scaleUpLeafNodes}
         onAnimationComplete={handleHighlightNext}
+        direction={direction}
+        onDirectionChange={handleDirectionChange}
       />
     </div>
   );

@@ -87,7 +87,7 @@ const SkillsTreeVisualization = ({
         className="w-full"
       >
         {/* Connections */}
-        {!scaleUpLeafNodes && treeNodes.map(node => (
+        {treeNodes.map(node => (
           node.children.length > 0 && node.children.map(childId => {
             const child = treeNodes.find(n => n.id === childId);
             if (!child) return null;

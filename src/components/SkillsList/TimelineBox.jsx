@@ -21,7 +21,7 @@ const TimelineBox = ({
   switch (state) {
     case 'adding':
       boxClasses += '';
-      opacity =0.51; // Lightened
+      opacity = getRemovingNodeOpacity ? getRemovingNodeOpacity() : 0.5; // Dynamic opacity based on scroll
       zIndex = 11;
       break;
     case 'removing':
@@ -71,11 +71,11 @@ const TimelineBox = ({
         top: `${timelineBox.y}px`,
         width: `${width}px`,
         height: `${timelineBox.height}px`,
-        opacity: state === 'adding' ? 0.5 : 1,
+        opacity: opacity,
         backgroundColor: rainbowColor,
         zIndex: zIndex,
         // transform: 'translateX(-50%)', // Center the box
-        transition: state === 'removing' ? 'none' : 'all 0.3s ease'
+        transition: state === 'removing' || state === 'adding' ? 'none' : 'all 0.3s ease'
       }}
       title={`${timelineBox.company || 'Unknown Company'} - ${timelineBox.expertise} (${formatDate(timelineBox.startDate)} to ${formatDate(timelineBox.endDate)})`}
     >

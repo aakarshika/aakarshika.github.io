@@ -16,6 +16,7 @@ const SkillsTreeControls = ({
   showOnlyWithData,
   scaleUpLeafNodes,
   onHighlightNext, 
+  onUnhighlightLast,
   onReset,
   onToggleShowOnlyWithData,
   onToggleScaleUpLeafNodes
@@ -99,6 +100,14 @@ const SkillsTreeControls = ({
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
         >
           Highlight Next ({highlightedNodes.size})
+        </button>
+        
+        <button
+          onClick={onUnhighlightLast}
+          disabled={isProcessing || highlightedNodes.size === 0}
+          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Unhighlight Last ({highlightedNodes.size > 0 ? highlightedNodes.size - 1 : 0})
         </button>
         
         <button
