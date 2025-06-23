@@ -1,7 +1,7 @@
 // File: src/App.jsx
 
 import React, { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import MainRoutingPage from './pages/MainRoutingPage';
@@ -19,9 +19,9 @@ const App = () => {
   }, []);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
         <MainRoutingPage />
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
