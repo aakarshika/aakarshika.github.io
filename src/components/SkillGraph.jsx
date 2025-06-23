@@ -72,12 +72,13 @@ const SkillGraph = ({ isActive, onScrollHandoff }) => {
   const y = 50; // Fixed vertical position
 
   return (
-    <div className="h-screen flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-20">
       <div className="w-full h-full flex flex-col">
-        <div className="text-center mb-6">
-          <h2 className="text-5xl font-bold text-white mb-2">Skills Tree</h2>
-          <p className="text-gray-300">Scroll to see skills merge and evolve</p>
-        </div>
+      <div className="about-section container mx-auto px-6">
+            <h2 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              Skills & Expertise
+            </h2>
+          </div>
         <div className="flex-1 rounded-lg p-6">
           <div 
             ref={containerRef}
