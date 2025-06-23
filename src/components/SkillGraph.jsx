@@ -76,7 +76,7 @@ const SkillGraph = ({ isActive, onScrollHandoff }) => {
       <div className="w-full h-full flex flex-col">
       <div className="about-section container mx-auto px-6">
             <h2 className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-              Skills & Expertise
+              My Skills Along The Way
             </h2>
           </div>
         <div className="flex-1 rounded-lg p-6">

@@ -18,7 +18,7 @@ const SkillsSection = ({part}) => {
     <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-20">
     <div className="custom-section container mx-auto px-6 text-center">
       <h2 className="text-6xl font-bold mb-16 bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">
-        Interactive Experience
+        Leave a footprint behind
       </h2>
       <div className="bg-gray-800 rounded-2xl p-12 h-96 flex items-center justify-center">
         <span className="text-gray-400 text-xl">[Your Custom React Component Here]</span>
@@ -32,7 +32,7 @@ const SkillsSection = ({part}) => {
               Let's Work Together
             </h2>
             <p className="text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
-              Ready to bring your ideas to life? Let's create something amazing together.
+              Ready to give me a chat, a challenge or money?
             </p>
             <div className="flex justify-center space-x-8">
               <a href="mailto:your@email.com" className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">

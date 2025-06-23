@@ -47,18 +47,18 @@ const Portfolio = () => {
       getFun: 'SkillGraph',
       ref: useRef(null)
     },
-    {
-      id: 'skills',
-      componentType: 'none',
-      componentFun: () => <SkillsSection part="Skills" />,
-      ref: useRef(null)
-    },
-    {
-      id: 'testimonials', 
-      componentType: 'horizontalStopper',
-      componentFun: () => <TestimonialsSection />,
-      ref: useRef(null)
-    },
+    // {
+    //   id: 'skills',
+    //   componentType: 'none',
+    //   componentFun: () => <SkillsSection part="Skills" />,
+    //   ref: useRef(null)
+    // },
+    // {
+    //   id: 'testimonials', 
+    //   componentType: 'horizontalStopper',
+    //   componentFun: () => <TestimonialsSection />,
+    //   ref: useRef(null)
+    // },
     {
       id: 'interactive',
       componentType: 'none',
