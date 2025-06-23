@@ -51,3 +51,18 @@ canvas {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* Grain effect for webcam and thumbnails */
+.webcam-grain {
+  position: relative;
+}
+.webcam-grain::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'><filter id='grain'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='128' height='128' filter='url(%23grain)' /></svg>");
+}

@@ -91,11 +91,7 @@ export function useSkillsListData({ treeNodes, scaleUpLeafNodes }) {
     const positioning = calculateInitialNodePositions(visibleNodes, treeNodes, {
       screenWidth: window.innerWidth,
       containerPadding: 10,
-      boxMargin: 10,
-      widthConfig: {
-        baseWidths: { beginner: 45, intermediate: 55, expert: 65 },
-        childWidthMultiplier: 25
-      }
+      boxMargin: 10
     });
 
     // Add boxHeight to positioning object for backward compatibility

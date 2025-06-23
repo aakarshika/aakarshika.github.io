@@ -10,7 +10,7 @@ export function calculateAnimation(elementKey, progress, photoAnimationSequence,
   };
 
   const { start, duration, initialScale, scaleIncrement } = config;
-  const minOpacity = 0.35;
+  const minOpacity = 0.7;
   // Fade-in logic
   const cappedProgress = Math.min(progress, 50);
   const elementProgress = cappedProgress >= start ? Math.min((cappedProgress - start) / duration, 1) : 0;

@@ -76,9 +76,12 @@ const SkillsListNode = ({
     opacity = 0.9;
     scale = 1.2; // Larger size for parent nodes
   }
-  const minY = timelineBoxes.reduce((min, box) => Math.min(min, box.y), Infinity);
-  const maxY = timelineBoxes.reduce((max, box) => Math.max(max, box.y + box.height), 0);
-const nodeChildrenHighlighted = node.childrenHighlighted;
+  // Only use the timelineBox with the smallest minY (smallest y value)
+  const smallestMinYBox = timelineBoxes.reduce((minBox, box) =>
+    box.y < (minBox ? minBox.y : Infinity) ? box : minBox, null);
+  const minY = smallestMinYBox ? smallestMinYBox.y : Infinity;
+  const maxY = smallestMinYBox ? smallestMinYBox.y + smallestMinYBox.height : 0;
+  const nodeChildrenHighlighted = node.childrenHighlighted;
   return (
     <>
       {/* Main node box */}
@@ -98,11 +101,11 @@ const nodeChildrenHighlighted = node.childrenHighlighted;
         </div>
       )}
       
-      {/* Timeline boxes */}
-      {timelineBoxes.map((timelineBox, boxIndex) => (
+      {/* Timeline box (only the one with smallest minY) */}
+      {smallestMinYBox && (
         <TimelineBox
-          key={timelineBox.id}
-          timelineBox={timelineBox}
+          key={smallestMinYBox.id}
+          timelineBox={smallestMinYBox}
           x={animatedX}
           width={adjustedBoxWidth}
           state={state}
@@ -112,17 +115,7 @@ const nodeChildrenHighlighted = node.childrenHighlighted;
           isParentOfRemoving={isParentOfRemoving}
           getRemovingNodeOpacity={getRemovingNodeOpacity}
         />
-      ))}
-      <div className="absolute top-0 left-0" 
-      style={{ 
-        height: `100%`,
-        opacity: isParentOfRemoving ? !(nodeChildrenHighlighted > 0) ? 0 : getRemovingNodeOpacity(node) : 1,
-        width: `${node.name == 'root' ? 0 : 12}px`,
-        left: `${(animatedX+adjustedBoxWidth/2)-6 }px`,
-        top: `${minY}px`,
-        backgroundColor: rainbowColor,
-        transition: 'all 0.3s ease'
-      }}></div>
+      )}
     </>
   );
 };

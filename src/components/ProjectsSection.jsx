@@ -1,4 +1,6 @@
 import React from 'react';
+import twirlyImg from '../assets/twirly.png';
+import daywiseImg from '../assets/daywise.png';
 
 const ProjectsSection = () => {
   return (
@@ -35,7 +37,7 @@ const ProjectsSection = () => {
             </a>
           </div>
           <div className="bg-gray-800 rounded-lg h-80 flex items-center justify-center">
-            <span className="text-gray-500">[Twirly App Screenshot]</span>
+            <img src={twirlyImg} alt="Twirly App Screenshot" className="rounded-lg w-full h-full object-cover" />
           </div>
         </div>
       </div>
@@ -44,7 +46,7 @@ const ProjectsSection = () => {
       <div className="w-screen h-screen flex items-center justify-center px-20 flex-shrink-0">
         <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl">
           <div className="bg-gray-800 rounded-lg h-80 flex items-center justify-center">
-            <span className="text-gray-500">[Daywise App Screenshot]</span>
+            <img src={daywiseImg} alt="Daywise App Screenshot" className="rounded-lg w-full h-full object-cover" />
           </div>
           <div>
             <h3 className="text-5xl font-bold mb-6 text-pink-400">Daywise</h3>

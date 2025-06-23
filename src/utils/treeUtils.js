@@ -55,7 +55,7 @@ export function createTransformFunctions(bounds, offset = 100) {
  * @returns {number} Calculated node width
  */
 export function calculateNodeWidth(node, treeNodes, widthConfig = {
-  baseWidths: { beginner: 45, intermediate: 55, expert: 65 },
+  baseWidths: { beginner: 70, intermediate: 80, expert: 90 },
   childWidthMultiplier: 25
 }) {
   // Base width based on highest expertise level in timeline data
@@ -92,11 +92,7 @@ export function calculateNodeWidth(node, treeNodes, widthConfig = {
 export function calculateInitialNodePositions(nodes, treeNodes, config = {
   screenWidth: window.innerWidth,
   containerPadding: 10,
-  boxMargin: 10,
-  widthConfig: {
-    baseWidths: { beginner: 45, intermediate: 55, expert: 65 },
-    childWidthMultiplier: 25
-  }
+  boxMargin: 10
 }) {
   const availableWidth = config.screenWidth - config.containerPadding;
   

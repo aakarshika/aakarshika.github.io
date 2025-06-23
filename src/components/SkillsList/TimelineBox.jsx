@@ -83,14 +83,24 @@ const TimelineBox = ({
       {/* Show content only if box is tall enough */}
       {timelineBox.height > 20 && timelineBox.name != 'root' && (
         <div className="flex flex-col h-full justify-center items-center text-center">
-          <div className="text-xs font-semibold text-white leading-tight">
-            {timelineBox.name}
+          <div
+            className="text-lg font-semibold text-white leading-tight"
+            style={{
+              writingMode: 'vertical-rl',
+              transform: 'rotate(180deg)',
+              textAlign: 'center',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              overflow: 'hidden',
+            }}
+          >
+            {timelineBox.name.split('_').join(' ').toUpperCase()}
           </div>
-          {/* {timelineBox.height > 30 && (
-            <div className="text-xs text-white opacity-80 leading-tight">
-              {timelineBox.company}
-            </div>
-          )} */}
         </div>
       )}
     </div>

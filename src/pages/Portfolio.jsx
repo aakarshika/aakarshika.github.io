@@ -4,7 +4,8 @@ import ProjectsSection from '../components/ProjectsSection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import VeeSection from '../components/VeeSection';
 import AboutMeSection from '../components/AboutMeSection';
-import SkillsSection from '../components/SkillsSection';
+import PicSection from '../components/PicSection';
+import ContactSection from '../components/ContactSection';
 import HeroSection from '../components/HeroSection';
 import { setupScrollEventListeners } from '../utils/scrollEventUtils';
 import SkillGraph from '../components/SkillGraph';
@@ -16,23 +17,36 @@ import {
   checkVisibleSection, 
   isContactFullyVisible 
 } from '../utils/portfolioUtils';
-
 import { supabase } from '../../supabase';
-
 const Portfolio = () => {
-  const [portfolio, setPortfolio] = useState([]);
+  const stoppersListRef = useRef([]);
+  const containerRef = useRef(null);
+  const [viewHeight, setViewHeight] = useState(0);
+  
+const  getPublicUrl = (filePath) => {
+  if (!filePath) return null;
+  const { data: { publicUrl } } = supabase.storage
+    .from('profile-pics')
+    .getPublicUrl(filePath);
+  return publicUrl;
+}
+  const [picturesList, setPicturesList] = useState([]);
   const fetchPortfolio = async () => {
     try {
       const { data, error } = await supabase
-        .from('categories')
+        .from('user_preferences')
         .select(`
           *
         `)
         .limit(20);
 
       if (error) throw error;
-      console.log('Portfolio:', data);
-      setPortfolio(data);
+      const d = data.filter(pic => pic.profile_image_url).map(pic => ({src: getPublicUrl(pic.profile_image_url), filter: pic.filter}));
+      console.log(d);
+      Array.from({length: 50-d.length}).forEach(i => {
+        d.push({src: 'blank'});
+      });
+      setPicturesList(d.sort(() => Math.random() - 0.5));
     } catch (err) {
       console.error('Error fetching trending sets:', err);
     } 
@@ -40,10 +54,6 @@ const Portfolio = () => {
   useEffect(() => {
     fetchPortfolio();
   }, []);
-  const stoppersListRef = useRef([]);
-  const containerRef = useRef(null);
-  const [viewHeight, setViewHeight] = useState(0);
-  
   // Custom scroll state
   const [scrollY, setScrollY] = useState(0);
   const [activeStopperId, setActiveStopperId] = useState(null); // Track which stopper is active
@@ -123,17 +133,21 @@ const Portfolio = () => {
     {
       id: 'interactive',
       componentType: 'none',
-      componentFun: () => <SkillsSection part="Interactive" />,
+      componentFun: () => <PicSection progress={cumulativeProgress} picturesList={picturesList} />,
       ref: useRef(null)
     },
     {
       id: 'contact',
       componentType: 'none',
-      componentFun: () => <SkillsSection part="Contact" />,
+      componentFun: () => <ContactSection  />,
       ref: useRef(null)
     }
     ];
   
+  // Calculate max scrollY based on number of sections
+  const sectionCount = stoppersConfig.length;
+  const maxScrollY = sectionCount * window.innerHeight - window.innerHeight;
+
   // Handle scroll handoff from any stopper section
   const handleScrollHandoff = (direction, stopperId) => {
     console.log('Portfolio: Received handoff:', direction, 'from:', stopperId);
@@ -155,15 +169,13 @@ const Portfolio = () => {
         // Continue scrolling down
         setScrollY(prev => {
           const newY = prev + 100; // Add some scroll to move past stopper section
-          const totalHeight = 8 * window.innerHeight; // Increased to accommodate all sections
-          return Math.max(0, Math.min(totalHeight, newY));
+          return Math.max(0, Math.min(maxScrollY, newY));
         });
       } else if (direction === 'previous') {
         // Continue scrolling up
         setScrollY(prev => {
           const newY = prev - 100; // Subtract some scroll to move before stopper section
-          const totalHeight = 8 * window.innerHeight; // Increased to accommodate all sections
-          return Math.max(0, Math.min(totalHeight, newY));
+          return Math.max(0, Math.min(maxScrollY, newY));
         });
       }
     }
@@ -255,8 +267,7 @@ const Portfolio = () => {
           // console.log('Parallel mode: Allowing vertical scroll during horizontal');
           setScrollY(prev => {
             const newY = prev + e.deltaY;
-            const totalHeight = 8 * window.innerHeight; // Increased to accommodate all sections
-            return Math.max(0, Math.min(totalHeight, newY));
+            return Math.max(0, Math.min(maxScrollY, newY));
           });
         } else {
           // In exclusive mode, don't handle vertical scroll at all
@@ -297,8 +308,7 @@ const Portfolio = () => {
         // console.log('Scrolling vertically, deltaY:', e.deltaY);
         setScrollY(prev => {
           const newY = prev + e.deltaY;
-          const totalHeight = 8 * window.innerHeight; // Increased to accommodate all sections
-          return Math.max(0, Math.min(totalHeight, newY));
+          return Math.max(0, Math.min(maxScrollY, newY));
         });
       }
     };
@@ -330,8 +340,7 @@ const Portfolio = () => {
       if (!stopperInView) {
         setScrollY(prev => {
           const newY = prev + deltaY;
-          const totalHeight = 8 * window.innerHeight; // Increased to accommodate all sections
-          return Math.max(0, Math.min(totalHeight, newY));
+          return Math.max(0, Math.min(maxScrollY, newY));
         });
       }
       
@@ -392,34 +401,6 @@ const Portfolio = () => {
         />
       </motion.div>
 
-      {/* Visual indicator for currently visible section */}
-      {visibleSections.length > 0 && (
-        <div className="fixed top-4 left-4 z-50 bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg">
-          <div className="text-sm font-semibold">Visible Sections:</div>
-          {visibleSections.map((section, index) => (
-            <div key={section.id} className="text-sm">
-              <span className="font-medium">{section.id}</span>
-              <span className="text-yellow-300 ml-2">({section.visibilityPercentage}%)</span>
-              <span className="text-green-300 ml-2">Cum: {section.cumulativeProgress}%</span>
-              <span className={`ml-2 ${
-                section.trend === 'waxing' ? 'text-green-300' : 
-                section.trend === 'waning' ? 'text-red-300' : 
-                'text-gray-300'
-              }`}>
-                {section.trend === 'waxing' ? '↗' : 
-                 section.trend === 'waning' ? '↘' : 
-                 '→'}
-              </span>
-              <span className="text-gray-300 ml-2">{section.top}/{section.sectionHeight}</span>
-            </div>
-          ))}
-          {activeStopperId && (
-            <div className="text-xs text-yellow-300 mt-1 border-t border-yellow-300 pt-1">
-              Stopper Active: {activeStopperId}
-            </div>
-          )}
-        </div>
-      )}
 
       <div 
         className="relative w-full"
