@@ -12,7 +12,7 @@ import SkillsListNode from './SkillsList/SkillsListNode';
  * Users can click a button to highlight nodes one by one, starting from the deepest level.
  * Each node shows accumulated start and end dates from all its children.
  */
-const AnimatedSkillsChart = () => {
+const AnimatedSkillsChart = ({ isActive = true, onScrollHandoff = null }) => {
   const {
     scaleUpLeafNodes,
     
@@ -23,12 +23,6 @@ const AnimatedSkillsChart = () => {
     handleHighlightNext,
     handleUnhighlightLast
   } = useSkillsTree();
-
-
-  const onDirectionChange = (newDirection) => {
-    // console.log('handleDirectionChange', newDirection);
-    setDirection(newDirection);
-  };
 
   // Handle animation completion for both forward and backward directions
   const onAnimationComplete = (direction) => {
@@ -75,7 +69,9 @@ const AnimatedSkillsChart = () => {
     findParentNode,
     getNodeState,
     highlightedNodes,
-    onAnimationComplete
+    onAnimationComplete,
+    isActive,
+    onScrollHandoff
   });
 
   // Update container width when component mounts or resizes

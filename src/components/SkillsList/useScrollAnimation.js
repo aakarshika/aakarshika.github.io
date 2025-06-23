@@ -92,12 +92,26 @@ export function useScrollAnimation({
   getNodeState,
   containerRef,
   highlightedNodes,
-  onAnimationComplete 
+  onAnimationComplete,
+  isActive = true,
+  onScrollHandoff = null
 }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollDirection, setScrollDirection] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [completionTrigger, setCompletionTrigger] = useState(null);
+  const [handoffDirection, setHandoffDirection] = useState(null);
+  const [isAtBoundary, setIsAtBoundary] = useState(false);
+
+  // Handle scroll handoff after render
+  useEffect(() => {
+    if (handoffDirection && onScrollHandoff) {
+      console.log('Handing off control:', handoffDirection);
+      onScrollHandoff(handoffDirection);
+      setHandoffDirection(null);
+    }
+  }, [handoffDirection, onScrollHandoff]);
+
   // Cache node positions when removingNodes or positioning changes
   const nodePositions = useMemo(() => {
     if (removingNodes.length === 0 || !positioning) {
@@ -117,88 +131,64 @@ export function useScrollAnimation({
   // Set up wheel event listener with passive: false
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !isActive) return;
 
     const wheelHandler = (e) => {
-      // console.log("wheelHandler", e.pageY);
-        // if((e.pageY > 500  && e.pageY < 600)){
-        //   e.preventDefault();
-        // } else {
-        //   return;
-        // }
-      // console.log("doing stuff");
-      
-      // Direct correlation between deltaY and scroll progress
+      if (handoffDirection) {
+        return;
+      }
+
       const delta = e.deltaY;
-      const scrollSensitivity = 0.01; // Adjust this value to control scroll sensitivity
+      const scrollSensitivity = 0.01;
       const progressChange = delta * scrollSensitivity;
       
-      // Set scroll direction based on delta
       const newDirection = delta > 0 ? 'merging' : 'splitting';
       setScrollDirection(newDirection);
       setScrollProgress(prev => {
         const newProgress = prev + progressChange;
-        if (newDirection === 'merging' && removingNodes.length === 0 && newProgress>=1.0) {
+        
+        if (newDirection === 'merging' && removingNodes.length === 0 && newProgress >= 1.0) {
           console.log("REACHED START");
+          if (!isAtBoundary && onScrollHandoff) {
+            setIsAtBoundary(true);
+            setHandoffDirection('next');
+            return 1;
+          }
           return 1;
         }
-        if (newDirection === 'splitting' && highlightedNodes.length === 0 && newProgress<=0.0) {
+        if (newDirection === 'splitting' && highlightedNodes.length === 0 && newProgress <= 0.0) {
           console.log("REACHED END");
+          if (!isAtBoundary && onScrollHandoff) {
+            setIsAtBoundary(true);
+            setHandoffDirection('previous');
+            return 0;
+          }
           return 0;
         }
-        // Check for forward completion (progress reaches 1.0)
-        if (newDirection === 'merging' && newProgress >= 1.0) {
-          // setIsAnimating(true);
-          setCompletionTrigger("forward");
-          return 0; // Keep at 1 to maintain the completed state
+        
+        if (newProgress !== prev) {
+          setIsAtBoundary(false);
         }
         
-        // Check for backward completion (progress reaches 0.0)
+        if (newDirection === 'merging' && newProgress >= 1.0) {
+          setCompletionTrigger("forward");
+          return 0;
+        }
+        
         if (newDirection === 'splitting' && newProgress <= 0.0) {
-          // setIsAnimating(true);
           setCompletionTrigger("backward");
-          return 1; // Keep at 0 to maintain the completed state
+          return 1;
         }
         return newProgress;
       });
     };
 
-    // Use the utility function to set up event listeners
     const cleanup = setupScrollEventListeners(container, {
       wheel: wheelHandler
     });
 
     return cleanup;
-  }, [removingNodes, positioning, nodePositions, onAnimationComplete, highlightedNodes]);
-
-  // Calculate animated position for removing nodes using cached positions
-  // const getAnimatedPosition = (node) => {
-  //   if (getNodeState(node) !== 'removing') {
-  //     // For non-removing nodes, return their current position
-  //     return PositionCalculator.getNodeCurrentPosition(node, positioning);
-  //   }
-    
-  //   // Determine direction based on current scroll direction
-  //   const direction = scrollDirection === 'splitting' ? 'backward' : 'forward';
-    
-  //   return PositionCalculator.getAnimatedPosition(node.id, nodePositions, scrollProgress, direction);
-  // };
-
-  // Calculate opacity for removing nodes based on scroll progress
-  const getRemovingNodeOpacity = (node) => {
-    if (getNodeState(node) !== 'removing') return 0.4;
-    
-    // Determine direction based on current scroll direction
-    const direction = scrollDirection === 'splitting' ? 'backward' : 'forward';
-    
-    if (direction === 'backward') {
-      // For backward direction, opacity increases as progress decreases (node becomes more visible)
-      return 0.4 * scrollProgress;
-    } else {
-      // For forward direction, opacity decreases as progress increases (node fades out)
-      return 0.4 * (1 - scrollProgress);
-    }
-  };
+  }, [removingNodes, positioning, nodePositions, onAnimationComplete, highlightedNodes, isActive, handoffDirection, isAtBoundary, onScrollHandoff]);
 
   const getAnimatedPosition = (node) => {
     if (removingNodes.length === 0) {
@@ -215,11 +205,22 @@ export function useScrollAnimation({
     if (nodePositionIndex <= 0) {
       widthB = widthA;
     }
-    // console.log(positioning.nodePositions.map(np => np.node.name + ' ' + np.x));
-    // console.log(positioning.nodePositions[nodePositionIndex].node.name, positioning.startX ,positioning.nodePositions[nodePositionIndex]?.x, scrollProgress* (widthA/2 + widthB/2) );
     return positioning.startX + positioning.nodePositions[nodePositionIndex]?.x 
     - scrollProgress* (widthA/2 + widthB/2) 
     ;
+  };
+
+  // Calculate opacity for removing nodes based on scroll progress
+  const getRemovingNodeOpacity = (node) => {
+    if (getNodeState(node) !== 'removing') return 0.4;
+    
+    const direction = scrollDirection === 'splitting' ? 'backward' : 'forward';
+    
+    if (direction === 'backward') {
+      return 0.4 * scrollProgress;
+    } else {
+      return 0.4 * (1 - scrollProgress);
+    }
   };
 
   return {
@@ -228,7 +229,7 @@ export function useScrollAnimation({
     isAnimating,
     getAnimatedPosition,
     getRemovingNodeOpacity,
-    PositionCalculator, // Export for use in other components
-    nodePositions // Export for debugging/inspection
+    PositionCalculator,
+    nodePositions
   };
 } 

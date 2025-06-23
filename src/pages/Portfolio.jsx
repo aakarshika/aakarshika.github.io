@@ -6,6 +6,7 @@ import AboutMeSection from '../components/AboutMeSection';
 import SkillsSection from '../components/SkillsSection';
 import HeroSection from '../components/HeroSection';
 import { setupScrollEventListeners } from '../utils/scrollEventUtils';
+import SkillGraph from '../components/SkillGraph';
 
 const Portfolio = () => {
   const stoppersListRef = useRef([]);
@@ -38,6 +39,12 @@ const Portfolio = () => {
       id: 'projects',
       componentType: 'horizontalStopper',
       componentFun: () => <ProjectsSection />,
+      ref: useRef(null)
+    },
+    {
+      id: 'skill-graph',
+      componentType: 'customHorizontalStopper',
+      getFun: 'SkillGraph',
       ref: useRef(null)
     },
     {
@@ -104,7 +111,7 @@ const Portfolio = () => {
   // Generic function to check if any stopper is in view
   const checkStoppersInView = () => {
     for (const stopper of stoppersConfig) {
-      if (!stopper.ref.current || stopper.componentType !== 'horizontalStopper') continue;
+      if (!stopper.ref.current || (stopper.componentType !== 'horizontalStopper' && stopper.componentType !== 'customHorizontalStopper')) continue;
       
       const rect = stopper.ref.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
@@ -133,19 +140,19 @@ const Portfolio = () => {
     document.body.style.height = '100vh';
 
     const handleWheel = (e) => {
-      console.log('Wheel event:', { 
-        activeStopperId, 
-        isHandingOff, 
-        scrollWasteCount: scrollWasteCountRef.current, 
-        scrollParallelly,
-        deltaY: e.deltaY 
-      });
+      // console.log('Wheel event:', { 
+      //   activeStopperId, 
+      //   isHandingOff, 
+      //   scrollWasteCount: scrollWasteCountRef.current, 
+      //   scrollParallelly,
+      //   deltaY: e.deltaY 
+      // });
       
       // If any stopper section is active, handle based on scroll mode
       if (activeStopperId) {
         if (scrollParallelly) {
           // In parallel mode, allow vertical scrolling even when stoppers are active
-          console.log('Parallel mode: Allowing vertical scroll during horizontal');
+          // console.log('Parallel mode: Allowing vertical scroll during horizontal');
           setScrollY(prev => {
             const newY = prev + e.deltaY;
             const totalHeight = 8 * window.innerHeight; // Increased to accommodate all sections
@@ -153,7 +160,7 @@ const Portfolio = () => {
           });
         } else {
           // In exclusive mode, don't handle vertical scroll at all
-          console.log('Exclusive mode: Ignoring vertical scroll during horizontal');
+          // console.log('Exclusive mode: Ignoring vertical scroll during horizontal');
         }
         return;
       }
@@ -176,11 +183,11 @@ const Portfolio = () => {
       
       if (stopperInView && !activeStopperId) {
         // Activate stopper section
-        console.log('Activating stopper section:', stopperInView);
+        // console.log('Activating stopper section:', stopperInView);
         setActiveStopperId(stopperInView);
       } else {
         // Normal vertical scrolling (either not in stopper or stopper not active)
-        console.log('Scrolling vertically, deltaY:', e.deltaY);
+        // console.log('Scrolling vertically, deltaY:', e.deltaY);
         setScrollY(prev => {
           const newY = prev + e.deltaY;
           const totalHeight = 8 * window.innerHeight; // Increased to accommodate all sections
@@ -262,7 +269,16 @@ const Portfolio = () => {
                 content={<stopper.componentFun />}
               />
             </div>
-          ) : (
+          ) : stopper.componentType === 'customHorizontalStopper' ? (
+            <div key={stopper.id} ref={stopper.ref}>
+              {stopper.getFun == 'SkillGraph' ? 
+              <SkillGraph isActive={activeStopperId === stopper.id} onScrollHandoff={(direction) => {
+                console.log('SkillGraph: Received handoff:', direction, 'from:', stopper.id);
+                handleScrollHandoff(direction, stopper.id)
+              }} /> 
+              : <div />}
+            </div>
+          ): (
             <div key={stopper.id} ref={stopper.ref}>
               <stopper.componentFun />
             </div>
