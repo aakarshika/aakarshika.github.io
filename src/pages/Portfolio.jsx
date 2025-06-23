@@ -10,7 +10,8 @@ import HeroSection from '../components/HeroSection';
 import { setupScrollEventListeners } from '../utils/scrollEventUtils';
 import SkillGraph from '../components/SkillGraph';
 import Lottie from 'lottie-react';
-import coderAnimation from '../assets/coder.json';
+import coderAnimation from '../assets/coder2.json';
+import clockAnimation from '../assets/clock2.json';
 import { 
   calculateAnimation, 
   checkStoppersInView, 
@@ -18,42 +19,77 @@ import {
   isContactFullyVisible 
 } from '../utils/portfolioUtils';
 import { supabase } from '../../supabase';
+
+function dataURLtoBlob(dataurl) {
+  const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+  for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+  return new Blob([u8arr], { type: mime });
+}
+
 const Portfolio = () => {
   const stoppersListRef = useRef([]);
   const containerRef = useRef(null);
   const [viewHeight, setViewHeight] = useState(0);
   
-const  getPublicUrl = (filePath) => {
-  if (!filePath) return null;
-  const { data: { publicUrl } } = supabase.storage
-    .from('profile-pics')
-    .getPublicUrl(filePath);
-  return publicUrl;
-}
   const [picturesList, setPicturesList] = useState([]);
+  const [fingerprint] = useState(() => Math.random().toString(36).slice(2));
+
+  const getPublicUrl = (filePath) => {
+    if (!filePath) return null;
+    const { data: { publicUrl } } = supabase.storage
+      .from('aakarshika-visitors')
+      .getPublicUrl(filePath);
+    return publicUrl;
+  };
+
   const fetchPortfolio = async () => {
     try {
       const { data, error } = await supabase
-        .from('user_preferences')
-        .select(`
-          *
-        `)
+        .from('visitor_fingerprints')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(20);
-
       if (error) throw error;
-      const d = data.filter(pic => pic.profile_image_url).map(pic => ({src: getPublicUrl(pic.profile_image_url), filter: pic.filter}));
-      console.log(d);
-      Array.from({length: 50-d.length}).forEach(i => {
-        d.push({src: 'blank'});
+      const d = data.map(pic => ({ src: getPublicUrl(pic.object_name), filter: pic.filter }));
+      Array(70-d.length).fill(0).forEach(() => {
+        d.push({ src: 'blank', filter: 'none' });
       });
-      setPicturesList(d.sort(() => Math.random() - 0.5));
+      console.log(d);
+      setPicturesList(d.sort((a, b) => Math.random() - 0.5));
     } catch (err) {
-      console.error('Error fetching trending sets:', err);
-    } 
+      console.error('Error fetching visitor images:', err);
+    }
   };
+
   useEffect(() => {
     fetchPortfolio();
   }, []);
+
+  const handleCapture = async (imageSrc, filter) => {
+    const imageBlob = dataURLtoBlob(imageSrc);
+    const fileName = `${Date.now()}_${fingerprint}.jpg`;
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('aakarshika-visitors')
+        .upload(fileName, imageBlob, {
+          cacheControl: '3600',
+          upsert: false
+        });
+      if (uploadError) throw uploadError;
+      const { error: insertError } = await supabase
+        .from('visitor_fingerprints')
+        .insert({
+          fingerprint,
+          object_name: fileName,
+          filter
+        });
+      if (insertError) throw insertError;
+      await fetchPortfolio();
+    } catch (err) {
+      console.error('Error uploading visitor picture:', err);
+    }
+  };
+
   // Custom scroll state
   const [scrollY, setScrollY] = useState(0);
   const [activeStopperId, setActiveStopperId] = useState(null); // Track which stopper is active
@@ -81,6 +117,7 @@ const  getPublicUrl = (filePath) => {
   };
 
   const photoLottieRef = useRef();
+  const clockLottieRef = useRef();
 
   useEffect(() => {
     const handleResize = () => setViewHeight(window.innerHeight);
@@ -92,12 +129,17 @@ const  getPublicUrl = (filePath) => {
   const aboutMeProgress = visibleSections.find(section => section.id === 'about-me')?.cumulativeProgress || 0;
   const photoAnim = calculateAnimation('photo', aboutMeProgress, photoAnimationSequence, viewHeight);
 
+  // Animate clock: fade in at 10%, fade out at 80%, move left to right
+
+  const clockX = Math.min(1, Math.max(0, (60 - 10) / 70)) * (window.innerWidth - 200); // 200px margin
+  const clockY = Math.min(1, Math.max(0, (aboutMeProgress - 10) / 70)) * (window.innerHeight - 200) - 100; // 200px margin
+
   // Define stoppers configuration
   const stoppersConfig = [
     {
       id: 'hero',
       componentType: 'none',
-      componentFun: () => <HeroSection />,
+      componentFun: () => <HeroSection progress={aboutMeProgress} />,
       ref: useRef(null)
     },
     {
@@ -133,7 +175,7 @@ const  getPublicUrl = (filePath) => {
     {
       id: 'interactive',
       componentType: 'none',
-      componentFun: () => <PicSection progress={cumulativeProgress} picturesList={picturesList} />,
+      componentFun: () => <PicSection progress={cumulativeProgress} pictures={picturesList} onCapture={handleCapture} />,
       ref: useRef(null)
     },
     {
@@ -190,7 +232,7 @@ const  getPublicUrl = (filePath) => {
       
       // Add waning/waxing information by comparing with previous data
       const sectionsWithTrend = visibleSectionsData.map(section => {
-        console.log('Section:', section);
+        // console.log('Section:', section);
         const previousSection = previousData.find(prev => prev.id === section.id);
         let trend = 'stable';
         
@@ -220,9 +262,9 @@ const  getPublicUrl = (filePath) => {
         );
       
       if (hasChanged) {
-        console.log('Currently visible sections:', sectionsWithTrend);
+        // console.log('Currently visible sections:', sectionsWithTrend);
         if (sectionsWithTrend.length > 0) {
-          console.log('Cumulative progress:', sectionsWithTrend[0].cumulativeProgress.toFixed(1) + '%');
+          // console.log('Cumulative progress:', sectionsWithTrend[0].cumulativeProgress.toFixed(1) + '%');
         }
         setVisibleSections(sectionsWithTrend);
         // Update cumulative progress to the first section's progress (most visible)
@@ -240,7 +282,15 @@ const  getPublicUrl = (filePath) => {
     const timeoutId = setTimeout(updateVisibleSection, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [scrollY, visibleSections, cumulativeProgress]);
+  }, [scrollY]);
+
+  useEffect(() => {
+    console.log("visibleSections[0].visibilityPercentagevisibleSections[0].visibilityPercentage", visibleSections?.[0]?.visibilityPercentage)
+    if(visibleSections.length > 0 && visibleSections?.[0]?.visibilityPercentage > 90) {
+      console.log(visibleSections, "visibleSections ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ssssssss ");
+    }
+  }, [visibleSections]);
+
 
   // Custom scroll handler
   useEffect(() => {
@@ -277,12 +327,15 @@ const  getPublicUrl = (filePath) => {
       }
       
       // If we're in handoff mode, waste scroll events (only in exclusive mode)
-      if (isHandingOff && scrollWasteCountRef.current > 0) {
+      if ((isHandingOff && scrollWasteCountRef.current > 0) ) {
         console.log('Wasting scroll event, remaining:', scrollWasteCountRef.current - 1);
-        scrollWasteCountRef.current = scrollWasteCountRef.current - 1;
+        if(scrollWasteCountRef.current > 0) {
+          scrollWasteCountRef.current = scrollWasteCountRef.current - 1;
+        } else {
+          scrollWasteCountRef.current = 0;
+        }
         return;
       }
-      
       // Reset handoff state when waste count reaches 0
       if (isHandingOff && scrollWasteCountRef.current === 0) {
         console.log('Waste period ended, resuming vertical scroll');
@@ -376,6 +429,13 @@ const  getPublicUrl = (filePath) => {
         photoLottieRef.current.goToAndStop(frame, true);
       }
     }
+    if (clockLottieRef.current && clockLottieRef.current.getDuration) {
+      const totalFrames = clockLottieRef.current.getDuration(true);
+      const frame = Math.round((aboutMeProgress / 100) * (totalFrames - 1));
+      if (!isNaN(frame)) {
+        clockLottieRef.current.goToAndStop(frame, true);
+      }
+    }
   }, [aboutMeProgress]);
 
   return (
@@ -383,24 +443,71 @@ const  getPublicUrl = (filePath) => {
       ref={containerRef}
       className="fixed inset-0 bg-black text-white overflow-hidden"
     >
+    {/* Sticky Photo/Avatar */}
+    <motion.div 
+      className="fixed top-0 right-8  rounded-lg p-8 h-120 w-120 flex items-center justify-center z-40"
+      style={{ 
+        opacity: photoAnim.opacity, 
+        scale: photoAnim.scale,
+        y: photoAnim.y
+      }}
+    >
+      <Lottie
+        animationData={coderAnimation}
+        loop={false}
+        autoplay={false}
+        style={{ height: '500px', width: '500px', background: 'none' }}
+        lottieRef={photoLottieRef}
+      />
+    </motion.div>
+
       {/* Sticky Photo/Avatar */}
       <motion.div 
-        className="fixed top-0 right-8  rounded-lg p-8 h-120 w-120 flex items-center justify-center z-40"
-        style={{ 
-          opacity: photoAnim.opacity, 
-          scale: photoAnim.scale,
-          y: photoAnim.y
+        className="fixed top-0 left-0 rounded-lg p-8 h-100 w-100 flex items-center justify-center z-50"
+        style={{
+          opacity: aboutMeProgress < 10 ? 0 :  aboutMeProgress > 80 ? 0 :  1,
+          x: clockX,
+          y: clockY,
+          scale: aboutMeProgress < 10 ? 1 :  aboutMeProgress > 90 ? 0.1 :  1-((aboutMeProgress) /200),
+          pointerEvents: 'none', // so it doesn't block UI
+        }}
+        transition={{
+          duration: 0.6,
+          ease: "easeInOut"
         }}
       >
         <Lottie
-          animationData={coderAnimation}
+          animationData={clockAnimation}
           loop={false}
           autoplay={false}
-          style={{ height: '500px', width: '500px', background: 'none' }}
-          lottieRef={photoLottieRef}
+          style={{ height: '400px', width: '400px', background: 'none' }}
+          lottieRef={clockLottieRef}
         />
       </motion.div>
 
+      <motion.div 
+        className="fixed top-0 left-0 m-12 p-16 rounded-full  h-100 w-100 flex items-center justify-center z-50 "
+        style={{
+          opacity: aboutMeProgress < 10 ? 0 :  aboutMeProgress > 80 ? 0 :  1,
+          x: clockX,
+          y: clockY,
+          scale: aboutMeProgress < 10 ? 1 :  aboutMeProgress > 90 ? 0.1 :  1-((aboutMeProgress) /200),
+          pointerEvents: 'none', // so it doesn't block UI
+        }}
+        transition={{
+          duration: 0.6,
+          ease: "easeInOut"
+        }}
+      >
+        <div
+        className='rounded-full'
+          style={{ 
+            opacity: 0.5,
+            height: '250px', width: '200px', 
+            transform: 'rotate(25deg) translateX(18px) translateY(-18px)',
+            backgroundColor: 'rgb(142, 142, 142)', color: 'green' }}
+        />
+      </motion.div>
 
       <div 
         className="relative w-full"

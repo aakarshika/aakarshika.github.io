@@ -131,7 +131,7 @@ const AboutMeSection = ({ progress }) => {
             opacity: titleAnim.opacity, 
             
           }}
-          className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
+          className="text-6xl font-bold  mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
         >
           About Me
         </motion.h2>
@@ -161,9 +161,10 @@ const AboutMeSection = ({ progress }) => {
         <motion.div 
           style={{ 
             opacity: skillsAnim.opacity, 
-            
+            paddingRight: '500px',
+            paddingTop: '100px'
           }}
-          className="grid md:grid-cols-4 gap-4 pt-40"
+          className="grid md:grid-cols-4 gap-4"
         >
           <motion.div 
             style={{ 

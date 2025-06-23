@@ -10,7 +10,7 @@ export function calculateAnimation(elementKey, progress, photoAnimationSequence,
   };
 
   const { start, duration, initialScale, scaleIncrement } = config;
-  const minOpacity = 0.7;
+  const minOpacity = elementKey === 'clock' ? 0.3 : 0.7;
   // Fade-in logic
   const cappedProgress = Math.min(progress, 50);
   const elementProgress = cappedProgress >= start ? Math.min((cappedProgress - start) / duration, 1) : 0;
@@ -18,10 +18,11 @@ export function calculateAnimation(elementKey, progress, photoAnimationSequence,
 
   let opacity = easedProgress;
 
+  const progressThreshold = 30;
   // Fade-out logic for progress > 50
-  if (progress > 40) {
-    const fadeOutDuration = 30; // 80 - 50
-    const fadeOutProgress = Math.min((progress - 40) / fadeOutDuration, 1);
+  if (progress > progressThreshold) {
+    const fadeOutDuration =  elementKey === 'clock' ? 40 : 30; // 80 - 50
+    const fadeOutProgress = Math.min((progress - progressThreshold) / fadeOutDuration, 1);
     opacity = minOpacity - fadeOutProgress;
   }
 
@@ -43,7 +44,7 @@ export function checkStoppersInView(stoppersConfig) {
     const sectionHeight = rect.height;
     const sectionCenter = rect.top + sectionHeight / 2;
     const viewportCenter = windowHeight / 2;
-    const isCentered = Math.abs(sectionCenter - viewportCenter) < 50; // 50px tolerance
+    const isCentered = Math.abs(sectionCenter - viewportCenter) < 100; // 50px tolerance
     const isInStopper = rect.top <= 0 && rect.bottom >= 0 && isCentered;
 
     if (isInStopper) {

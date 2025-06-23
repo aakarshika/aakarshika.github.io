@@ -19,7 +19,7 @@ const SkillGraph = ({ isActive, onScrollHandoff }) => {
     handleUnhighlightLast
   } = useSkillsTree();
 
-  console.log('SkillGraph: isActive:', isActive);
+  // console.log('SkillGraph: isActive:', isActive);
   // Handle animation completion for both forward and backward directions
   const onAnimationComplete = (direction) => {
     if (direction === 'forward') {
@@ -73,7 +73,8 @@ const SkillGraph = ({ isActive, onScrollHandoff }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-20">
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full h-full flex flex-col"
+            ref={containerRef}>
       <div className="about-section container mx-auto px-6">
             <h2 className="text-6xl font-bold text-center pb-16 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
               Skills Gained Along The Way
@@ -81,7 +82,6 @@ const SkillGraph = ({ isActive, onScrollHandoff }) => {
           </div>
         <div className="flex-1 rounded-lg p-6">
           <div 
-            ref={containerRef}
             className="rounded-lg p-4 h-full"
             style={{ cursor: removingNodes.length > 0 ? 'ns-resize' : 'default' }}
           >

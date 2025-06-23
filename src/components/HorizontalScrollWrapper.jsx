@@ -21,7 +21,8 @@ const HorizontalScrollWrapper = ({
       onScrollHandoff(handoffDirection);
       setHandoffDirection(null);
     }
-  }, [handoffDirection, onScrollHandoff]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handoffDirection]);
 
   // Handle horizontal scroll when section is active
   useEffect(() => {
@@ -39,17 +40,6 @@ const HorizontalScrollWrapper = ({
         const maxScroll = -(window.innerWidth * (slideCount - 1));
         const limitedX = Math.max(maxScroll, Math.min(0, newX));
         
-        console.log('Scroll debug:', { 
-          prev, 
-          deltaX, 
-          newX, 
-          limitedX, 
-          maxScroll, 
-          deltaY: e.deltaY,
-          atEnd: prev <= maxScroll && e.deltaY > 0,
-          atStart: prev >= 0 && e.deltaY < 0,
-          isAtBoundary
-        });
         
         // Reset boundary flag if we're moving away from boundary
         if (limitedX !== prev) {

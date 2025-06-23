@@ -5,7 +5,6 @@ import { Camera } from 'lucide-react';
 import AllPicturesTwinkling from './AllPicturesTwinkling';
 // import ImageFilters from 'react-image-filters'; // Not needed for live preview
 
-const LOCAL_STORAGE_KEY = 'tandl_pictures';
 
 const FILTERS = {
   none: { label: 'None', setup: (seriously, src, target) => { target.source = src; } },
@@ -68,31 +67,24 @@ function getPictureKey(pic, idx) {
   return String(idx);
 }
 
-const TandLPictureSection = ({progress, picturesList}) => {
+// Utility: Convert dataURL to Blob
+function dataURLtoBlob(dataurl) {
+  const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+  for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+  return new Blob([u8arr], { type: mime });
+}
+
+const TandLPictureSection = ({ progress, pictures, onCapture }) => {
     const [cameraOpen, setCameraOpen] = useState(false);
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
-    const [pictures, setPictures] = useState(picturesList);
     const [filter, setFilter] = useState('sepia');
     const seriouslyInstance = useRef(null);
     const videoSource = useRef(null);
     const targetNode = useRef(null);
-    // Stable random seeds for each picture
-
-    // Fetch pictures from localStorage on mount
-    // useEffect(() => {
-    //     const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-    //     if (stored) setPictures(JSON.parse(stored));
-    // }, []);
-
-    // Save pictures to localStorage when updated
-    // useEffect(() => {
-    //     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(pictures));
-    // }, [pictures]);
 
     // Setup Seriously.js pipeline for live preview
     useEffect(() => {
-      console.log(cameraOpen);
         if (!cameraOpen) return;
         if (!window.Seriously) return;
         if (!webcamRef.current || !canvasRef.current) return;
@@ -122,26 +114,16 @@ const TandLPictureSection = ({progress, picturesList}) => {
         };
     }, [cameraOpen, filter]);
 
-    // Capture from canvas (filtered)
-    const capture = useCallback(() => {
+    // Capture from canvas (filtered) and call onCapture
+    const handleCapture = useCallback(() => {
         if (canvasRef.current) {
-            console.log('Capture called. Canvas:', canvasRef.current);
             requestAnimationFrame(() => {
                 const imageSrc = canvasRef.current.toDataURL('image/jpeg');
-                console.log('Captured image data URL length:', imageSrc.length);
-                setPictures(prev => [
-                    { src: imageSrc, filter },
-                    ...prev
-                ]);
-                setTimeout(() => {
-                    console.log('Closing camera after capture.');
-                    setCameraOpen(false);
-                }, 120);
+                if (onCapture) onCapture(imageSrc, filter);
+                setTimeout(() => setCameraOpen(false), 120);
             });
-        } else {
-            console.log('No canvas to capture from.');
         }
-    }, [filter]);
+    }, [filter, onCapture]);
 
     return (
         <div className="tstart relative h-full w-full items-center justify-center">
@@ -179,7 +161,7 @@ const TandLPictureSection = ({progress, picturesList}) => {
                     />
                     <button
                         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition cursor-pointer"
-                        onClick={capture}
+                        onClick={handleCapture}
                     >
                         Capture
                     </button>
@@ -191,8 +173,10 @@ const TandLPictureSection = ({progress, picturesList}) => {
                     </button>
                 </div>
             ) : (
-                <div className="p-12 h-96 flex items-center justify-center gap-4" onClick={() => setCameraOpen(true)}>
+                <div className="p-12 h-96 flex items-center justify-center gap-4 z-10" onClick={() => setCameraOpen(true)}>
+                  <div className='flex flex-col items-center justify-center bg-gradient-to-b from-black to-gray-900 rounded-lg p-12 gap-4 z-10'>
                     <Camera className="w-10 h-10" />
+                </div>
                 </div>
             )}
         </div>

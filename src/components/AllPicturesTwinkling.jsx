@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 
 const IMG_SIZE = 58; // px
 const GRID_COLS = 10;
-const TWINKLE_COUNT = 10; // Number of nodes to twinkle at once
+const TWINKLE_COUNT = 30; // Number of nodes to twinkle at once
 const TWINKLE_OUT_DURATION = 0.35; // seconds
-const TWINKLE_IN_DURATION = 0.35; // seconds
-const TWINKLE_IDLE_DELAY = 350; // ms between cycles
+const TWINKLE_IN_DURATION = 0.5; // seconds
+const TWINKLE_IDLE_DELAY = 100; // ms between cycles
 
 const getPictureKey = (pic, idx) => {
   if (typeof pic === 'string') return pic;
@@ -100,7 +100,7 @@ const AllPicturesTwinkling = ({ pictures, progress = 0, size = { width: 210, hei
 
   return (
     <div className="relative w-full h-full">
-      <div className={`h-full w-full grid grid-cols-${GRID_COLS} gap-4`}>
+      <div className="grid grid-cols-10 gap-4 w-full min-w-[724px]">
         {picOrder.map((picIdx, idx) => {
           const pic = pictures[picIdx];
           const isTwinkle = twinkleIdxs.includes(idx);

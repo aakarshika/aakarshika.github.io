@@ -1,18 +1,24 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
-const HeroSection = () => {
+const HeroSection = ({progress}) => {
   return (
         
     <div className="h-screen relative flex items-center justify-center">
-    <div className="text-center z-10">
-      <h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
+    <motion.div className="text-center z-10"
+    style={{
+      y: progress*5,
+      x: progress*-10,
+    }}
+    >
+      <motion.h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
         Aakarshika 
-      </h1>
-      <p className="text-2xl text-gray-300 mb-8">
+      </motion.h1>
+      <motion.p className="text-2xl text-gray-300 mb-8">
         Software Developer, not Designer
-      </p>
-      <div className="w-24 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto"></div>
-    </div>
+      </motion.p>
+      <motion.div className="w-24 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto"></motion.div>
+    </motion.div>
     
     {/* Floating Background Elements */}
     <div className="absolute top-20 left-20 w-32 h-32 bg-purple-500 rounded-full opacity-20 blur-xl"></div>
