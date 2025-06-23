@@ -4,6 +4,7 @@ import {
   getNodeTargetPosition, 
   interpolatePosition 
 } from '../../utils/treeUtils';
+import { setupScrollEventListeners } from '../../utils/scrollEventUtils';
 
 /**
  * Position calculation utilities
@@ -97,8 +98,6 @@ export function useScrollAnimation({
   const [scrollDirection, setScrollDirection] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [completionTrigger, setCompletionTrigger] = useState(null);
-  const [bla, setBla] = useState(false);
-  const blaRef = useRef(false); // Add ref to track bla state immediately
   // Cache node positions when removingNodes or positioning changes
   const nodePositions = useMemo(() => {
     if (removingNodes.length === 0 || !positioning) {
@@ -115,16 +114,10 @@ export function useScrollAnimation({
     }
   }, [completionTrigger, onAnimationComplete]);
 
-  // Sync bla ref with bla state
-  useEffect(() => {
-    blaRef.current = bla;
-  }, [bla]);
-
   // Set up wheel event listener with passive: false
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
 
     const wheelHandler = (e) => {
       // console.log("wheelHandler", e.pageY);
@@ -134,7 +127,6 @@ export function useScrollAnimation({
         //   return;
         // }
       // console.log("doing stuff");
-      e.preventDefault();
       
       // Direct correlation between deltaY and scroll progress
       const delta = e.deltaY;
@@ -146,22 +138,14 @@ export function useScrollAnimation({
       setScrollDirection(newDirection);
       setScrollProgress(prev => {
         const newProgress = prev + progressChange;
-        // console.log(newDirection==='merging'? "<<<------" : "------>>>", newProgress);
         if (newDirection === 'merging' && removingNodes.length === 0 && newProgress>=1.0) {
-          // console.log("************<<<");
-          setBla(true);
-          blaRef.current = true;
+          console.log("REACHED START");
           return 1;
         }
         if (newDirection === 'splitting' && highlightedNodes.length === 0 && newProgress<=0.0) {
-          // console.log(">>>-====-=-=-=--====-");
-          setBla(true);
-          blaRef.current = true;
+          console.log("REACHED END");
           return 0;
         }
-        setBla(false);
-        blaRef.current = false;
-
         // Check for forward completion (progress reaches 1.0)
         if (newDirection === 'merging' && newProgress >= 1.0) {
           // setIsAnimating(true);
@@ -179,13 +163,13 @@ export function useScrollAnimation({
       });
     };
 
-    // Add event listener with passive: false to allow preventDefault
-    container.addEventListener('wheel', wheelHandler, { passive: false });
+    // Use the utility function to set up event listeners
+    const cleanup = setupScrollEventListeners(container, {
+      wheel: wheelHandler
+    });
 
-    return () => {
-      container.removeEventListener('wheel', wheelHandler);
-    };
-  }, [removingNodes, positioning, nodePositions, onAnimationComplete, bla]);
+    return cleanup;
+  }, [removingNodes, positioning, nodePositions, onAnimationComplete, highlightedNodes]);
 
   // Calculate animated position for removing nodes using cached positions
   // const getAnimatedPosition = (node) => {
@@ -244,7 +228,6 @@ export function useScrollAnimation({
     isAnimating,
     getAnimatedPosition,
     getRemovingNodeOpacity,
-    containerRef,
     PositionCalculator, // Export for use in other components
     nodePositions // Export for debugging/inspection
   };
