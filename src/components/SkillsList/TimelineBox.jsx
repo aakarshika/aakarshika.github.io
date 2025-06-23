@@ -70,7 +70,7 @@ const TimelineBox = ({
       style={{
         left: `${x}px`,
         top: `${timelineBox.y}px`,
-        width: `${width}px`,
+        width: `${timelineBox.name == 'root' ? 0 : width}px`,
         height: `${timelineBox.height}px`,
         opacity:isParentOfRemoving ? !(nodeChildrenHighlighted > 0) ? 0 : 1 : 1,
         backgroundColor: rainbowColor,
@@ -81,7 +81,7 @@ const TimelineBox = ({
       title={`${timelineBox.company || 'Unknown Company'} - ${timelineBox.expertise} (${formatDate(timelineBox.startDate)} to ${formatDate(timelineBox.endDate)})`}
     >
       {/* Show content only if box is tall enough */}
-      {timelineBox.height > 20 && (
+      {timelineBox.height > 20 && timelineBox.name != 'root' && (
         <div className="flex flex-col h-full justify-center items-center text-center">
           <div className="text-xs font-semibold text-white leading-tight">
             {timelineBox.name}

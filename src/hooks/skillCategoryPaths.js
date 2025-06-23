@@ -74,5 +74,80 @@ export const skillCategoryPaths = [
   'mind_and_body.health.fitness.gym',
   'mind_and_body.health.fitness.running',
   'mind_and_body.leisure.art.crafting',
-  'mind_and_body.leisure.art.painting'
-];
+  'mind_and_body.leisure.art.painting',
+
+    // Backend Technologies
+    'tech.backend.nodejs',
+    'tech.backend.python',
+    'tech.backend.api.rest',
+  
+    // Frontend Technologies
+    'tech.frontend.reactjs',
+    'tech.frontend.angular',
+    'tech.frontend.kotlin',
+    'tech.frontend.swiftui',
+    'tech.frontend.typescript',
+  
+    'tech.frontend.realtime.supabase_subscriptions',
+    'tech.frontend.realtime.websocket',
+    'tech.frontend.realtime.chartjs',
+  
+    // UI/UX & Tooling
+    'tech.frontend.react.tailwind',
+    'tech.frontend.react.framer_motion',
+    'tech.frontend.react.pwa',
+    'tech.frontend.react.responsive_design',
+    'tech.frontend.a_b_testing',
+    'tech.frontend.react.scroll_animation',
+    // Mobile & Cross-Platform
+    'tech.frontend.mobile.kotlin_multiplatform',
+    'tech.frontend.mobile.android',
+    'tech.frontend.mobile.swiftui',
+    'tech.frontend.mobile.capacitor',
+    'tech.frontend.mobile.react_native',
+  
+    // Databases
+    'tech.database.postgresql',
+    'tech.database.postgresql.rls',
+    'tech.database.mongodb',
+    'tech.database.query_optimization',
+    'tech.database.supabase',
+  
+    // Cloud & DevOps
+    'tech.devops.aws',
+    'tech.devops.aws.ec2',
+    'tech.devops.aws.lambda',
+    'tech.devops.aws.s3',
+    'tech.devops.aws.kinesis',
+    'tech.devops.aws.rds',
+    'tech.devops.cicd.jenkins',
+    'tech.devops.container.docker',
+  
+    // Machine Learning & AI
+    'tech.machine_learning',
+    'tech.machine_learning.pytorch',
+    'tech.machine_learning.huggingface',
+    'tech.machine_learning.transformers',
+    'tech.machine_learning.nlp',
+    'tech.machine_learning.opencv',
+    'tech.machine_learning.fine_tuning',
+  
+    // Architecture & Patterns
+    'tech.backend.architecture.mvvm',
+    'tech.backend.architecture.microservices',
+
+    // 3D & Visual Computing
+    'tech.graphics.unity',
+    'tech.graphics.blender',
+
+  
+    // Realtime & Interaction
+  
+    // Project & Delivery
+    'agile.process.agile',
+    'agile.process.scrum',
+    'agile.process.code_review',
+    'agile.process.beta_testing',
+    'agile.process.crash_reporting.sentry'
+  ];
+  

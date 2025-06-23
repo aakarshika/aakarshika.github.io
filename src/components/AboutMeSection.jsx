@@ -131,9 +131,9 @@ const AboutMeSection = ({ progress }) => {
             opacity: titleAnim.opacity, 
             
           }}
-          className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+          className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
         >
-          About Me {progress ? `(${progress}%)` : ''}
+          About Me
         </motion.h2>
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>

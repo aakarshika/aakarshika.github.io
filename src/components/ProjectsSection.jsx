@@ -30,7 +30,7 @@ const ProjectsSection = () => {
               <span className="px-3 py-1 bg-cyan-600 rounded-full text-sm">Tailwind</span>
               <span className="px-3 py-1 bg-pink-600 rounded-full text-sm">Framer Motion</span>
             </div>
-            <a href="#" className="text-cyan-400 hover:text-cyan-300 font-semibold">
+            <a href="https://twirlyapp.com" target="_blank" className="text-cyan-400 hover:text-cyan-300 font-semibold">
               View Live Site →
             </a>
           </div>
@@ -58,8 +58,8 @@ const ProjectsSection = () => {
               <span className="px-3 py-1 bg-indigo-600 rounded-full text-sm">GPT</span>
               <span className="px-3 py-1 bg-green-600 rounded-full text-sm">ML</span>
             </div>
-            <a href="#" className="text-pink-400 hover:text-pink-300 font-semibold">
-              View Live Site →
+            <a href="https://github.com/aakarshika/daywisehub" target="_blank" className="text-pink-400 hover:text-pink-300 font-semibold">
+              View App Code →
             </a>
           </div>
         </div>
@@ -80,12 +80,6 @@ const ProjectsSection = () => {
               <span className="px-3 py-1 bg-teal-600 rounded-full text-sm">Scikit-learn</span>
               <span className="px-3 py-1 bg-purple-600 rounded-full text-sm">D3.js</span>
             </div>
-            <a href="#" className="text-green-400 hover:text-green-300 font-semibold">
-              View Live Site →
-            </a>
-          </div>
-          <div className="bg-gray-800 rounded-lg h-80 flex items-center justify-center">
-            <span className="text-gray-500">[Coder Kids Platform Screenshot]</span>
           </div>
         </div>
       </div>

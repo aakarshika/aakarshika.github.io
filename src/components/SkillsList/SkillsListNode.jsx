@@ -82,6 +82,21 @@ const nodeChildrenHighlighted = node.childrenHighlighted;
   return (
     <>
       {/* Main node box */}
+      {node.name == 'root' && (
+        <div className="absolute h-full w-full flex items-center justify-center " 
+        style={{ 
+          height: `100%`,
+          transition: 'all 0.3s ease'
+        }}>
+          <div className="text-2xl w-60 rounded-lg p-3 shadow-lg items-center justify-center flex font-semibold text-white leading-tight text-center"
+        style={{ 
+          height: `100%`,
+          backgroundColor: rainbowColor,
+        }}>
+            Awesomeness
+          </div>
+        </div>
+      )}
       
       {/* Timeline boxes */}
       {timelineBoxes.map((timelineBox, boxIndex) => (
@@ -102,7 +117,7 @@ const nodeChildrenHighlighted = node.childrenHighlighted;
       style={{ 
         height: `100%`,
         opacity: isParentOfRemoving ? !(nodeChildrenHighlighted > 0) ? 0 : getRemovingNodeOpacity(node) : 1,
-        width: `12px`,
+        width: `${node.name == 'root' ? 0 : 12}px`,
         left: `${(animatedX+adjustedBoxWidth/2)-6 }px`,
         top: `${minY}px`,
         backgroundColor: rainbowColor,

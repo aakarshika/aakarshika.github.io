@@ -1,274 +1,92 @@
 [
   {
-    "Skill": "Django",
-    "Start Date": "2014-12-01 00:00:00",
-    "End Date": "2016-04",
-    "Expertise Level Achieved": "Beginner",
-    "1 line Description on how I used it": "Built Neuron\u2019s website and REST APIs using Django",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "AngularJS",
-    "Start Date": "2015-03-01 00:00:00",
-    "End Date": "2016-04",
-    "Expertise Level Achieved": "Beginner",
-    "1 line Description on how I used it": "Used for front-end in Neuron\u2019s website",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "NLP",
-    "Start Date": "2015-12-01 00:00:00",
-    "End Date": "2016-04",
-    "Expertise Level Achieved": "Beginner",
-    "1 line Description on how I used it": "Integrated NLP models for Ad Recommender System",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "Python",
-    "Start Date": "2015-12-01 00:00:00",
-    "End Date": "2016-04",
-    "Expertise Level Achieved": "Beginner",
-    "1 line Description on how I used it": "Developed backend with Django and NLP integration",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "Python",
-    "Start Date": "2016-05-01 00:00:00",
-    "End Date": "2017-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Built RESTful APIs and chatbot services",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "Django REST Framework",
-    "Start Date": "2016-05-01 00:00:00",
-    "End Date": "2017-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Designed RESTful services for developer platform",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "ReactJS",
-    "Start Date": "2016-05-01 00:00:00",
-    "End Date": "2017-05",
-    "Expertise Level Achieved": "Beginner",
-    "1 line Description on how I used it": "Built chatbot admin panel",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "MySQL",
-    "Start Date": "2016-05-01 00:00:00",
-    "End Date": "2017-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Used as a primary database in chatbot project",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "MySQL",
-    "Start Date": "2024-01-01 00:00:00",
-    "End Date": "2025-01",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Used as a primary database in chatbot project",
-    "Where Tag": "Twirly"
-  },
-  {
-    "Skill": "MongoDB",
-    "Start Date": "2016-05-01 00:00:00",
-    "End Date": "2017-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Used for storing survey data in chatbot project",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "Jenkins",
-    "Start Date": "2016-05-01 00:00:00",
-    "End Date": "2017-05",
-    "Expertise Level Achieved": "Beginner",
-    "1 line Description on how I used it": "Used for CI/CD pipelines",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "Python",
-    "Start Date": "2016-05-01 00:00:00",
-    "End Date": "2017-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Created RESTful services and chatbot backend",
-    "Where Tag": "Neuron"
-  },
-  {
-    "Skill": "Python",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Built data pipelines and testing tools using Python",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Apache Kafka",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Used for real-time data streaming",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Airflow",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Used to orchestrate data pipeline workflows",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "AWS",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "AWS",
-    "Start Date": "2014-06-01 00:00:00",
-    "End Date": "2016-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "AWS",
-    "Start Date": "2020-06-01 00:00:00",
-    "End Date": "2024-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
-    "Where Tag": "GoDaddy"
-  },
-  {
-    "Skill": "Gym",
-    "Start Date": "2018-01-01 00:00:00",
-    "End Date": "2026-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
-    "Where Tag": "GoDaddy"
-  },
-  {
-    "Skill": "Airflow",
-    "Start Date": "2020-06-01 00:00:00",
-    "End Date": "2024-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Used AWS Redshift, S3, Lambda, EMR for big data pipelines",
-    "Where Tag": "GoDaddy"
-  },
-  {
-    "Skill": "Redshift",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Managed multi-node Redshift clusters",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Pytest",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Implemented unit testing for pipelines",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Running",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Implemented unit testing for pipelines",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Localstack",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Beginner",
-    "1 line Description on how I used it": "Used for AWS testing",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Apache Spark",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Processed JSON to Parquet on AWS EMR",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Running",
-    "Start Date": "2017-06-01 00:00:00",
-    "End Date": "2019-06",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Processed JSON to Parquet on AWS EMR",
-    "Where Tag": "Delhivery"
-  },
-  {
-    "Skill": "Python",
-    "Start Date": "2020-01-01 00:00:00",
-    "End Date": "2021-05",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Built ML models for emotion recognition",
-    "Where Tag": "USF"
-  },
-  {
-    "Skill": "Machine Learning",
-    "Start Date": "2020-01-01 00:00:00",
-    "End Date": "2021-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Built emotion recognition models using ML",
-    "Where Tag": "USF"
-  },
-  {
-    "Skill": "Crafting",
-    "Start Date": "2020-01-01 00:00:00",
-    "End Date": "2021-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Built emotion recognition models using ML",
-    "Where Tag": "USF"
-  },
-  {
-    "Skill": "Computer Vision",
-    "Start Date": "2020-01-01 00:00:00",
-    "End Date": "2021-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Applied CV techniques for emotion detection",
-    "Where Tag": "USF"
-  },
-  {
-    "Skill": "Teaching",
-    "Start Date": "2020-08-01 00:00:00",
-    "End Date": "2021-05",
-    "Expertise Level Achieved": "Intermediate",
-    "1 line Description on how I used it": "Graded and guided students in CS coursework",
-    "Where Tag": "USF"
-  },
-  {
-    "Skill": "API",
-    "Start Date": "2021-06-01 00:00:00",
+    "Skill": "node_js",
+    "Start Date": "2019-04",
     "End Date": "2025-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Developed scalable systems and APIs at GoDaddy",
-    "Where Tag": "GoDaddy"
+    "Expertise Level Achieved": "Expert"
   },
   {
-    "Skill": "Python",
-    "Start Date": "2021-06-01 00:00:00",
+    "Skill": "postgresql",
+    "Start Date": "2019-04",
     "End Date": "2025-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Developed scalable APIs and backend systems",
-    "Where Tag": "GoDaddy"
+    "Expertise Level Achieved": "Expert"
   },
   {
-    "Skill": "Painting",
-    "Start Date": "2021-06-01 00:00:00",
+    "Skill": "react",
+    "Start Date": "2020-01",
     "End Date": "2025-06",
-    "Expertise Level Achieved": "Expert",
-    "1 line Description on how I used it": "Developed scalable APIs and backend systems",
-    "Where Tag": "GoDaddy"
+    "Expertise Level Achieved": "Advanced"
+  },
+  {
+    "Skill": "kotlin_multiplatform",
+    "Start Date": "2023-10",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate"
+  },
+  {
+    "Skill": "android",
+    "Start Date": "2015-06",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Advanced"
+  },
+  {
+    "Skill": "huggingface",
+    "Start Date": "2023-10",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate"
+  },
+  {
+    "Skill": "aws",
+    "Start Date": "2019-04",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Advanced"
+  },
+  {
+    "Skill": "typescript",
+    "Start Date": "2020-01",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate"
+  },
+  {
+    "Skill": "angular",
+    "Start Date": "2019-04",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Advanced"
+  },
+  {
+    "Skill": "swiftui",
+    "Start Date": "2022-06",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Beginner"
+  },
+  {
+    "Skill": "machine_learning",
+    "Start Date": "2016-01",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Advanced"
+  },
+  {
+    "Skill": "unity",
+    "Start Date": "2021-06",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Beginner"
+  },
+  {
+    "Skill": "blender",
+    "Start Date": "2021-06",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Beginner"
+  },
+  {
+    "Skill": "python",
+    "Start Date": "2016-01",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Advanced"
+  },
+  {
+    "Skill": "mvvm",
+    "Start Date": "2020-01",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate"
   }
 ]

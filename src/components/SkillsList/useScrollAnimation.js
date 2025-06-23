@@ -139,7 +139,7 @@ export function useScrollAnimation({
       }
 
       const delta = e.deltaY;
-      const scrollSensitivity = 0.01;
+      const scrollSensitivity = 0.06;
       const progressChange = delta * scrollSensitivity;
       
       const newDirection = delta > 0 ? 'merging' : 'splitting';

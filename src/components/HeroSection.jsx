@@ -5,7 +5,7 @@ const HeroSection = () => {
         
     <div className="h-screen relative flex items-center justify-center">
     <div className="text-center z-10">
-      <h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+      <h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
         Aakarshika 
       </h1>
       <p className="text-2xl text-gray-300 mb-8">
