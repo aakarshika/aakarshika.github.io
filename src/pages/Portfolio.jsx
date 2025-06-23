@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import ProjectsSection from '../components/ProjectsSection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import VeeSection from '../components/VeeSection';
@@ -11,6 +12,7 @@ import SkillGraph from '../components/SkillGraph';
 const Portfolio = () => {
   const stoppersListRef = useRef([]);
   const containerRef = useRef(null);
+  const [viewHeight, setViewHeight] = useState(0);
   
   // Custom scroll state
   const [scrollY, setScrollY] = useState(0);
@@ -18,9 +20,67 @@ const Portfolio = () => {
   const [isHandingOff, setIsHandingOff] = useState(false);
   const scrollWasteCountRef = useRef(0);
   
+  // Track currently visible section
+  const [visibleSections, setVisibleSections] = useState([]);
+  const previousVisibleSectionsRef = useRef([]); // Store previous visibility data for comparison
+  
+  // Add cumulative progress tracking
+  const [cumulativeProgress, setCumulativeProgress] = useState(0);
+  
   // Scroll mode control
   const [scrollParallelly, setScrollParallelly] = useState(false); // false = stop vertical during horizontal, true = allow both
   
+  // Animation sequence for the photo
+  const photoAnimationSequence = {
+    photo: {
+      start: 0, // Start animation at 20% of about-me progress
+      duration: 20, // Animation duration
+      initialScale: 0.9,
+      scaleIncrement: 0.1
+    }
+  };
+
+  useEffect(() => {
+    const handleResize = () => setViewHeight(window.innerHeight);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Calculate animation values for the photo
+  const calculateAnimation = (elementKey, progress) => {
+    const config = photoAnimationSequence[elementKey];
+    if (!config || progress === undefined) return { 
+      opacity: 0, 
+      scale: config?.initialScale || 1,
+      y: 0
+    };
+
+    const { start, duration, initialScale, scaleIncrement } = config;
+    
+    // Fade-in logic
+    const cappedProgress = Math.min(progress, 50);
+    const elementProgress = cappedProgress >= start ? Math.min((cappedProgress - start) / duration, 1) : 0;
+    const easedProgress = 1 - Math.pow(1 - elementProgress, 3);
+    
+    let opacity = easedProgress;
+    
+    // Fade-out logic for progress > 50
+    if (progress > 50) {
+      const fadeOutDuration = 30; // 80 - 50
+      const fadeOutProgress = Math.min((progress - 50) / fadeOutDuration, 1);
+      opacity = 1 - fadeOutProgress;
+    }
+    
+    const scale = cappedProgress >= start ? initialScale + (easedProgress * scaleIncrement) : initialScale;
+    const y = (progress / 100) * (viewHeight - 240); // 240 is h-60
+
+    return { opacity, scale, y };
+  };
+
+  const aboutMeProgress = visibleSections.find(section => section.id === 'about-me')?.cumulativeProgress || 0;
+  const photoAnim = calculateAnimation('photo', aboutMeProgress);
+
   // Define stoppers configuration
   const stoppersConfig = [
     {
@@ -32,7 +92,7 @@ const Portfolio = () => {
     {
       id: 'about-me', 
       componentType: 'none',
-      componentFun: () => <AboutMeSection />,
+      componentFun: () => <AboutMeSection progress={aboutMeProgress} />,
       ref: useRef(null)
     },
     {
@@ -129,6 +189,126 @@ const Portfolio = () => {
     }
     return null;
   };
+
+  // Function to check which section is currently visible on screen
+  const checkVisibleSection = () => {
+    const windowHeight = window.innerHeight;
+    const visibleSections = [];
+
+    for (const section of stoppersConfig) {
+      if (!section.ref.current) continue;
+      
+      const rect = section.ref.current.getBoundingClientRect();
+      
+      // Calculate how much of the section is visible
+      const visibleTop = Math.max(0, Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0));
+      const visibleHeight = Math.max(0, visibleTop);
+      const sectionHeight = rect.height ;
+      const visibilityRatio = visibleHeight / sectionHeight;
+      
+      // If more than 0% of the section is visible, include it in the list
+      if (visibilityRatio > 0) {
+        // Calculate cumulative progress for this section (0-100)
+        let cumulativeProgress = 0;
+        
+        // Calculate progress based on section's journey through the viewport
+        // Start from 0 when section top enters viewport, reach 100 when section bottom leaves viewport
+        const sectionTop = rect.top;
+        const sectionBottom = rect.bottom;
+        const viewportHeight = windowHeight;
+        
+        if (sectionTop < viewportHeight && sectionBottom > 0) {
+          // Section is in viewport
+          if (sectionTop <= 0) {
+            // Section top has passed viewport top - calculate progress from 0 to 100
+            const totalJourney = viewportHeight + rect.height;
+            const distanceTraveled = Math.abs(sectionTop) + rect.height;
+            cumulativeProgress = Math.min(100, (distanceTraveled / totalJourney) * 100);
+          } else {
+            // Section is entering - calculate progress from 0 to 100
+            const totalJourney = viewportHeight + rect.height;
+            const distanceTraveled = rect.height - sectionTop;
+            cumulativeProgress = Math.max(0, (distanceTraveled / totalJourney) * 100);
+          }
+        }
+        
+        // Ensure cumulative progress is between 0 and 100
+        cumulativeProgress = Math.max(0, Math.min(100, cumulativeProgress));
+        
+        visibleSections.push({
+          id: section.id,
+          top: rect.top,
+          sectionHeight: visibleHeight,
+          visibilityPercentage: Math.round(visibilityRatio * 100),
+          cumulativeProgress: Math.round(cumulativeProgress)
+        });
+      }
+    }
+    
+    // Sort by visibility percentage (highest first)
+    return visibleSections.sort((a, b) => b.visibilityPercentage - a.visibilityPercentage);
+  };
+
+  // Update visible section whenever scroll position changes
+  useEffect(() => {
+    const updateVisibleSection = () => {
+      const result = checkVisibleSection();
+      const visibleSectionsData = result;
+      const previousData = previousVisibleSectionsRef.current;
+      
+      // Add waning/waxing information by comparing with previous data
+      const sectionsWithTrend = visibleSectionsData.map(section => {
+        console.log('Section:', section);
+        const previousSection = previousData.find(prev => prev.id === section.id);
+        let trend = 'stable';
+        
+        if (previousSection) {
+          if (section.visibilityPercentage > previousSection.visibilityPercentage) {
+            trend = 'waxing';
+          } else if (section.visibilityPercentage < previousSection.visibilityPercentage) {
+            trend = 'waning';
+          }
+        } else {
+          // New section appearing
+          trend = 'waxing';
+        }
+        
+        return {
+          ...section,
+          trend
+        };
+      });
+      
+      const hasChanged = sectionsWithTrend.length !== visibleSections.length ||
+        sectionsWithTrend.some((section, index) => 
+          !visibleSections[index] || 
+          section.id !== visibleSections[index].id || 
+          section.visibilityPercentage !== visibleSections[index].visibilityPercentage ||
+          section.trend !== visibleSections[index].trend
+        );
+      
+      if (hasChanged) {
+        console.log('Currently visible sections:', sectionsWithTrend);
+        if (sectionsWithTrend.length > 0) {
+          console.log('Cumulative progress:', sectionsWithTrend[0].cumulativeProgress.toFixed(1) + '%');
+        }
+        setVisibleSections(sectionsWithTrend);
+        // Update cumulative progress to the first section's progress (most visible)
+        if (sectionsWithTrend.length > 0) {
+          setCumulativeProgress(sectionsWithTrend[0].cumulativeProgress);
+        }
+        previousVisibleSectionsRef.current = visibleSectionsData; // Store current data for next comparison
+      }
+    };
+
+    // Update immediately
+    updateVisibleSection();
+    
+    // Also update after a short delay to ensure DOM is updated
+    const timeoutId = setTimeout(updateVisibleSection, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [scrollY, visibleSections, cumulativeProgress]);
 
   // Custom scroll handler
   useEffect(() => {
@@ -250,6 +430,47 @@ const Portfolio = () => {
       ref={containerRef}
       className="fixed inset-0 bg-black text-white overflow-hidden"
     >
+      {/* Sticky Photo/Avatar */}
+      <motion.div 
+        className="fixed top-0 right-8 bg-gray-800 rounded-lg p-8 h-60 w-60 flex items-center justify-center z-40"
+        style={{ 
+          opacity: photoAnim.opacity, 
+          scale: photoAnim.scale,
+          y: photoAnim.y
+        }}
+      >
+        <span className="text-gray-500 text-lg">[Your Photo Here]</span>
+      </motion.div>
+
+      {/* Visual indicator for currently visible section */}
+      {visibleSections.length > 0 && (
+        <div className="fixed top-4 left-4 z-50 bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg">
+          <div className="text-sm font-semibold">Visible Sections:</div>
+          {visibleSections.map((section, index) => (
+            <div key={section.id} className="text-sm">
+              <span className="font-medium">{section.id}</span>
+              <span className="text-yellow-300 ml-2">({section.visibilityPercentage}%)</span>
+              <span className="text-green-300 ml-2">Cum: {section.cumulativeProgress}%</span>
+              <span className={`ml-2 ${
+                section.trend === 'waxing' ? 'text-green-300' : 
+                section.trend === 'waning' ? 'text-red-300' : 
+                'text-gray-300'
+              }`}>
+                {section.trend === 'waxing' ? '↗' : 
+                 section.trend === 'waning' ? '↘' : 
+                 '→'}
+              </span>
+              <span className="text-gray-300 ml-2">{section.top}/{section.sectionHeight}</span>
+            </div>
+          ))}
+          {activeStopperId && (
+            <div className="text-xs text-yellow-300 mt-1 border-t border-yellow-300 pt-1">
+              Stopper Active: {activeStopperId}
+            </div>
+          )}
+        </div>
+      )}
+
       <div 
         className="relative w-full"
         style={{
