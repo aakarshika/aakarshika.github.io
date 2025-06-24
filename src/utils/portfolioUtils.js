@@ -114,10 +114,11 @@ export function checkVisibleSection(stoppersConfig) {
 }
 
 // Helper to check if contact section is fully visible
-export function isContactFullyVisible(visibleSections) {
-  const contactSection = visibleSections.find(
-    (section) => section.id === 'contact'
-  );
-  // Allow a small tolerance for floating point errors
-  return contactSection && contactSection.visibilityPercentage >= 99;
+export function isContactFullyVisible() {
+  return false;
+  // const contactSection = visibleSections.find(
+  //   (section) => section.id === 'contact'
+  // );
+  // // Allow a small tolerance for floating point errors
+  // return contactSection && contactSection.visibilityPercentage >= 99;
 } 

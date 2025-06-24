@@ -1,15 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const HeroSection = ({progress}) => {
+const HeroSection = () => {
   return (
         
     <div className="h-screen relative flex items-center justify-center">
     <motion.div className="text-center z-10"
-    style={{
-      y: progress*5,
-      x: progress*-10,
-    }}
+    // style={{
+    //   y: ((progress > 20 ? progress-20 : 0))*5,
+    //   x: ((progress > 20 ? progress-20 : 0))*-10,
+    // }}
     >
       <motion.h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
         Aakarshika 

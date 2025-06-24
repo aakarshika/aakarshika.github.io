@@ -2,15 +2,6 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const AboutMeSection = ({ progress }) => {
-  const [viewHeight, setViewHeight] = useState(0);
-
-  useEffect(() => {
-    const handleResize = () => setViewHeight(window.innerHeight);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   // Animation sequence configuration - All animations complete by 50%
   const animationSequence = {
     title: {
