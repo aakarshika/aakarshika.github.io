@@ -75,15 +75,41 @@ const ProjectsSection = () => {
           </div>
         </div>
       </div>
-
-      {/* Coder Kids */}
-
+      {/* Portfolio */}
       <div className="w-screen h-screen flex items-center justify-center px-20 flex-shrink-0 relative">
         {/* Background div */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-red-900"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900 to-transparent "></div>
         
         {/* Content */}
+        <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
+          <div className="bg-gray-800 rounded-lg h-80 flex items-center justify-center">
+            <img src={daywiseImg} alt="Daywise App Screenshot" className="rounded-lg w-full h-full object-cover" />
+          </div>
+          <div>
+            <h3 className="text-5xl font-bold mb-6 text-pink-400">Portfolio</h3>
+            <p className="text-xl text-gray-300 mb-6">
+            This website!   
+            </p>
+            <div className="flex space-x-4 mb-6">
+              <span className="px-3 py-1 bg-red-600 rounded-full text-sm">React</span>
+              <span className="px-3 py-1 bg-yellow-600 rounded-full text-sm">Tailwind</span>
+              <span className="px-3 py-1 bg-indigo-600 rounded-full text-sm">Framer Motion</span>
+              <span className="px-3 py-1 bg-green-600 rounded-full text-sm">Github Pages</span>
+            </div>
+            <a href="https://github.com/aakarshika/aakarshika.github.io/tree/main" target="_blank" className="text-pink-400 hover:text-pink-300 font-semibold">
+              View App Code →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Coder Kids */}
+
+      {/* <div className="w-screen h-screen flex items-center justify-center px-20 flex-shrink-0 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-red-900"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-900 to-transparent "></div>
+        
         <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
           <div>
             <h3 className="text-5xl font-bold mb-6 text-green-400">Coder Kids ML Platform</h3>
@@ -99,7 +125,7 @@ const ProjectsSection = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };
