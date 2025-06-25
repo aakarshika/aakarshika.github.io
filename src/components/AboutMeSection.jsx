@@ -1,73 +1,90 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import twirlyImg from '../assets/twirly.png';
 
 const AboutMeSection = ({ progress }) => {
-  const [viewHeight, setViewHeight] = useState(0);
-
-  useEffect(() => {
-    const handleResize = () => setViewHeight(window.innerHeight);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Animation sequence configuration - All animations complete by 50%
+  // console.log("progress", progress);
+  // Animation sequence configuration - All animations complete by progress 50, exit animations start at 65
   const animationSequence = {
     title: {
       start: 0,
-      duration: 10,
-      initialY: 50,
-      yMultiplier: 3
+      duration: 15,
+      initialY: 100,
+      yMultiplier: 3,
+      exitStart: 75,
+      exitDuration: 15,
+      exitType: 'fade'
     },
     firstText: {
-      start: 5,
-      duration: 15,
-      initialY: 30,
-      yMultiplier: 2
+      start: 8,
+      duration: 18,
+      initialY: 60,
+      yMultiplier: 2,
+      exitStart: 80,
+      exitDuration: 12,
+      exitType: 'slideUp'
     },
     secondText: {
-      start: 20,
+      start: 18,
       duration: 15,
-      initialY: 1,
-      yMultiplier: 1.3
+      initialY: 40,
+      yMultiplier: 1.3,
+      exitStart: 82,
+      exitDuration: 10,
+      exitType: 'slideUp'
     },
     skills: {
       start: 25,
-      duration: 10,
-      initialY: 40,
-      yMultiplier: 2.5
+      duration: 12,
+      initialY: 80,
+      yMultiplier: 2.5,
+      exitStart: 85,
+      exitDuration: 10,
+      exitType: 'fade'
     },
     skill1: {
-      start: 30,
-      duration: 8,
-      initialY: 30,
+      start: 28,
+      duration: 10,
+      initialY: 60,
       yMultiplier: 2,
-      initialX: -100,
-      xMultiplier: 8
+      initialX: -150,
+      xMultiplier: 8,
+      exitStart: 88,
+      exitDuration: 8,
+      exitType: 'slideLeft'
     },
     skill2: {
-      start: 32,
-      duration: 8,
-      initialY: 30,
+      start: 30,
+      duration: 10,
+      initialY: 60,
       yMultiplier: 2,
-      initialX: 100,
-      xMultiplier: -8
+      initialX: 150,
+      xMultiplier: -8,
+      exitStart: 90,
+      exitDuration: 8,
+      exitType: 'slideRight'
     },
     skill3: {
-      start: 34,
-      duration: 8,
-      initialY: 30,
+      start: 32,
+      duration: 10,
+      initialY: 60,
       yMultiplier: 2,
-      initialX: -100,
-      xMultiplier: 8
+      initialX: -150,
+      xMultiplier: 8,
+      exitStart: 92,
+      exitDuration: 8,
+      exitType: 'slideLeft'
     },
     skill4: {
-      start: 36,
-      duration: 8,
-      initialY: 30,
+      start: 34,
+      duration: 10,
+      initialY: 60,
       yMultiplier: 2,
-      initialX: 100,
-      xMultiplier: -8
+      initialX: 150,
+      xMultiplier: -8,
+      exitStart: 94,
+      exitDuration: 8,
+      exitType: 'slideRight'
     }
   };
 
@@ -76,37 +93,62 @@ const AboutMeSection = ({ progress }) => {
     const config = animationSequence[elementKey];
     if (!config || !progress) return { 
       opacity: 0, 
-      
+      y: config?.initialY || 0,
       x: config?.initialX || 0, 
       scale: config?.initialScale || 1 
     };
 
-    const { start, duration, initialY, yMultiplier, initialX, xMultiplier, initialScale, scaleIncrement } = config;
+    const { start, duration, initialY, yMultiplier, initialX, xMultiplier, initialScale, scaleIncrement, exitStart, exitDuration, exitType } = config;
     
-    // Calculate progress within this element's animation window (0 to 1)
-    // Cap progress at 50% to ensure animations complete by then
-    const cappedProgress = Math.min(progress, 50);
-    const elementProgress = cappedProgress >= start ? Math.min((cappedProgress - start) / duration, 1) : 0;
+    // Handle entrance animation
+    let entranceProgress = 0;
+    if (progress >= start) {
+      entranceProgress = Math.min((progress - start) / duration, 1);
+    }
+    
+    // Handle exit animation
+    let exitProgress = 0;
+    if (exitStart && progress >= exitStart) {
+      exitProgress = Math.min((progress - exitStart) / exitDuration, 1);
+    }
     
     // Apply easing for smoother animation (ease-out cubic)
-    const easedProgress = 1 - Math.pow(1 - elementProgress, 3);
+    const easedEntranceProgress = 1 - Math.pow(1 - entranceProgress, 3);
+    const easedExitProgress = 1 - Math.pow(1 - exitProgress, 3);
     
-    // Opacity: 0 to 1 based on eased progress
-    const opacity = easedProgress;
+    // Opacity: 0 to 1 during entrance, 1 to 0 during exit
+    let opacity = easedEntranceProgress;
+    if (exitProgress > 0) {
+      opacity = 1 - easedExitProgress;
+    }
     
-    // Y movement: from initialY to 0 with easing
-    const y = cappedProgress >= start ? 
-      initialY * (1 - easedProgress) : 
-      initialY;
+    // Y movement: from initialY to 0 during entrance
+    let y = progress >= start ? initialY * (1 - easedEntranceProgress) : initialY;
     
-    // X movement: from initialX to 0 with easing
-    const x = initialX ? 
-      (cappedProgress >= start ? initialX * (1 - easedProgress) : initialX) : 
-      0;
+    // Add exit Y movement based on exit type
+    if (exitProgress > 0) {
+      if (exitType === 'slideUp') {
+        y = -50 * easedExitProgress; // Slide up and out
+      } else if (exitType === 'slideDown') {
+        y = 50 * easedExitProgress; // Slide down and out
+      }
+    }
+    
+    // X movement: from initialX to 0 during entrance
+    let x = initialX ? (progress >= start ? initialX * (1 - easedEntranceProgress) : initialX) : 0;
+    
+    // Add exit X movement based on exit type
+    if (exitProgress > 0) {
+      if (exitType === 'slideLeft') {
+        x = -100 * easedExitProgress; // Slide left and out
+      } else if (exitType === 'slideRight') {
+        x = 100 * easedExitProgress; // Slide right and out
+      }
+    }
     
     // Scale: from initialScale to final scale with easing
     const scale = initialScale ? 
-      (cappedProgress >= start ? initialScale + (easedProgress * scaleIncrement) : initialScale) : 
+      (progress >= start ? initialScale + (easedEntranceProgress * scaleIncrement) : initialScale) : 
       1;
 
     return { opacity, y, x, scale };
@@ -123,24 +165,27 @@ const AboutMeSection = ({ progress }) => {
   const skill4Anim = calculateAnimation('skill4');
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 py-20">
+    <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center py-20">
       
-      <div className="about-section container mx-auto px-6">
+      <div className="absolute right-0 top-0 bg-gray-800 rounded-lg h-full flex items-center justify-center">
+        {/* <img src={twirlyImg} alt="Twirly App Screenshot" className="rounded-lg w-full h-full object-cover" /> */}
+      </div>
+      <div className="absolute about-section container mx-auto px-6 max-w-6xl">
         <motion.h2 
           style={{ 
             opacity: titleAnim.opacity, 
-            
+            y: titleAnim.y
           }}
-          className="text-6xl font-bold  mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
+          className="text-6xl font-bold text-start mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
         >
           About Me
         </motion.h2>
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
           <div>
             <motion.div 
               style={{ 
                 opacity: firstTextAnim.opacity, 
-                
+                y: firstTextAnim.y
               }}
               className="text-xl text-gray-300 leading-relaxed mb-6"
             >
@@ -150,7 +195,7 @@ const AboutMeSection = ({ progress }) => {
             <motion.div 
               style={{ 
                 opacity: secondTextAnim.opacity, 
-                
+                y: secondTextAnim.y
               }}
               className="text-lg text-gray-400"
             >
@@ -161,15 +206,14 @@ const AboutMeSection = ({ progress }) => {
         <motion.div 
           style={{ 
             opacity: skillsAnim.opacity, 
-            paddingRight: '500px',
-            paddingTop: '100px'
+            y: skillsAnim.y
           }}
-          className="grid md:grid-cols-4 gap-4"
+          className="grid md:grid-cols-4 gap-8"
         >
           <motion.div 
             style={{ 
               opacity: skill1Anim.opacity, 
-              
+              y: skill1Anim.y,
               x: skill1Anim.x
             }}
             className="text-center"
@@ -181,7 +225,7 @@ const AboutMeSection = ({ progress }) => {
           <motion.div 
             style={{ 
               opacity: skill2Anim.opacity, 
-              
+              y: skill2Anim.y,
               x: skill2Anim.x
             }}
             className="text-center"
@@ -193,7 +237,7 @@ const AboutMeSection = ({ progress }) => {
           <motion.div 
             style={{ 
               opacity: skill3Anim.opacity, 
-              
+              y: skill3Anim.y,
               x: skill3Anim.x
             }}
             className="text-center"
@@ -205,7 +249,7 @@ const AboutMeSection = ({ progress }) => {
           <motion.div 
             style={{ 
               opacity: skill4Anim.opacity, 
-              
+              y: skill4Anim.y,
               x: skill4Anim.x
             }}
             className="text-center"

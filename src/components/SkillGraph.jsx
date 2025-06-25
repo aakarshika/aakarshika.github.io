@@ -72,7 +72,7 @@ const SkillGraph = ({ isActive, onScrollHandoff }) => {
   const y = 50; // Fixed vertical position
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-20">
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black py-20">
       <div className="w-full h-full flex flex-col"
             ref={containerRef}>
       <div className="about-section container mx-auto px-6">
