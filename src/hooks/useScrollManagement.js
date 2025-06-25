@@ -1,116 +1,150 @@
 import { useState, useRef, useEffect } from 'react';
 import { setupScrollEventListeners } from '../utils/scrollEventUtils';
 import { 
-  checkStoppersInView, 
-  checkVisibleSection, 
   isContactFullyVisible 
 } from '../utils/portfolioUtils';
 
 export const useScrollManagement = (stoppersConfig) => {
   // Custom scroll state
+    const sectionCount = stoppersConfig.length;
+    const viewHeight = window.innerHeight;
+    const maxScrollY = sectionCount * window.innerHeight - window.innerHeight;
   const [scrollY, setScrollY] = useState(0);
+  const [storedYY, setStoredYY] = useState(0);
   const [activeStopperId, setActiveStopperId] = useState(null);
-  const [isHandingOff, setIsHandingOff] = useState(false);
-  const scrollWasteCountRef = useRef(0);
-  
+  const activeStopperIdRef = useRef(activeStopperId);
+  const [activePageName, setActivePageName] = useState(null);
   const [pageProgress, setPageProgress] = useState(0);
+  const [handoffsReceived, setHandoffsReceived] = useState([]);
+  const [centerStuck, setCenterStuck] = useState(null);
+  const [direction, setDirection] = useState(null);
+  const centerOfEachPage = [];
+    for(let i = 0; i < stoppersConfig.length; i++) {
+      const stopper = stoppersConfig[i];
+      const top = (i * viewHeight);
+      const bottom = ((i + 1) * viewHeight );
+      const center = (top + bottom)/2;
+      centerOfEachPage.push({
+        ...stopper,
+        id: stopper.id,
+        center: center,
+        top: top,
+        bottom: bottom,
+        stopAtY: stopper.componentType === 'horizontalStopper' ? top-100 : null
+      });
+    }
 
   const [scrollParallelly, setScrollParallelly] = useState(false);
   
-  // Calculate max scrollY based on number of sections
-  const sectionCount = stoppersConfig.length;
-  const maxScrollY = sectionCount * window.innerHeight - window.innerHeight;
+  useEffect(() => {
+    activeStopperIdRef.current = activeStopperId;
+  }, [activeStopperId]);
 
-  // Handle scroll handoff from any stopper section
-  const handleScrollHandoff = (direction, stopperId) => {
-    console.log('Portfolio: Received handoff:', direction, 'from:', stopperId);
-    
-    if (scrollParallelly) {
-      // In parallel mode, just deactivate stopper section without stopping vertical scroll
-      console.log('Parallel mode: Continuing vertical scroll during horizontal');
-      setActiveStopperId(null);
-      // No immediate vertical scroll adjustment needed
+  useEffect(() => {
+    console.log("scrollY", scrollY);
+
+    const matlabKaY = scrollY + viewHeight/2;
+    const activePageProgress = 100*((matlabKaY%viewHeight)/viewHeight);
+    setPageProgress(activePageProgress);
+
+    const ovrAllPage = centerOfEachPage.find(page => matlabKaY > page.top && matlabKaY < page.bottom);
+    const activePage = centerOfEachPage.find(page => matlabKaY > page.top+100 && matlabKaY < page.bottom-100);
+    const neighbors = centerOfEachPage.filter(page => matlabKaY > page.top-100 && matlabKaY < page.bottom+100 && page.id !== activePage?.id);
+
+    var interimName = null;
+    if(activePage) {
+      setActivePageName(activePage?.id);
+      interimName = activePage.id;
     } else {
-      // In exclusive mode, stop vertical scroll and add delay
-      console.log('Exclusive mode: Stopping vertical scroll during handoff');
-      setIsHandingOff(true);
-      scrollWasteCountRef.current = 3; // Waste 3 scroll events
-      setActiveStopperId(null);
-      
-      // Immediately continue vertical scrolling in the direction of the handoff
-      if (direction === 'next') {
-        // Continue scrolling down
-        setScrollY(prev => {
-          const newY = prev + 100; // Add some scroll to move past stopper section
-          return Math.max(0, Math.min(maxScrollY, newY));
-        });
-      } else if (direction === 'previous') {
-        // Continue scrolling up
-        setScrollY(prev => {
-          const newY = prev - 100; // Subtract some scroll to move before stopper section
-          return Math.max(0, Math.min(maxScrollY, newY));
-        });
-      }
+      setActivePageName(null); 
+      interimName = neighbors[0]?.id+'-'+neighbors[1]?.id;
     }
+    if (
+      activePage &&
+      activePage.componentType === 'horizontalStopper' 
+    ) {
+      setActiveStopperId(activePage.id);
+    } else {
+      setActiveStopperId(null);
+    }
+    if(direction == 'next' && activePageProgress >= 45 
+      && !handoffsReceived.find(h => h.direction == 'next')
+      && ovrAllPage?.componentType === 'horizontalStopper' ){
+      setCenterStuck(ovrAllPage);
+    }
+    else if(direction == 'previous' && activePageProgress <= 55 
+      && !handoffsReceived.find(h => h.direction == 'previous')
+      && ovrAllPage?.componentType === 'horizontalStopper' ){
+      setCenterStuck(ovrAllPage);
+    } else {
+      setCenterStuck(null);
+    }
+
+    if(!activePage) {
+      console.log("--------------------------------");
+    } else {
+      console.log(pageProgress.toFixed(), `\"${activePage?.id}\"`,
+    centerStuck ? "centerStuck": ""  ,
+    direction,
+    handoffsReceived.length,
+    handoffsReceived.find(h => h.direction == direction) ? "found": ""
+    );
+    }
+  }, [scrollY]);
+
+
+  const handleScrollHandoff = (direction, stopperId) => {
+    console.log("handleScrollHandoff recieved", direction, stopperId);
+    setHandoffsReceived([{ direction, stopperId }]);
+    setCenterStuck(null);
+    setActiveStopperId(null);
   };
 
   // Custom scroll handler
   useEffect(() => {
-    // Disable browser scroll
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100vh';
+    
+    const MAX_SCROLL_SPEED = 250;    
+    const handleScroll = (deltaY) => {
+      setDirection(deltaY > 0 ? "next" : "previous");
+      if (deltaY > 0 && isContactFullyVisible()) {
+        return;
+      }
+      const cappedDeltaY = Math.max(-MAX_SCROLL_SPEED, Math.min(MAX_SCROLL_SPEED, deltaY));
+      setScrollY(prev => {
+
+        const newDirection = deltaY > 0 ? "next" : "previous";
+
+        const nextY = prev + cappedDeltaY;
+        const matlabKaY = nextY + viewHeight/2;
+        const ovrAllPage = centerOfEachPage.find(page => matlabKaY > page.top && matlabKaY < page.bottom);
+
+        if(ovrAllPage){
+          const activePageProgress = 100*((matlabKaY%viewHeight)/viewHeight);
+          
+          let shouldCenterStuck = false;
+          if(newDirection == 'next' && activePageProgress >= 50 
+            && !handoffsReceived.find(h => h.direction == 'next')
+            && ovrAllPage.componentType === 'horizontalStopper' ){
+            shouldCenterStuck = true;
+          }
+          else if(newDirection == 'previous' && activePageProgress <= 40 
+            && !handoffsReceived.find(h => h.direction == 'previous')
+            && ovrAllPage.componentType === 'horizontalStopper' ){
+            shouldCenterStuck = true;
+          }
+          
+          if(shouldCenterStuck || centerStuck){
+            return ovrAllPage.top;
+          }
+        }
+        return Math.max(0, Math.min(nextY, maxScrollY));
+      });
+    };
 
     const handleWheel = (e) => {
-      // If any stopper section is active, handle based on scroll mode
-      if (activeStopperId) {
-        if (scrollParallelly) {
-          // In parallel mode, allow vertical scrolling even when stoppers are active
-          setScrollY(prev => {
-            const newY = prev + e.deltaY;
-            return Math.max(0, Math.min(maxScrollY, newY));
-          });
-        } else {
-          // In exclusive mode, don't handle vertical scroll at all
-        }
-        return;
-      }
-      
-      // If we're in handoff mode, waste scroll events (only in exclusive mode)
-      if ((isHandingOff && scrollWasteCountRef.current > 0) ) {
-        console.log('Wasting scroll event, remaining:', scrollWasteCountRef.current - 1);
-        if(scrollWasteCountRef.current > 0) {
-          scrollWasteCountRef.current = scrollWasteCountRef.current - 1;
-        } else {
-          scrollWasteCountRef.current = 0;
-        }
-        return;
-      }
-      // Reset handoff state when waste count reaches 0
-      if (isHandingOff && scrollWasteCountRef.current === 0) {
-        console.log('Waste period ended, resuming vertical scroll');
-        setIsHandingOff(false);
-      }
-      
-      // Check if any stopper is in view
-      const stopperInView = checkStoppersInView(stoppersConfig);
-      
-      // --- Block downward scroll if contact is fully visible ---
-      if (e.deltaY > 0 && isContactFullyVisible()) {
-        // Block further downward scroll
-        return;
-      }
-      // --- End block ---
-      
-      if (stopperInView && !activeStopperId) {
-        // Activate stopper section
-        setActiveStopperId(stopperInView);
-      } else {
-        // Normal vertical scrolling (either not in stopper or stopper not active)
-        setScrollY(prev => {
-          const newY = prev + e.deltaY;
-          return Math.max(0, Math.min(maxScrollY, newY));
-        });
-      }
+      handleScroll(e.deltaY);
     };
 
     // Touch events for mobile
@@ -121,29 +155,8 @@ export const useScrollManagement = (stoppersConfig) => {
     };
 
     const handleTouchMove = (e) => {
-      // If any stopper section is active, don't handle vertical scroll at all
-      if (activeStopperId) {
-        return;
-      }
-      
-      const stopperInView = checkStoppersInView(stoppersConfig);
-      
       const deltaY = startY - e.touches[0].clientY;
-      
-      // --- Block downward scroll if contact is fully visible ---
-      if (deltaY > 0 && isContactFullyVisible()) {
-        // Block further downward scroll
-        return;
-      }
-      // --- End block ---
-      
-      if (!stopperInView) {
-        setScrollY(prev => {
-          const newY = prev + deltaY;
-          return Math.max(0, Math.min(maxScrollY, newY));
-        });
-      }
-      
+      handleScroll(deltaY);
       startY = e.touches[0].clientY;
     };
 
@@ -166,11 +179,14 @@ export const useScrollManagement = (stoppersConfig) => {
       document.body.style.overflow = '';
       document.body.style.height = '';
     };
-  }, [activeStopperId, isHandingOff, scrollParallelly, stoppersConfig,  maxScrollY]);
+  }, [activeStopperId, scrollParallelly, stoppersConfig]);
 
   return {
     scrollY,
     activeStopperId,
-    handleScrollHandoff
+    activePageName,
+    pageProgress,
+    handleScrollHandoff,
+    handoffsReceived,
   };
 }; 

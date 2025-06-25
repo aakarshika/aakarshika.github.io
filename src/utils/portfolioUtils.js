@@ -32,27 +32,6 @@ export function calculateAnimation(elementKey, progress, photoAnimationSequence,
   return { opacity, scale, y };
 }
 
-// Check if any stopper is in view
-export function checkStoppersInView(stoppersConfig) {
-  for (const stopper of stoppersConfig) {
-    if (!stopper.ref.current || (stopper.componentType !== 'horizontalStopper' && stopper.componentType !== 'customHorizontalStopper')) continue;
-
-    const rect = stopper.ref.current.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-
-    // Check if stopper section is perfectly centered in viewport
-    const sectionHeight = rect.height;
-    const sectionCenter = rect.top + sectionHeight / 2;
-    const viewportCenter = windowHeight / 2;
-    const isCentered = Math.abs(sectionCenter - viewportCenter) < 100; // 50px tolerance
-    const isInStopper = rect.top <= 0 && rect.bottom >= 0 && isCentered;
-
-    if (isInStopper) {
-      return stopper.id; // Return the stopper ID instead of just true
-    }
-  }
-  return null;
-}
 
 // Check which section is currently visible on screen
 export function checkVisibleSection(stoppersConfig) {

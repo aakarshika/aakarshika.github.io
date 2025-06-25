@@ -10,10 +10,8 @@ const HorizontalScrollWrapper = ({
 }) => {
   const containerRef = useRef(null);
   const [scrollX, setScrollX] = useState(0);
-  const [isHorizontalMode, setIsHorizontalMode] = useState(false);
   const [handoffDirection, setHandoffDirection] = useState(null);
-  const [isAtBoundary, setIsAtBoundary] = useState(false);
-
+  
   // Handle scroll handoff after render
   useEffect(() => {
     if (handoffDirection) {
@@ -21,45 +19,36 @@ const HorizontalScrollWrapper = ({
       onScrollHandoff(handoffDirection);
       setHandoffDirection(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handoffDirection]);
-
+  }, [handoffDirection, onScrollHandoff]);
+    
   // Handle horizontal scroll when section is active
   useEffect(() => {
     if (!isActive) return;
 
     const handleWheel = (e) => {
-      // Don't process events if we're in the middle of a handoff
-      if (handoffDirection) {
-        return;
-      }
+      // console.log("handleWheel", e);
       
-      const deltaX = e.deltaY * 2;
+      const deltaX = e.deltaY ;
       setScrollX(prev => {
         const newX = prev - deltaX;
         const maxScroll = -(window.innerWidth * (slideCount - 1));
         const limitedX = Math.max(maxScroll, Math.min(0, newX));
         
-        
-        // Reset boundary flag if we're moving away from boundary
-        if (limitedX !== prev) {
-          setIsAtBoundary(false);
-        }
+        // Add a small buffer zone (50px) for earlier handoff
+        const handoffBuffer = 150;
         
         // Check if we need to hand off control
-        // Only hand off if we're already at the boundary AND trying to scroll beyond it AND haven't already triggered handoff
-        if (e.deltaY > 0 && prev <= maxScroll && newX < maxScroll && !isAtBoundary) {
-          // Scrolling down and already at end - hand off to next section
-          console.log('Setting handoff to next');
-          setIsAtBoundary(true);
+        // Hand off when approaching the boundary with buffer
+        if (e.deltaY > 0 && prev <= (maxScroll + handoffBuffer) && newX < (maxScroll + handoffBuffer)) {
+          // Scrolling down and approaching end - hand off to next section
+          console.log('Setting handoff to next - approaching end');
           setHandoffDirection('next');
-          return maxScroll; // Stay at max
-        } else if (e.deltaY < 0 && prev >= 0 && newX > 0 && !isAtBoundary) {
-          // Scrolling up and already at start - hand off to previous section
-          console.log('Setting handoff to previous');
-          setIsAtBoundary(true);
+          return Math.max(maxScroll, newX); // Don't go beyond actual boundary
+        } else if (e.deltaY < 0 && prev >= -handoffBuffer && newX > -handoffBuffer) {
+          // Scrolling up and approaching start - hand off to previous section
+          console.log('Setting handoff to previous - approaching start');
           setHandoffDirection('previous');
-          return 0; // Stay at start
+          return Math.min(0, newX); // Don't go beyond actual boundary
         }
         
         return limitedX;
@@ -71,56 +60,26 @@ const HorizontalScrollWrapper = ({
     };
 
     const handleTouchMove = (e) => {
-      // Don't process events if we're in the middle of a handoff
-      if (handoffDirection) {
-        return;
-      }
-      
-      // Touch handling for mobile
-      const deltaX = e.touches[0].movementX || 0;
-      setScrollX(prev => {
-        const newX = prev - deltaX * 2;
-        const maxScroll = -(window.innerWidth * (slideCount - 1));
-        const limitedX = Math.max(maxScroll, Math.min(0, newX));
-        
-        // Reset boundary flag if we're moving away from boundary
-        if (limitedX !== prev) {
-          setIsAtBoundary(false);
-        }
-        
-        // Check if we need to hand off control
-        // Only hand off if we're already at the boundary AND trying to scroll beyond it AND haven't already triggered handoff
-        if (deltaX > 0 && prev <= maxScroll && newX < maxScroll && !isAtBoundary) {
-          setIsAtBoundary(true);
-          setHandoffDirection('next');
-          return maxScroll;
-        } else if (deltaX < 0 && prev >= 0 && newX > 0 && !isAtBoundary) {
-          setIsAtBoundary(true);
-          setHandoffDirection('previous');
-          return 0;
-        }
-        
-        return limitedX;
-      });
+      // console.log("handleTouchMove", e);
     };
 
-    // Use the utility function to set up event listeners with capture phase
+    // Use the utility function to set up event listeners
     const cleanup = setupScrollEventListeners(
-      null, // Use window as target
+      containerRef.current, // Use container as target
       {
         wheel: handleWheel,
         touchStart: handleTouchStart,
         touchMove: handleTouchMove
       },
       {
-        useWindow: true,
-        useCapture: true,
-        stopPropagation: true
+        useWindow: true, // Use window to detect scroll events globally
+        useCapture: false, // Don't use capture phase
+        stopPropagation: false // Don't stop propagation
       }
     );
 
     return cleanup;
-  }, [isActive, isAtBoundary, handoffDirection, slideCount]);
+  }, [isActive, slideCount]);
 
   return (
     <div className={className}>

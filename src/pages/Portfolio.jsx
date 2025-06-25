@@ -13,7 +13,7 @@ import { useScrollManagement } from '../hooks/useScrollManagement';
 import { useAnimationEffects } from '../hooks/useAnimationEffects';
 
 const Portfolio = () => {
-  const containerRef = useRef(null);
+  // const containerRef = useRef(null);
   
   // Use extracted hooks
   const { picturesList, handleCapture } = useVisitorPortfolio();
@@ -23,13 +23,13 @@ const Portfolio = () => {
     {
       id: 'hero',
       componentType: 'none',
-      componentFun: () => <HeroSection progress={pageProgress} />,
+      componentFun: () => <HeroSection progress={activePageName == 'hero' ? pageProgress : 0} />,
       ref: useRef(null)
     },
     {
       id: 'about-me', 
       componentType: 'none',
-      componentFun: () => <AboutMeSection progress={pageProgress} />,
+      componentFun: () => <AboutMeSection progress={activePageName == 'about-me' ? pageProgress : 0} />,
       ref: useRef(null)
     },
     {
@@ -47,7 +47,7 @@ const Portfolio = () => {
     {
       id: 'interactive',
       componentType: 'none',
-      componentFun: () => <PicSection progress={pageProgress} pictures={picturesList} onCapture={handleCapture} />,
+      componentFun: () => <PicSection progress={activePageName == 'interactive' ? pageProgress : 0} pictures={picturesList} onCapture={handleCapture} />,
       ref: useRef(null)
     },
     {
@@ -59,11 +59,11 @@ const Portfolio = () => {
   ];
 
   // Use scroll management hook
-  const { scrollY, activeStopperId, pageProgress,  handleScrollHandoff } = useScrollManagement(stoppersConfig);
+  const { scrollY, activeStopperId, activePageName, pageProgress,  handleScrollHandoff } = useScrollManagement(stoppersConfig);
   
   return (
     <div 
-      ref={containerRef}
+      // ref={containerRef}
       className="fixed inset-0 bg-black text-white overflow-hidden"
     >
       {/* Portfolio Overlays */}
@@ -83,9 +83,9 @@ const Portfolio = () => {
         }}
       >
         {/* Render all stopper sections */}
-        {stoppersConfig.map((stopper) => {
+        {stoppersConfig.map((stopper, idx) => {
           return stopper.componentType === 'horizontalStopper' ? (
-            <div key={stopper.id} ref={stopper.ref}>
+            <div key={stopper.id + ' ' + idx} ref={stopper.ref}>
               <VeeSection
                 isActive={activeStopperId === stopper.id}
                 onScrollHandoff={(direction) => handleScrollHandoff(direction, stopper.id)}
@@ -93,7 +93,7 @@ const Portfolio = () => {
               />
             </div>
           ) : stopper.componentType === 'customHorizontalStopper' ? (
-            <div key={stopper.id} ref={stopper.ref}>
+            <div key={stopper.id + ' ' + idx} ref={stopper.ref}>
               {stopper.getFun === 'SkillGraph' ? 
                 <SkillGraph 
                   isActive={activeStopperId === stopper.id} 
@@ -106,7 +106,7 @@ const Portfolio = () => {
               }
             </div>
           ) : (
-            <div key={stopper.id} ref={stopper.ref}>
+            <div key={stopper.id + ' ' + idx} ref={stopper.ref}>
               <stopper.componentFun />
             </div>
           );
