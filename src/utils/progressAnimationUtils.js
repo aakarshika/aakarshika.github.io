@@ -110,134 +110,6 @@ const calculateSingleAnimation = (anim, progress) => {
 };
 
 /**
- * Calculate all animations for an object
- * @param {Object} objectConfig - Object with 'object' and 'anim' properties
- * @param {number} progress - Current progress percentage (0-100)
- * @returns {Object} Animation values for each animation type
- */
-export const calculateObjectAnimations = (objectConfig, progress) => {
-  const { object, anim } = objectConfig;
-  
-  if (!anim || !Array.isArray(anim)) {
-    return {};
-  }
-
-  const animations = {};
-  
-  // Group animations by type to handle multiple animations of the same type
-  const groupedAnimations = {};
-  anim.forEach(animation => {
-    const { type } = animation;
-    if (type) {
-      if (!groupedAnimations[type]) {
-        groupedAnimations[type] = [];
-      }
-      groupedAnimations[type].push(animation);
-    }
-  });
-
-  // Calculate values for each animation type using precalculated timeline
-  Object.keys(groupedAnimations).forEach(type => {
-    const typeAnimations = groupedAnimations[type];
-    
-    if (type === 'fade' || type === 'slideX' || type === 'slideY') {
-      // Precalculate timeline for fade and slide animations
-      const timeline = precalculateTimeline(typeAnimations);
-      const value = getValueFromTimeline(timeline, progress);
-      animations[type] = value;
-      console.log(`${type} timeline result: progress=${progress}, value=${value}`);
-    } else {
-      // For other animations, use the last active one (or combine as needed)
-      let finalValue = 0;
-      typeAnimations.forEach(animation => {
-        const value = calculateSingleAnimation(animation, progress);
-        // For non-fade/slide animations, we might want to add or use the last one
-        // For now, let's use the last active animation
-        if (progress >= animation.startTiming && progress <= animation.startTiming + animation.duration) {
-          finalValue = value;
-        }
-      });
-      animations[type] = finalValue;
-    }
-  });
-
-  return animations;
-};
-
-/**
- * Calculate animations for multiple objects
- * @param {Array} animationConfig - Array of object configurations
- * @param {number} progress - Current progress percentage (0-100)
- * @returns {Object} Animation values for each object
- */
-export const calculateAnimations = (animationConfig, progress) => {
-  if (!Array.isArray(animationConfig)) {
-    return {};
-  }
-
-  const results = {};
-  
-  animationConfig.forEach(objectConfig => {
-    const { object } = objectConfig;
-    if (object) {
-      results[object] = calculateObjectAnimations(objectConfig, progress);
-    }
-  });
-
-  return results;
-};
-
-/**
- * Predefined animation configurations for common use cases
- */
-export const AnimationPresets = {
-  // Simple fade in
-  fadeIn: { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 0, duration: 5 },
-  
-  // Fade out
-  fadeOut: { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 5 },
-  
-  // Scale up
-  scaleUp: { type: 'scale', initialValue: 0.5, finalValue: 1, startTiming: 10, duration: 8 },
-  
-  // Slide in from left
-  slideInLeft: { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 15, duration: 10 },
-  
-  // Slide in from right
-  slideInRight: { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 15, duration: 10 },
-  
-  // Slide up from bottom
-  slideUp: { type: 'slideY', initialValue: 50, finalValue: 0, startTiming: 20, duration: 8 },
-  
-  // Rotate in
-  rotateIn: { type: 'rotate', initialValue: 0, finalValue: 360, startTiming: 25, duration: 6 }
-};
-
-/**
- * Example usage:
- * 
- * const animationConfig = [
- *   {
- *     object: 'title',
- *     anim: [
- *       { type: 'fade', initialValue: 0, startTiming: 0, duration: 5 },
- *       { type: 'slideY', initialValue: 50, startTiming: 0, duration: 8 }
- *     ]
- *   },
- *   {
- *     object: 'card1',
- *     anim: [
- *       { type: 'slideX', initialValue: -100, startTiming: 15, duration: 10 },
- *       { type: 'scale', initialValue: 0.8, startTiming: 15, duration: 8 }
- *     ]
- *   }
- * ];
- * 
- * const animations = calculateAnimations(animationConfig, progress);
- * // Result: { title: { fade: 0.5, slideY: 25 }, card1: { slideX: -50, scale: 0.9 } }
- */
-
-/**
  * Precalculate timeline for an object's animations
  * @param {Array} animations - Array of animation objects
  * @returns {Array} Timeline array with {start, end, value} objects
@@ -351,4 +223,155 @@ const getValueFromTimeline = (timeline, progress) => {
   }
   
   return 0; // Emergency fallback
-}; 
+};
+
+/**
+ * Memoized timeline cache to avoid recalculating timelines
+ */
+const timelineCache = new Map();
+
+/**
+ * Get or create timeline for animations (memoized)
+ * @param {Array} animations - Array of animation objects
+ * @returns {Array} Timeline array
+ */
+const getMemoizedTimeline = (animations) => {
+  // Create a cache key from the animations array
+  const cacheKey = JSON.stringify(animations);
+  
+  if (timelineCache.has(cacheKey)) {
+    return timelineCache.get(cacheKey);
+  }
+  
+  const timeline = precalculateTimeline(animations);
+  timelineCache.set(cacheKey, timeline);
+  return timeline;
+};
+
+/**
+ * Calculate all animations for an object (optimized version)
+ * @param {Object} objectConfig - Object with 'object' and 'anim' properties
+ * @param {number} progress - Current progress percentage (0-100)
+ * @returns {Object} Animation values for each animation type
+ */
+export const calculateObjectAnimations = (objectConfig, progress) => {
+  const { object, anim } = objectConfig;
+  
+  if (!anim || !Array.isArray(anim)) {
+    return {};
+  }
+
+  const animations = {};
+  
+  // Group animations by type to handle multiple animations of the same type
+  const groupedAnimations = {};
+  anim.forEach(animation => {
+    const { type } = animation;
+    if (type) {
+      if (!groupedAnimations[type]) {
+        groupedAnimations[type] = [];
+      }
+      groupedAnimations[type].push(animation);
+    }
+  });
+
+  // Calculate values for each animation type using precalculated timeline
+  Object.keys(groupedAnimations).forEach(type => {
+    const typeAnimations = groupedAnimations[type];
+    
+    if (type === 'fade' || type === 'slideX' || type === 'slideY') {
+      // Use memoized timeline for fade and slide animations
+      const timeline = getMemoizedTimeline(typeAnimations);
+      const value = getValueFromTimeline(timeline, progress);
+      animations[type] = value;
+      // console.log(`${type} timeline result: progress=${progress}, value=${value}`);
+    } else {
+      // For other animations, use the last active one (or combine as needed)
+      let finalValue = 0;
+      typeAnimations.forEach(animation => {
+        const value = calculateSingleAnimation(animation, progress);
+        // For non-fade/slide animations, we might want to add or use the last one
+        // For now, let's use the last active animation
+        if (progress >= animation.startTiming && progress <= animation.startTiming + animation.duration) {
+          finalValue = value;
+        }
+      });
+      animations[type] = finalValue;
+    }
+  });
+
+  return animations;
+};
+
+/**
+ * Calculate animations for multiple objects
+ * @param {Array} animationConfig - Array of object configurations
+ * @param {number} progress - Current progress percentage (0-100)
+ * @returns {Object} Animation values for each object
+ */
+export const calculateAnimations = (animationConfig, progress) => {
+  if (!Array.isArray(animationConfig)) {
+    return {};
+  }
+
+  const results = {};
+  
+  animationConfig.forEach(objectConfig => {
+    const { object } = objectConfig;
+    if (object) {
+      results[object] = calculateObjectAnimations(objectConfig, progress);
+    }
+  });
+
+  return results;
+};
+
+/**
+ * Predefined animation configurations for common use cases
+ */
+export const AnimationPresets = {
+  // Simple fade in
+  fadeIn: { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 0, duration: 5 },
+  
+  // Fade out
+  fadeOut: { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 5 },
+  
+  // Scale up
+  scaleUp: { type: 'scale', initialValue: 0.5, finalValue: 1, startTiming: 10, duration: 8 },
+  
+  // Slide in from left
+  slideInLeft: { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 15, duration: 10 },
+  
+  // Slide in from right
+  slideInRight: { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 15, duration: 10 },
+  
+  // Slide up from bottom
+  slideUp: { type: 'slideY', initialValue: 50, finalValue: 0, startTiming: 20, duration: 8 },
+  
+  // Rotate in
+  rotateIn: { type: 'rotate', initialValue: 0, finalValue: 360, startTiming: 25, duration: 6 }
+};
+
+/**
+ * Example usage:
+ * 
+ * const animationConfig = [
+ *   {
+ *     object: 'title',
+ *     anim: [
+ *       { type: 'fade', initialValue: 0, startTiming: 0, duration: 5 },
+ *       { type: 'slideY', initialValue: 50, startTiming: 0, duration: 8 }
+ *     ]
+ *   },
+ *   {
+ *     object: 'card1',
+ *     anim: [
+ *       { type: 'slideX', initialValue: -100, startTiming: 15, duration: 10 },
+ *       { type: 'scale', initialValue: 0.8, startTiming: 15, duration: 8 }
+ *     ]
+ *   }
+ * ];
+ * 
+ * const animations = calculateAnimations(animationConfig, progress);
+ * // Result: { title: { fade: 0.5, slideY: 25 }, card1: { slideX: -50, scale: 0.9 } }
+ */ 

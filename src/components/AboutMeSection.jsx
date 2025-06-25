@@ -1,6 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import twirlyImg from '../assets/twirly.png';
+import girlMain from '../assets/girl_main.png';
+import winkingGirl from '../assets/winking_girl.png';
+import hand from '../assets/hand.png';
+import laptop from '../assets/laptop.png';
+import laptopBase from '../assets/lapbase.png';
+import table from '../assets/table.png';
 import { calculateAnimations } from '../utils/progressAnimationUtils';
 
 const AboutMeSection = ({ progress }) => {
@@ -13,7 +18,7 @@ const AboutMeSection = ({ progress }) => {
       anim: [
         { type: 'fade', initialValue: 0, finalValue: 0.8, startTiming: 0, duration: 15 },
         { type: 'slideY', initialValue: 50, finalValue: 0, startTiming: 0, duration: 15 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 60, duration: 15 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 60, duration: 15 },
       ]
     },
     {
@@ -21,7 +26,7 @@ const AboutMeSection = ({ progress }) => {
       anim: [
         { type: 'fade', initialValue: 0, startTiming: 8, duration: 18 },
         { type: 'slideY', initialValue: 30, finalValue: 0, startTiming: 8, duration: 18 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 65, duration: 15 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 65, duration: 15 },
       ]
     },
     {
@@ -29,7 +34,7 @@ const AboutMeSection = ({ progress }) => {
       anim: [
         { type: 'fade', initialValue: 0, startTiming: 18, duration: 15 },
         { type: 'slideY', initialValue: 20, finalValue: 0, startTiming: 18, duration: 15 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 70, duration: 10 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 70, duration: 10 },
       ]
     },
     {
@@ -44,7 +49,7 @@ const AboutMeSection = ({ progress }) => {
       anim: [
         { type: 'fade', initialValue: 0, startTiming: 28, duration: 10 },
         { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 28, duration: 10 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 60, duration: 10 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 60, duration: 10 },
       ]
     },
     {
@@ -52,7 +57,7 @@ const AboutMeSection = ({ progress }) => {
       anim: [
         { type: 'fade', initialValue: 0, startTiming: 30, duration: 10 },
         { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 30, duration: 10 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 70, duration: 10 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 70, duration: 10 },
       ]
     },
     {
@@ -60,7 +65,7 @@ const AboutMeSection = ({ progress }) => {
       anim: [
         { type: 'fade', initialValue: 0, startTiming: 32, duration: 10 },
         { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 32, duration: 10 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 10 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 10 },
       ]
     },
     {
@@ -68,15 +73,29 @@ const AboutMeSection = ({ progress }) => {
       anim: [
         { type: 'fade', initialValue: 0, startTiming: 34, duration: 10 },
         { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 34, duration: 10 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 90, duration: 10 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 90, duration: 10 },
       ]
     },
     {
       object: 'aboutImage',
       anim: [
         { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 0, duration: 25 },
-        { type: 'slideY', initialValue: -1000, finalValue: 0, startTiming: 0, duration: 35 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 65, duration: 15 },
+        { type: 'slideY', initialValue: -1000, finalValue: 0, startTiming: 0, duration: 45 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 65, duration: 15 },
+      ]
+    },
+    {
+      object: 'laptopImage',
+      anim: [
+        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 35, duration: 10 },
+        { type: 'slideX', initialValue: 200, finalValue: 0, startTiming: 35, duration: 10 },
+      ]
+    },
+    {
+      object: 'tableImage', 
+      anim: [
+        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 45, duration: 10 },
+        { type: 'slideX', initialValue: 200, finalValue: 0, startTiming: 45, duration: 10 },
       ]
     }
   ];
@@ -91,6 +110,11 @@ const AboutMeSection = ({ progress }) => {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center py-20">
+
+      {/* Floating Background Elements */}
+      <motion.div style={{ opacity:progress  == 0 ? 0 : (progress/100) }} className="absolute bottom-20 left-20 w-40 h-40 bg-purple-500 rounded-full opacity-40 blur-2xl"></motion.div>
+      <motion.div style={{ opacity:progress  == 0 ? 0 : (progress/100) }} className="absolute top-0 right-10 w-32 h-32 bg-blue-500 rounded-full opacity-40 blur-2xl"></motion.div>
+
 
       <div className="absolute right-0 top-0 bg-gray-800 rounded-lg h-full flex items-center justify-center">
         {/* <motion.img 
@@ -138,15 +162,64 @@ const AboutMeSection = ({ progress }) => {
             </motion.div>
           </div>
           <div>
-            <motion.img
-              src={twirlyImg}
-              alt="Twirly App Screenshot"
-              className="rounded-lg w-full h-full object-cover"
-              style={{
-                opacity: animations.aboutImage?.fade || 0,
-                y: animations.aboutImage?.slideY || 0
-              }}
-            />
+              <div className="relative w-full h-96">
+              <motion.div style={{ opacity: progress  == 0 ? 0 : (progress/100) }} 
+              className="absolute w-96 h-96 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
+
+              <motion.img
+                  src={laptopBase}
+                  alt="Laptop base Image"
+                  className="rounded-lg w-full h-full object-cover absolute inset-0"
+                  style={{
+                    opacity: animations.laptopImage?.fade || 0,
+                    x: animations.laptopImage?.slideX || 0
+                  }}
+                />
+                <motion.img
+                  src={winkingGirl}
+                  alt="Winking Girl Image"
+                  className="rounded-lg w-full h-full object-cover absolute inset-0"
+                  style={{
+                    opacity: progress > 55 && progress < 70 ? animations.aboutImage?.fade || 0 : 0,
+                    y: animations.aboutImage?.slideY || 0
+                  }}
+                />
+                <motion.div 
+                  style={{
+                    opacity: progress < 55 || progress > 70 ? animations.aboutImage?.fade || 0 : 0,
+                    y: progress < 55 || progress > 70 ? animations.aboutImage?.slideY || 0 : 0
+                  }}
+                  className="rounded-lg w-full h-full object-cover absolute inset-0">
+                <img
+                  src={girlMain}
+                  alt="Girl Main Image"
+                  className="rounded-lg w-full h-full object-cover absolute inset-0"
+                />
+                <img
+                  src={hand}
+                  alt="Hand Image"
+                  className="rounded-lg w-full h-full object-cover absolute inset-0"
+                />
+                </motion.div>
+                <motion.img
+                  src={laptop}
+                  alt="Laptop Image"
+                  className="rounded-lg w-full h-full object-cover absolute inset-0"
+                  style={{
+                    opacity: animations.laptopImage?.fade || 0,
+                    x: animations.laptopImage?.slideX || 0
+                  }}
+                />
+                <motion.img
+                  src={table}
+                  alt="Table Image"
+                  className="rounded-lg w-full h-full object-cover absolute inset-0"
+                  style={{
+                    opacity: animations.tableImage?.fade || 0,
+                    x: animations.tableImage?.slideX || 0
+                  }}
+                />
+              </div>
           </div>
         </div>
         <motion.div
@@ -201,6 +274,10 @@ const AboutMeSection = ({ progress }) => {
           </motion.div>
         </motion.div>
       </div>)}
+
+
+
+
     </div>
   );
 };

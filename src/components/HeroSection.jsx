@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { calculateAnimations } from '../utils/progressAnimationUtils';
 
 const HeroSection = ({ progress }) => {
-  // console.log("progress", progress);
+  console.log("Hero progress", progress);
   
   // Animation configuration using the new JSON format
   const animationConfig = [
@@ -62,9 +62,12 @@ const HeroSection = ({ progress }) => {
       </motion.div>
 
       {/* Floating Background Elements */}
-      <div className="absolute top-20 left-20 w-32 h-32 bg-purple-500 rounded-full opacity-20 blur-xl"></div>
-      <div className="absolute bottom-20 right-20 w-48 h-48 bg-pink-500 rounded-full opacity-15 blur-2xl"></div>
-      <div className="absolute top-1/2 left-10 w-20 h-20 bg-blue-500 rounded-full opacity-25 blur-lg"></div>
+      <motion.div style={{ opacity:progress  == 0 ? 0 : 1-(progress/100) }} className="absolute top-20 left-20 w-40 h-40 bg-purple-500 rounded-full opacity-40 blur-2xl"></motion.div>
+      <motion.div style={{ opacity: progress  == 0 ? 0 : 1-(progress/100) }} className="absolute bottom-20 right-20 w-60 h-60 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
+      <motion.div style={{ opacity:progress  == 0 ? 0 : 1-(progress/100) }} className="absolute top-1/2 left-10 w-32 h-32 bg-blue-500 rounded-full opacity-40 blur-2xl"></motion.div>
+
+      {/* <motion.div style={{ opacity:progress  == 0 ? 0 : 1 }} className="absolute bottom-20 right-20 w-60 h-60 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div> */}
+
     </div>
   );
 };
