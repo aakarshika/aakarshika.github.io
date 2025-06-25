@@ -3,21 +3,39 @@ import { motion } from 'framer-motion';
 
 const HeroSection = ({ progress }) => {
   console.log("progress", progress);
+  
+  // Calculate animation values similar to AboutMeSection pattern
+  const calculateDesignerTextAnimation = () => {
+    const start = 51;
+    const duration = 14; // 65 - 51 = 14
+    
+    let entranceProgress = 0;
+    if (progress >= start) {
+      entranceProgress = Math.min((progress - start) / duration, 1);
+    }
+    
+    // Apply easing for smoother animation (ease-out cubic)
+    const easedEntranceProgress = 1 - Math.pow(1 - entranceProgress, 3);
+    
+    // X movement: slide in from right (positive initialX)
+    const initialX = 200; // Start 200px to the right
+    const x = progress >= start ? initialX * (1 - easedEntranceProgress) : initialX;
+    
+    // Opacity: fade in during entrance, fade out after 65%
+    let opacity = easedEntranceProgress;
+    if (progress > 65) {
+      opacity = 0;
+    }
+    
+    return { x, opacity };
+  };
+  
+  const designerTextAnim = calculateDesignerTextAnimation();
+
   return (
 
     <div className="h-screen relative flex items-center justify-center overflow-hidden">
 
-      <motion.span 
-        className="absolute text-2xl text-gray-300 mb-8 pointer-events-none"
-        style={{
-          y: 65,
-          // transform: `translateX(${progress*10}px)`,
-          right: `${((progress*20-500))}px`,
-          opacity: progress > 65 ? 0 : progress < 51 ? 0 : 1
-        }}>
-        {', not Designer'}
-      </motion.span>
-      
       <motion.div className="text-center z-10"
         initial={{
           opacity: progress > 50 ? 1 : 0,
@@ -34,8 +52,18 @@ const HeroSection = ({ progress }) => {
           Aakarshika
         </motion.h1>
         <motion.span className="text-2xl text-gray-300 mb-8">
-          {(progress < 65 ? 'Software Developer' : 'Software Developer, not Designer')}
+          {(progress < 65 ? 'Software Developer' : 'Software Developer, sometimes Designer')}
         </motion.span>
+
+      <motion.span 
+        className="absolute text-2xl text-gray-300 mb-8 pointer-events-none"
+        style={{
+          x: `${designerTextAnim.x}px`,
+          opacity: designerTextAnim.opacity
+        }}>
+        {', sometimes Designer'}
+      </motion.span>
+      
         <motion.div
           className="h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mt-5"
           style={{

@@ -47,7 +47,7 @@ export const useScrollManagement = (stoppersConfig) => {
     setPageProgress(activePageProgress);
 
     const ovrAllPage = centerOfEachPage.find(page => matlabKaY > page.top && matlabKaY < page.bottom);
-    const activePage = centerOfEachPage.find(page => matlabKaY > page.top+100 && matlabKaY < page.bottom-100);
+    const activePage = centerOfEachPage.find(page => matlabKaY > page.top && matlabKaY < page.bottom);
     const neighbors = centerOfEachPage.filter(page => matlabKaY > page.top-100 && matlabKaY < page.bottom+100 && page.id !== activePage?.id);
 
     var interimName = null;
