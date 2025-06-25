@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import twirlyImg from '../assets/twirly.png';
 
 const AboutMeSection = ({ progress }) => {
   // console.log("progress", progress);
@@ -10,7 +11,7 @@ const AboutMeSection = ({ progress }) => {
       duration: 15,
       initialY: 100,
       yMultiplier: 3,
-      exitStart: 65,
+      exitStart: 75,
       exitDuration: 15,
       exitType: 'fade'
     },
@@ -19,7 +20,7 @@ const AboutMeSection = ({ progress }) => {
       duration: 18,
       initialY: 60,
       yMultiplier: 2,
-      exitStart: 70,
+      exitStart: 80,
       exitDuration: 12,
       exitType: 'slideUp'
     },
@@ -28,7 +29,7 @@ const AboutMeSection = ({ progress }) => {
       duration: 15,
       initialY: 40,
       yMultiplier: 1.3,
-      exitStart: 72,
+      exitStart: 82,
       exitDuration: 10,
       exitType: 'slideUp'
     },
@@ -37,7 +38,7 @@ const AboutMeSection = ({ progress }) => {
       duration: 12,
       initialY: 80,
       yMultiplier: 2.5,
-      exitStart: 75,
+      exitStart: 85,
       exitDuration: 10,
       exitType: 'fade'
     },
@@ -48,7 +49,7 @@ const AboutMeSection = ({ progress }) => {
       yMultiplier: 2,
       initialX: -150,
       xMultiplier: 8,
-      exitStart: 78,
+      exitStart: 88,
       exitDuration: 8,
       exitType: 'slideLeft'
     },
@@ -59,7 +60,7 @@ const AboutMeSection = ({ progress }) => {
       yMultiplier: 2,
       initialX: 150,
       xMultiplier: -8,
-      exitStart: 80,
+      exitStart: 90,
       exitDuration: 8,
       exitType: 'slideRight'
     },
@@ -70,7 +71,7 @@ const AboutMeSection = ({ progress }) => {
       yMultiplier: 2,
       initialX: -150,
       xMultiplier: 8,
-      exitStart: 82,
+      exitStart: 92,
       exitDuration: 8,
       exitType: 'slideLeft'
     },
@@ -81,7 +82,7 @@ const AboutMeSection = ({ progress }) => {
       yMultiplier: 2,
       initialX: 150,
       xMultiplier: -8,
-      exitStart: 84,
+      exitStart: 94,
       exitDuration: 8,
       exitType: 'slideRight'
     }
@@ -165,17 +166,21 @@ const AboutMeSection = ({ progress }) => {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center py-20">
-      <div className="about-section container mx-auto px-6 max-w-6xl">
+      
+      <div className="absolute right-0 top-0 bg-gray-800 rounded-lg h-full flex items-center justify-center">
+        {/* <img src={twirlyImg} alt="Twirly App Screenshot" className="rounded-lg w-full h-full object-cover" /> */}
+      </div>
+      <div className="absolute about-section container mx-auto px-6 max-w-6xl">
         <motion.h2 
           style={{ 
             opacity: titleAnim.opacity, 
             y: titleAnim.y
           }}
-          className="text-6xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
+          className="text-6xl font-bold text-start mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
         >
           About Me
         </motion.h2>
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+        <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
           <div>
             <motion.div 
               style={{ 
@@ -203,7 +208,7 @@ const AboutMeSection = ({ progress }) => {
             opacity: skillsAnim.opacity, 
             y: skillsAnim.y
           }}
-          className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+          className="grid md:grid-cols-4 gap-8"
         >
           <motion.div 
             style={{ 

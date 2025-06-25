@@ -29,8 +29,7 @@ export const useScrollManagement = (stoppersConfig) => {
         id: stopper.id,
         center: center,
         top: top,
-        bottom: bottom,
-        stopAtY: stopper.componentType === 'horizontalStopper' ? top-100 : null
+        bottom: bottom
       });
     }
 
@@ -61,20 +60,16 @@ export const useScrollManagement = (stoppersConfig) => {
     }
     if (
       activePage &&
-      activePage.componentType === 'horizontalStopper' 
+      matlabKaY > activePage.center-100 && matlabKaY < activePage.center+100 &&
+      ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == activePage.componentType) 
     ) {
       setActiveStopperId(activePage.id);
     } else {
       setActiveStopperId(null);
     }
-    if(direction == 'next' && activePageProgress >= 45 
-      && !handoffsReceived.find(h => h.direction == 'next')
-      && ovrAllPage?.componentType === 'horizontalStopper' ){
-      setCenterStuck(ovrAllPage);
-    }
-    else if(direction == 'previous' && activePageProgress <= 55 
-      && !handoffsReceived.find(h => h.direction == 'previous')
-      && ovrAllPage?.componentType === 'horizontalStopper' ){
+    if(((direction == 'next' && activePageProgress >= 45 ) || (direction == 'previous' && activePageProgress <= 55 ))
+      && !handoffsReceived.find(h => h.direction == direction && h.stopperId == ovrAllPage?.id)
+      && ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == ovrAllPage?.componentType) ){
       setCenterStuck(ovrAllPage);
     } else {
       setCenterStuck(null);
@@ -87,7 +82,7 @@ export const useScrollManagement = (stoppersConfig) => {
     centerStuck ? "centerStuck": ""  ,
     direction,
     handoffsReceived.length,
-    handoffsReceived.find(h => h.direction == direction) ? "found": ""
+    handoffsReceived.find(h => h.direction == direction && h.stopperId == activePage?.id) ? "found": ""
     );
     }
   }, [scrollY]);
@@ -124,14 +119,10 @@ export const useScrollManagement = (stoppersConfig) => {
           const activePageProgress = 100*((matlabKaY%viewHeight)/viewHeight);
           
           let shouldCenterStuck = false;
-          if(newDirection == 'next' && activePageProgress >= 50 
-            && !handoffsReceived.find(h => h.direction == 'next')
-            && ovrAllPage.componentType === 'horizontalStopper' ){
-            shouldCenterStuck = true;
-          }
-          else if(newDirection == 'previous' && activePageProgress <= 40 
-            && !handoffsReceived.find(h => h.direction == 'previous')
-            && ovrAllPage.componentType === 'horizontalStopper' ){
+          if(((newDirection == 'next' && activePageProgress >= 50) 
+            || newDirection == 'previous' && activePageProgress <= 50) 
+            && !handoffsReceived.find(h => h.direction == newDirection && h.stopperId == ovrAllPage?.id)
+            && ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == ovrAllPage.componentType) ){
             shouldCenterStuck = true;
           }
           

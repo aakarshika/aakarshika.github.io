@@ -88,6 +88,7 @@ const Portfolio = () => {
             <div key={stopper.id + ' ' + idx} ref={stopper.ref}>
               <VeeSection
                 isActive={activeStopperId === stopper.id}
+                progress={activePageName == stopper.id ? pageProgress : 0}
                 onScrollHandoff={(direction) => handleScrollHandoff(direction, stopper.id)}
                 content={<stopper.componentFun />}
               />
@@ -98,7 +99,6 @@ const Portfolio = () => {
                 <SkillGraph 
                   isActive={activeStopperId === stopper.id} 
                   onScrollHandoff={(direction) => {
-                    console.log('SkillGraph: Received handoff:', direction, 'from:', stopper.id);
                     handleScrollHandoff(direction, stopper.id);
                   }} 
                 /> 

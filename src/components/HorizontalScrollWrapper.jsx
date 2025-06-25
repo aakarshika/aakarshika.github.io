@@ -3,6 +3,7 @@ import { setupScrollEventListeners } from '../utils/scrollEventUtils';
 
 const HorizontalScrollWrapper = ({ 
   isActive, 
+  progress,
   onScrollHandoff, 
   children, 
   slideCount = 3, // Number of slides/pages
@@ -24,11 +25,12 @@ const HorizontalScrollWrapper = ({
   // Handle horizontal scroll when section is active
   useEffect(() => {
     if (!isActive) return;
+    // if (!(progress < 40 || progress > 60)) return;
 
     const handleWheel = (e) => {
       // console.log("handleWheel", e);
       
-      const deltaX = e.deltaY ;
+      const deltaX = e.deltaY * 2;
       setScrollX(prev => {
         const newX = prev - deltaX;
         const maxScroll = -(window.innerWidth * (slideCount - 1));
