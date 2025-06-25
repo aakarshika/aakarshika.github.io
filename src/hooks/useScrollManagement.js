@@ -40,7 +40,7 @@ export const useScrollManagement = (stoppersConfig) => {
   }, [activeStopperId]);
 
   useEffect(() => {
-    console.log("scrollY", scrollY);
+    // console.log("scrollY", scrollY);
 
     const matlabKaY = scrollY + viewHeight/2;
     const activePageProgress = 100*((matlabKaY%viewHeight)/viewHeight);
@@ -75,21 +75,21 @@ export const useScrollManagement = (stoppersConfig) => {
       setCenterStuck(null);
     }
 
-    if(!activePage) {
-      console.log("--------------------------------");
-    } else {
-      console.log(pageProgress.toFixed(), `\"${activePage?.id}\"`,
-    centerStuck ? "centerStuck": ""  ,
-    direction,
-    handoffsReceived.length,
-    handoffsReceived.find(h => h.direction == direction && h.stopperId == activePage?.id) ? "found": ""
-    );
-    }
+    // if(!activePage) {
+    //   console.log("--------------------------------");
+    // } else {
+    //   console.log(pageProgress.toFixed(), `\"${activePage?.id}\"`,
+    // centerStuck ? "centerStuck": ""  ,
+    // direction,
+    // handoffsReceived.length,
+    // handoffsReceived.find(h => h.direction == direction && h.stopperId == activePage?.id) ? "found": ""
+    // );
+    // }
   }, [scrollY]);
 
 
   const handleScrollHandoff = (direction, stopperId) => {
-    console.log("handleScrollHandoff recieved", direction, stopperId);
+    console.log("changing hands", direction, stopperId);
     setHandoffsReceived([{ direction, stopperId }]);
     setCenterStuck(null);
     setActiveStopperId(null);

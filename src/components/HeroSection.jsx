@@ -1,51 +1,40 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { calculateAnimations } from '../utils/progressAnimationUtils';
 
 const HeroSection = ({ progress }) => {
-  console.log("progress", progress);
+  // console.log("progress", progress);
   
-  // Calculate animation values similar to AboutMeSection pattern
-  const calculateDesignerTextAnimation = () => {
-    const start = 51;
-    const duration = 14; // 65 - 51 = 14
-    
-    let entranceProgress = 0;
-    if (progress >= start) {
-      entranceProgress = Math.min((progress - start) / duration, 1);
-    }
-    
-    // Apply easing for smoother animation (ease-out cubic)
-    const easedEntranceProgress = 1 - Math.pow(1 - entranceProgress, 3);
-    
-    // X movement: slide in from right (positive initialX)
-    const initialX = 200; // Start 200px to the right
-    const x = progress >= start ? initialX * (1 - easedEntranceProgress) : initialX;
-    
-    // Opacity: fade in during entrance, fade out after 65%
-    let opacity = easedEntranceProgress;
-    if (progress > 65) {
-      opacity = 0;
-    }
-    
-    return { x, opacity };
-  };
+  // Animation configuration using the new JSON format
+  const animationConfig = [
+    {
+      object: 'designerText',
+      anim: [
+        { type: 'fade', initialValue: 0, startTiming: 51, duration: 14 },
+        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 63, duration: 1 },
+        { type: 'slideX', initialValue: 250, finalValue: 0, startTiming: 51, duration: 14}
+      ]
+    },
+    {
+      object: 'mainComponent',
+      anim: [
+        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 20 },
+        { type: 'slideY', initialValue: 0, finalValue: 300, startTiming: 65, duration: 40}
+      ]
+    },
+  ];
   
-  const designerTextAnim = calculateDesignerTextAnimation();
+  // Calculate animation values using the utility
+  const animations = calculateAnimations(animationConfig, progress);
 
   return (
 
     <div className="h-screen relative flex items-center justify-center overflow-hidden">
 
       <motion.div className="text-center z-10"
-        initial={{
-          opacity: progress > 50 ? 1 : 0,
-        }}
-        animate={{
-          opacity: 1
-        }}
-        transition={{
-          duration: 1,
-          ease: "easeInOut",
+        style={{
+          // y: `${animations.mainComponent?.slideY || 0}px`,
+          opacity: progress > 0 ? animations.mainComponent?.fade || 1 : 0
         }}
       >
         <motion.h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -58,8 +47,8 @@ const HeroSection = ({ progress }) => {
       <motion.span 
         className="absolute text-2xl text-gray-300 mb-8 pointer-events-none"
         style={{
-          x: `${designerTextAnim.x}px`,
-          opacity: designerTextAnim.opacity
+          x: `${animations.designerText?.slideX || 200}px`,
+          opacity: animations.designerText?.fade || 0
         }}>
         {', sometimes Designer'}
       </motion.span>
