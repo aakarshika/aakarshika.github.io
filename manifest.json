@@ -1,7 +1,7 @@
 {
-  "name": "NotAResume",
-  "short_name": "NotAResume",
-  "description": "Your modern resume builder application",
+  "name": "Not A Resume",
+  "short_name": "Not A Resume",
+  "description": "Aakarshika's Portfolio",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
