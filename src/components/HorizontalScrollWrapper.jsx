@@ -16,7 +16,7 @@ const HorizontalScrollWrapper = ({
   // Handle scroll handoff after render
   useEffect(() => {
     if (handoffDirection) {
-      console.log('Handing off control:', handoffDirection);
+      // console.log('Handing off control:', handoffDirection);
       onScrollHandoff(handoffDirection);
       setHandoffDirection(null);
     }
@@ -36,19 +36,12 @@ const HorizontalScrollWrapper = ({
         const maxScroll = -(window.innerWidth * (slideCount - 1));
         const limitedX = Math.max(maxScroll, Math.min(0, newX));
         
-        // Add a small buffer zone (50px) for earlier handoff
         const handoffBuffer = 150;
         
-        // Check if we need to hand off control
-        // Hand off when approaching the boundary with buffer
         if (e.deltaY > 0 && prev <= (maxScroll + handoffBuffer) && newX < (maxScroll + handoffBuffer)) {
-          // Scrolling down and approaching end - hand off to next section
-          console.log('Setting handoff to next - approaching end');
           setHandoffDirection('next');
           return Math.max(maxScroll, newX); // Don't go beyond actual boundary
         } else if (e.deltaY < 0 && prev >= -handoffBuffer && newX > -handoffBuffer) {
-          // Scrolling up and approaching start - hand off to previous section
-          console.log('Setting handoff to previous - approaching start');
           setHandoffDirection('previous');
           return Math.min(0, newX); // Don't go beyond actual boundary
         }

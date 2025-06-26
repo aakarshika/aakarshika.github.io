@@ -127,7 +127,7 @@ const precalculateTimeline = (animations) => {
   const animationType = sortedAnimations[0]?.type || 'fade';
   let currentFallback = animationType === 'fade' ? 0 : 0; // 0 for fade (invisible), 0 for slides (original position)
   
-  console.log(`Precalculating timeline for animations:`, sortedAnimations);
+  // console.log(`Precalculating timeline for animations:`, sortedAnimations);
   
   sortedAnimations.forEach((animation, index) => {
     const { initialValue, finalValue, startTiming, duration, type } = animation;
@@ -144,7 +144,7 @@ const precalculateTimeline = (animations) => {
       }
     }
     
-    console.log(`Animation ${index}: startTiming=${startTiming}, duration=${duration}, initialValue=${initialValue}, finalValue=${effectiveFinalValue}, type=${type}`);
+    // console.log(`Animation ${index}: startTiming=${startTiming}, duration=${duration}, initialValue=${initialValue}, finalValue=${effectiveFinalValue}, type=${type}`);
     
     // Add gap period if there's a gap between previous animation and this one
     if (index === 0 && startTiming > 0) {
@@ -155,7 +155,7 @@ const precalculateTimeline = (animations) => {
         value: currentFallback,
         type: 'fallback'
       });
-      console.log(`Added gap: 0-${startTiming}, value=${currentFallback}`);
+      // console.log(`Added gap: 0-${startTiming}, value=${currentFallback}`);
     } else if (index > 0) {
       const previousAnimation = sortedAnimations[index - 1];
       const previousEnd = previousAnimation.startTiming + previousAnimation.duration;
@@ -167,7 +167,7 @@ const precalculateTimeline = (animations) => {
           value: currentFallback,
           type: 'fallback'
         });
-        console.log(`Added gap: ${previousEnd}-${startTiming}, value=${currentFallback}`);
+        // console.log(`Added gap: ${previousEnd}-${startTiming}, value=${currentFallback}`);
       }
     }
     
@@ -179,13 +179,13 @@ const precalculateTimeline = (animations) => {
       finalValue: effectiveFinalValue,
       type: 'animation'
     });
-    console.log(`Added animation: ${startTiming}-${startTiming + duration}, ${initialValue}->${effectiveFinalValue}`);
+    // console.log(`Added animation: ${startTiming}-${startTiming + duration}, ${initialValue}->${effectiveFinalValue}`);
     
     // Update fallback to this animation's final value
     currentFallback = effectiveFinalValue;
   });
   
-  console.log(`Final timeline:`, timeline);
+  // console.log(`Final timeline:`, timeline);
   return timeline;
 };
 

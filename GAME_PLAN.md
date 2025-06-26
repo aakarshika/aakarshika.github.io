@@ -211,7 +211,6 @@ if the user lets go of the scroll, we will snap to the expanded or collapsed pos
 - **AnimatedSkillsChart.jsx**: Main chart component with scroll handling (FIXED: proper level transitions)
 - **TimelineDataProcessor.js**: NEW - Processes timeline data with proper time-based segments
 - **TimelineSegment.jsx**: NEW - Renders timeline segments with time-based positioning
-- **AnimatedSkillsPage.jsx**: Test page for the new chart
 - **Routing**: Added route `/animated-skills` to test the implementation
 - **X/Y Axis Understanding**: Fixed positioning with X-only animations
 - **Even Distribution**: Skills spread evenly across page width
