@@ -106,7 +106,7 @@ export function useScrollAnimation({
   // Handle scroll handoff after render
   useEffect(() => {
     if (handoffDirection && onScrollHandoff) {
-      console.log('Handing off control:', handoffDirection);
+      // console.log('Handing off control:', handoffDirection);
       onScrollHandoff(handoffDirection);
       setHandoffDirection(null);
     }

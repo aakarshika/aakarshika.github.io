@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { calculateAnimations } from '../utils/progressAnimationUtils';
 
 const HeroSection = ({ progress }) => {
-  console.log("Hero progress", progress);
+  // console.log("Hero progress", progress);
   
   // Animation configuration using the new JSON format
   const animationConfig = [

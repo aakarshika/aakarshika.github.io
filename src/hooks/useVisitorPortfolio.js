@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../supabase';
+import { getCachedFingerprint } from '../utils/fingerprintUtils';
 
 function dataURLtoBlob(dataurl) {
   const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -9,7 +10,18 @@ function dataURLtoBlob(dataurl) {
 
 export const useVisitorPortfolio = () => {
   const [picturesList, setPicturesList] = useState([]);
-  const [fingerprint] = useState(() => Math.random().toString(36).slice(2));
+  // const [fingerprint] = useState(() => Math.random().toString(36).slice(2));
+
+  const [fingerprint, setFingerprint] = useState(null);
+
+  // Initialize fingerprint on component mount
+  useEffect(() => {
+    const initFingerprint = async () => {
+      const fp = await getCachedFingerprint();
+      setFingerprint(fp);
+    };
+    initFingerprint();
+  }, []);
 
   const getPublicUrl = (filePath) => {
     if (!filePath) return null;
@@ -27,18 +39,37 @@ export const useVisitorPortfolio = () => {
         .order('created_at', { ascending: false })
         .limit(20);
       if (error) throw error;
-      const d = data.map(pic => ({ src: getPublicUrl(pic.object_name), filter: pic.filter }));
-      Array(70-d.length).fill(0).forEach(() => {
+      const d = data.map(pic => ({ 
+        src: getPublicUrl(pic.object_name), 
+        filter: pic.filter,
+        fingerprint: pic.fingerprint,
+        object_name: pic.object_name,
+        id: pic.id,
+        message: pic.message || ''
+      }));
+      Array(5).fill(0).forEach(() => {
+        d.push({ src: 'heart', filter: 'none' });
+      });
+      Array(40-d.length).fill(0).forEach(() => {
         d.push({ src: 'blank', filter: 'none' });
       });
-      console.log(d);
+      Array(55-d.length).fill(0).forEach(() => {
+        d.push(d[Math.floor(Math.random() * d.length)]);
+      });
       setPicturesList(d.sort((a, b) => Math.random() - 0.5));
     } catch (err) {
       console.error('Error fetching visitor images:', err);
     }
   };
 
-  const handleCapture = async (imageSrc, filter) => {
+  const handleCapture = async (imageSrc, filter, message = '') => {
+    if (!fingerprint) {
+      console.warn('Fingerprint not ready yet, retrying...');
+      // Wait a bit and try again
+      setTimeout(() => handleCapture(imageSrc, filter, message), 100);
+      return;
+    }
+
     const imageBlob = dataURLtoBlob(imageSrc);
     const fileName = `${Date.now()}_${fingerprint}.jpg`;
     try {
@@ -54,12 +85,42 @@ export const useVisitorPortfolio = () => {
         .insert({
           fingerprint,
           object_name: fileName,
-          filter
+          filter,
+          message: message.trim()
         });
       if (insertError) throw insertError;
       await fetchPortfolio();
     } catch (err) {
       console.error('Error uploading visitor picture:', err);
+    }
+  };
+
+  const handleDelete = async (objectName, id) => {
+    if (!fingerprint) {
+      console.warn('Fingerprint not ready yet');
+      return;
+    }
+
+    try {
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
+        .from('aakarshika-visitors')
+        .remove([objectName]);
+      
+      if (storageError) throw storageError;
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('visitor_fingerprints')
+        .delete()
+        .eq('id', id);
+      
+      if (dbError) throw dbError;
+
+      // Refresh the portfolio
+      await fetchPortfolio();
+    } catch (err) {
+      console.error('Error deleting image:', err);
     }
   };
 
@@ -69,6 +130,8 @@ export const useVisitorPortfolio = () => {
 
   return {
     picturesList,
-    handleCapture
+    handleCapture,
+    handleDelete,
+    fingerprint
   };
 }; 

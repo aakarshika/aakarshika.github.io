@@ -1,6 +1,6 @@
 {
   "appId": "com.notaresume.app",
-  "appName": "NotAResume",
+  "appName": "Not A Resume",
   "webDir": "dist",
   "server": {
     "androidScheme": "https",
