@@ -5,9 +5,14 @@ import { supabase } from '../../supabase';
 
 const PicSection = ({progress, pictures, onCapture, currentFingerprint, onDelete}) => {
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 ">
+    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900"
+    style={{
+      paddingBottom: '500px'
+    }}
+    >
+    <div className="relative w-full bg-gradient-to-b from-black to-gray-900">
     
-      <div className="absolute top-0 left-0 w-full h-full tlan">
+      <div className="absolute w-full h-screen tlan">
       <TandLPictureSection 
         pictures={pictures} 
         progress={progress} 
@@ -27,6 +32,7 @@ const PicSection = ({progress, pictures, onCapture, currentFingerprint, onDelete
             leave a heart
           </h2>
         </div>
+    </div>
     </div>
   </div>
   );

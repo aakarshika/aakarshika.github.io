@@ -53,7 +53,7 @@ export const useVisitorPortfolio = () => {
       Array(40-d.length).fill(0).forEach(() => {
         d.push({ src: 'blank', filter: 'none' });
       });
-      Array(55-d.length).fill(0).forEach(() => {
+      Array((15*5)-d.length).fill(0).forEach(() => {
         d.push(d[Math.floor(Math.random() * d.length)]);
       });
       setPicturesList(d.sort((a, b) => Math.random() - 0.5));

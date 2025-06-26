@@ -9,9 +9,13 @@ const AllPicturesTwinkling = ({ pictures, progress = 0, size = { width: 210, hei
   }
   // console.log("currentFingerprint", currentFingerprint);
   return (
-    <div className="relative w-full h-full ">
-      <div className="grid grid-cols-11 w-full ">
-        {pictures.slice(0, 11*5).map((pic, idx) => 
+    <div className="relative w-full h-full "
+    style={{
+      scale: 0.8
+    }}
+    >
+      <div className="w-full" style={{ display: 'grid', gridTemplateColumns: 'repeat(15, 1fr)' }}>
+        {pictures.slice(0, 15*5).map((pic, idx) => 
           { 
             const sign = (1-(idx%2)*2);
             const rot = 5*sign*(idx%3);
