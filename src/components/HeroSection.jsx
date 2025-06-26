@@ -40,12 +40,12 @@ const HeroSection = ({ progress }) => {
         <motion.h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
           Aakarshika
         </motion.h1>
-        <motion.span className="text-2xl text-gray-300 mb-8">
+        <motion.span className="text-2xl text-white mb-8">
           {(progress < 65 ? 'Software Developer' : 'Software Developer, sometimes Designer')}
         </motion.span>
 
       <motion.span 
-        className="absolute text-2xl text-gray-300 mb-8 pointer-events-none"
+        className="absolute text-2xl text-white mb-8 pointer-events-none"
         style={{
           x: `${animations.designerText?.slideX || 200}px`,
           opacity: animations.designerText?.fade || 0

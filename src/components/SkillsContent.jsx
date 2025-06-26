@@ -9,7 +9,7 @@ const SkillsContent = () => {
           <h2 className="text-7xl font-bold mb-8 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
             Skills
           </h2>
-          <p className="text-2xl text-gray-300 mb-4">My technical expertise</p>
+          <p className="text-2xl text-white mb-4">My technical expertise</p>
           <div className="w-32 h-1 bg-gradient-to-r from-green-400 to-blue-400 mx-auto"></div>
         </div>
       </div>
@@ -24,28 +24,28 @@ const SkillsContent = () => {
                 <span className="text-2xl">⚛️</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">React</h4>
-              <p className="text-gray-400">Advanced</p>
+              <p className="text-white">Advanced</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-green-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">⚡</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Vue.js</h4>
-              <p className="text-gray-400">Intermediate</p>
+              <p className="text-white">Intermediate</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-red-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🅰️</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Angular</h4>
-              <p className="text-gray-400">Intermediate</p>
+              <p className="text-white">Intermediate</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-yellow-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🎨</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">CSS/SCSS</h4>
-              <p className="text-gray-400">Advanced</p>
+              <p className="text-white">Advanced</p>
             </div>
           </div>
         </div>
@@ -61,28 +61,28 @@ const SkillsContent = () => {
                 <span className="text-2xl">🟢</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Node.js</h4>
-              <p className="text-gray-400">Advanced</p>
+              <p className="text-white">Advanced</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🐍</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Python</h4>
-              <p className="text-gray-400">Intermediate</p>
+              <p className="text-white">Intermediate</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-orange-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🔥</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Firebase</h4>
-              <p className="text-gray-400">Advanced</p>
+              <p className="text-white">Advanced</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-indigo-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🗄️</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Databases</h4>
-              <p className="text-gray-400">Intermediate</p>
+              <p className="text-white">Intermediate</p>
             </div>
           </div>
         </div>
@@ -98,28 +98,28 @@ const SkillsContent = () => {
                 <span className="text-2xl">📦</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Git</h4>
-              <p className="text-gray-400">Advanced</p>
+              <p className="text-white">Advanced</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🎨</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Figma</h4>
-              <p className="text-gray-400">Intermediate</p>
+              <p className="text-white">Intermediate</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-yellow-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">🚀</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">Docker</h4>
-              <p className="text-gray-400">Basic</p>
+              <p className="text-white">Basic</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-6 text-center">
               <div className="w-16 h-16 bg-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-2xl">☁️</span>
               </div>
               <h4 className="text-xl font-semibold mb-2">AWS</h4>
-              <p className="text-gray-400">Basic</p>
+              <p className="text-white">Basic</p>
             </div>
           </div>
         </div>

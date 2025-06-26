@@ -9,7 +9,7 @@ const TestimonialsSection = () => {
           <h2 className="text-7xl font-bold mb-8 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
             Testimonials
           </h2>
-          <p className="text-2xl text-gray-300 mb-4">Swipe through my latest work</p>
+          <p className="text-2xl text-white mb-4">Swipe through my latest work</p>
           <div className="w-32 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto"></div>
         </div>
       </div>
@@ -19,7 +19,7 @@ const TestimonialsSection = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl">
           <div>
             <h3 className="text-5xl font-bold mb-6 text-cyan-400">Project One</h3>
-            <p className="text-xl text-gray-300 mb-6">
+            <p className="text-xl text-white mb-6">
               [Detailed description of your first project - the challenge, 
               your approach, technologies used, and the impact.]
             </p>
@@ -46,7 +46,7 @@ const TestimonialsSection = () => {
           </div>
           <div>
             <h3 className="text-5xl font-bold mb-6 text-pink-400">Project Two</h3>
-            <p className="text-xl text-gray-300 mb-6">
+            <p className="text-xl text-white mb-6">
               [Description of your second project - highlighting different 
               skills and technologies than the first project.]
             </p>
@@ -67,7 +67,7 @@ const TestimonialsSection = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl">
           <div>
             <h3 className="text-5xl font-bold mb-6 text-green-400">Project Three</h3>
-            <p className="text-xl text-gray-300 mb-6">
+            <p className="text-xl text-white mb-6">
               [Your third project showcase - maybe a mobile app, 
               AI project, or something completely different.]
             </p>

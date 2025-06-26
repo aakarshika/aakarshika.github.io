@@ -83,7 +83,6 @@ const SkillGraph = ({ isActive, onScrollHandoff }) => {
         <div className="flex-1 rounded-lg p-6">
           <div 
             className="rounded-lg p-4 h-full"
-            style={{ cursor: removingNodes.length > 0 ? 'ns-resize' : 'default' }}
           >
             <div 
               ref={timelineContainerRef}

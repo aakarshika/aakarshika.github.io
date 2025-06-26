@@ -12,7 +12,7 @@ const ProjectsSection = () => {
           <h2 className="text-7xl font-bold pb-8 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
             Projects
           </h2>
-          <p className="text-2xl text-gray-300 mb-4">that I spend late nights on</p>
+          <p className="text-2xl text-white mb-4">that I spend late nights on</p>
           <div className="w-32 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto"></div>
         </div>
       </div>
@@ -26,7 +26,7 @@ const ProjectsSection = () => {
         <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
           <div>
             <h3 className="text-5xl font-bold mb-6 text-cyan-400">Twirly App</h3>
-            <p className="text-xl text-gray-300 mb-6">
+            <p className="text-xl text-white mb-6">
               A real-time social comparison platform for mobile and web. Built with live voting system, 
               TikTok-style infinite scroll, and mobile-first UI with smooth animations.
             </p>
@@ -60,7 +60,7 @@ const ProjectsSection = () => {
           </div>
           <div>
             <h3 className="text-5xl font-bold mb-6 text-pink-400">Daywise</h3>
-            <p className="text-xl text-gray-300 mb-6">
+            <p className="text-xl text-white mb-6">
               An ADHD-friendly To-Do mobile app using LLMs for predictive, personalized tasking. 
               Built with shared business logic for Android/iOS using Kotlin Multiplatform.
             </p>
@@ -89,7 +89,7 @@ const ProjectsSection = () => {
           </div>
           <div>
             <h3 className="text-5xl font-bold mb-6 text-pink-400">Portfolio</h3>
-            <p className="text-xl text-gray-300 mb-6">
+            <p className="text-xl text-white mb-6">
             This website!   
             </p>
             <div className="flex space-x-4 mb-6">
@@ -114,7 +114,7 @@ const ProjectsSection = () => {
         <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
           <div>
             <h3 className="text-5xl font-bold mb-6 text-green-400">Coder Kids ML Platform</h3>
-            <p className="text-xl text-gray-300 mb-6">
+            <p className="text-xl text-white mb-6">
               Backend API for ML learning platform with drag-and-drop interface. Integrated scikit-learn, 
               Keras, and Caffe libraries for non-technical users to train and visualize ML models.
             </p>

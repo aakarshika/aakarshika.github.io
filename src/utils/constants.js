@@ -90,7 +90,7 @@ export const TIMELINE_COLORS = {
   duration: 'text-yellow-300',
   company: 'text-blue-300',
   level: 'text-green-300',
-  description: 'text-gray-400'
+  description: 'text-white'
 };
 
 // Toggle button states

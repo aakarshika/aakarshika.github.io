@@ -214,7 +214,7 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                             className="rounded px-3 py-2 bg-gray-700 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             disabled={isCountingDown}
                         />
-                        <div className="text-xs text-gray-400 text-right">
+                        <div className="text-xs text-white text-right">
                             {message.length}/100
                         </div>
                     </div>

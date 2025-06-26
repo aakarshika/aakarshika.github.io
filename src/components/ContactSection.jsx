@@ -79,7 +79,7 @@ const ContactSection = () => {
         <h2 className="text-6xl font-bold mb-12 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
           Let's Work Together
         </h2>
-        <p className="text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
+        <p className="text-2xl text-white mb-12 max-w-2xl mx-auto">
           Ready to give me a call, a challenge or money?
         </p>
         
@@ -91,7 +91,7 @@ const ContactSection = () => {
             >
               Get In Touch
             </button>
-            <a href="#" className="border border-gray-600 px-8 py-4 rounded-full text-gray-300 hover:border-white hover:text-white transition-all duration-300">
+            <a href="#" className="border border-gray-600 px-8 py-4 rounded-full text-white hover:border-white hover:text-white transition-all duration-300">
               View Resume
             </a>
           </div>
@@ -112,7 +112,7 @@ const ContactSection = () => {
 
             <form onSubmit={handleSubmitForm} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-gray-300 text-sm font-medium mb-2 text-left">
+                <label htmlFor="name" className="block text-white text-sm font-medium mb-2 text-left">
                   Name
                 </label>
                 <input
@@ -129,7 +129,7 @@ const ContactSection = () => {
               </div>
               
               <div>
-                <label htmlFor="message" className="block text-gray-300 text-sm font-medium mb-2 text-left">
+                <label htmlFor="message" className="block text-white text-sm font-medium mb-2 text-left">
                   Message
                 </label>
                 <textarea
@@ -149,7 +149,7 @@ const ContactSection = () => {
                 <button
                   type="button"
                   onClick={handleCloseForm}
-                  className="flex-1 px-6 py-3 border border-gray-600 rounded-lg text-gray-300 hover:border-white hover:text-white transition-all duration-300 font-medium"
+                  className="flex-1 px-6 py-3 border border-gray-600 rounded-lg text-white hover:border-white hover:text-white transition-all duration-300 font-medium"
                   disabled={isSubmitting}
                 >
                   Cancel

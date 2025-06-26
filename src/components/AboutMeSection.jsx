@@ -147,7 +147,7 @@ const AboutMeSection = ({ progress }) => {
                 opacity: animations.firstText?.fade || 0,
                 y: animations.firstText?.slideY || 0
               }}
-              className="text-xl text-gray-300 leading-relaxed mb-6"
+              className="text-xl text-white leading-relaxed mb-6"
             >
               I'm building intelligent, cross-platform apps.
               Trying to combine real-time systems, elegant UX, and AI-driven features, hoping for clean code and bold experiences.
@@ -156,7 +156,7 @@ const AboutMeSection = ({ progress }) => {
               style={{
                 opacity: animations.secondText?.fade || 0
               }}
-              className="text-lg text-gray-400"
+              className="text-lg text-white"
             >
               Engineer, system thinker, and AI whisperer.
             </motion.div>
@@ -237,7 +237,7 @@ const AboutMeSection = ({ progress }) => {
           >
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-4"></div>
             <h3 className="text-xl font-semibold mb-2">Frontend</h3>
-            <p className="text-gray-400">React, Kotlin, Angular</p>
+            <p className="text-white">React, Kotlin, Angular</p>
           </motion.div>
           <motion.div
             style={{
@@ -248,7 +248,7 @@ const AboutMeSection = ({ progress }) => {
           >
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full mx-auto mb-4"></div>
             <h3 className="text-xl font-semibold mb-2">Backend</h3>
-            <p className="text-gray-400">Node.js, Python, APIs, Java</p>
+            <p className="text-white">Node.js, Python, APIs, Java</p>
           </motion.div>
           <motion.div
             style={{
@@ -259,7 +259,7 @@ const AboutMeSection = ({ progress }) => {
           >
             <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-red-500 rounded-full mx-auto mb-4"></div>
             <h3 className="text-xl font-semibold mb-2">Database</h3>
-            <p className="text-gray-400">MongoDB, PostgreSQL, MySQL</p>
+            <p className="text-white">MongoDB, PostgreSQL, MySQL</p>
           </motion.div>
           <motion.div
             style={{
@@ -270,7 +270,7 @@ const AboutMeSection = ({ progress }) => {
           >
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mx-auto mb-4"></div>
             <h3 className="text-xl font-semibold mb-2">Cloud</h3>
-            <p className="text-gray-400">AWS, Vercel, Supabase</p>
+            <p className="text-white">AWS, Vercel, Supabase</p>
           </motion.div>
         </motion.div>
       </div>)}

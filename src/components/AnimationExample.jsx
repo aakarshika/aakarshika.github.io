@@ -126,7 +126,7 @@ const AnimationExample = ({ progress }) => {
               opacity: animations.subtitle?.fade || 0, 
               y: animations.subtitle?.slideY || 0 
             }}
-            className="text-xl text-gray-300 mb-8"
+            className="text-xl text-white mb-8"
           >
             This demonstrates the new JSON-based progress animation system
           </motion.p>
@@ -202,7 +202,7 @@ const AnimationExample = ({ progress }) => {
           className="bg-gray-700 p-6 rounded-lg text-center"
         >
           <h3 className="text-white text-lg font-semibold">Simple Fade</h3>
-          <p className="text-gray-300">This element simply fades in</p>
+          <p className="text-white">This element simply fades in</p>
         </motion.div>
 
         {/* Rotate Animation */}

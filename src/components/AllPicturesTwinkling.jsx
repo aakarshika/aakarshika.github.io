@@ -5,7 +5,7 @@ const IMG_SIZE = 100; // px
 
 const AllPicturesTwinkling = ({ pictures, progress = 0, size = { width: 210, height: 190 }, currentFingerprint, onDelete }) => {
   if (!pictures || pictures.length === 0) {
-    return <div className="text-gray-400 text-sm">No pictures yet.</div>;
+    return <div className="text-white text-sm">No pictures yet.</div>;
   }
   // console.log("currentFingerprint", currentFingerprint);
   return (
