@@ -21,6 +21,10 @@ const ContactSection = () => {
     setSubmitStatus(null);
   };
 
+  const handleOpenResume = () => {
+    window.open('/Resume_AakarshikaPriydarshi_SDE.pdf', '_blank');
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -91,9 +95,12 @@ const ContactSection = () => {
             >
               Get In Touch
             </button>
-            <a href="#" className="border border-gray-600 px-8 py-4 rounded-full text-white hover:border-white hover:text-white transition-all duration-300">
+            <button 
+              onClick={handleOpenResume}
+              className="border border-gray-600 px-8 py-4 rounded-full text-white hover:border-white hover:text-white transition-all duration-300"
+            >
               View Resume
-            </a>
+            </button>
           </div>
         ) : (
           <div className="max-w-md mx-auto">
