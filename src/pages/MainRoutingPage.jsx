@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Home from './Home';
 import Portfolio from './Portfolio';
 import AnimatedSkillsPage from './AnimatedSkillsPage';
 

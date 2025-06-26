@@ -28,8 +28,11 @@ export const useVisitorPortfolio = () => {
         .limit(20);
       if (error) throw error;
       const d = data.map(pic => ({ src: getPublicUrl(pic.object_name), filter: pic.filter }));
+      // Array(70-d.length).fill(0).forEach(() => {
+      //   d.push({ src: 'blank', filter: 'none' });
+      // });
       Array(70-d.length).fill(0).forEach(() => {
-        d.push({ src: 'blank', filter: 'none' });
+        d.push(d[Math.floor(Math.random() * d.length)]);
       });
       console.log(d);
       setPicturesList(d.sort((a, b) => Math.random() - 0.5));

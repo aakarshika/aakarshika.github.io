@@ -5,15 +5,23 @@ import { supabase } from '../../supabase';
 
 const PicSection = ({progress, pictures, onCapture}) => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 py-10">
-    <div className="custom-section container mx-auto px-6 text-center">
-      <h2 className="text-6xl font-bold mb-16 bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">
-        Take a picture, leave a picture
-      </h2>
-    </div>
-      <div className="tlan">
+    <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 ">
+    
+      <div className="absolute top-0 left-0 w-full h-full tlan">
       <TandLPictureSection pictures={pictures} progress={progress} onCapture={onCapture} />
       </div>
+      <div className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 text-center">
+        <div className=" px-6 py-2 rounded-lg mb-4">
+          <h2 className="text-6xl font-bold bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">
+            If you want to
+          </h2>
+        </div>
+        <div className=" px-6 py-2 rounded-lg">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">
+            take a picture, leave a picture
+          </h2>
+        </div>
+    </div>
   </div>
   );
 };

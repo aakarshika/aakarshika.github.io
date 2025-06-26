@@ -12,7 +12,7 @@ const FILTERS = {
     label: 'Blur',
     setup: (seriously, src, target) => {
       const effect = seriously.effect('blur');
-      effect.amount = 0.7;
+      effect.amount = 0.07;
       effect.source = src;
       target.source = effect;
     }
@@ -126,12 +126,12 @@ const TandLPictureSection = ({ progress, pictures, onCapture }) => {
     }, [filter, onCapture]);
 
     return (
-        <div className="tstart relative h-full w-full items-center justify-center">
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none p-12">
+        <div className="tstart relative h-full w-full items-center justify-center mb-60">
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none p-12 pt-60">
         <AllPicturesTwinkling pictures={pictures} progress={progress} />
         </div>
             {cameraOpen ? (
-                <div className="p-12 h-96 flex flex-col items-center justify-center gap-4 relative z-10">
+                <div className="p-12 pt-60 h-full flex flex-col items-center justify-center gap-4 relative z-10">
                     <div className="mb-4 flex gap-2">
                         <label className="text-white">Filter:</label>
                         <select
@@ -173,8 +173,8 @@ const TandLPictureSection = ({ progress, pictures, onCapture }) => {
                     </button>
                 </div>
             ) : (
-                <div className="p-12 h-96 flex items-center justify-center gap-4 z-10" onClick={() => setCameraOpen(true)}>
-                  <div className='flex flex-col items-center justify-center bg-gradient-to-b from-black to-gray-900 rounded-lg p-12 gap-4 z-10'>
+                <div className="p-12 pt-60 h-full flex items-center justify-center gap-4  z-2" onClick={() => setCameraOpen(true)}>
+                  <div className=' items-center justify-center bg-gradient-to-b from-black to-gray-900 rounded-lg p-20 gap-4 z-10'>
                     <Camera className="w-10 h-10" />
                 </div>
                 </div>
