@@ -1,5 +1,4 @@
 import React from 'react';
-import TimelineBox from './TimelineBox';
 import { getRainbowColor } from '../../utils/constants';
 
 /**
@@ -19,69 +18,55 @@ const SkillsListNode = ({
   adjustedBoxWidth,
   getRemovingNodeOpacity,
   visibleNodes,
+  onHover,
   timelineBoxes = [] // New prop for timeline boxes
 }) => {
+
   // Generate rainbow color based on index
   const rainbowColor = getRainbowColor(index, visibleNodes.length);
   
-  // Determine styling based on state
-  let boxClasses = 'absolute rounded-lg p-3 shadow-lg';
-  let opacity = 1;
-  let scale = 1;
-  let backgroundColor = rainbowColor;
-  let borderColor = rainbowColor;
   
+  // Only use the timelineBox with the smallest minY (smallest y value)
+  const timelineBox = timelineBoxes.reduce((minBox, box) =>
+    box.y < (minBox ? minBox.y : Infinity) ? box : minBox, null);
+  const nodeChildrenHighlighted = node.childrenHighlighted;
+  // Determine styling based on state
+  let boxClasses = 'absolute rounded ';
+  let zIndex = 10;
   switch (state) {
     case 'adding':
-      boxClasses += ' border-2 hover:opacity-80';
-      backgroundColor = rainbowColor;
-      borderColor = rainbowColor;
-      opacity = getRemovingNodeOpacity(node); // Dynamic opacity based on scroll
+      zIndex = 11;
       break;
     case 'removing':
-      boxClasses += ' border-2 hover:opacity-60';
-      backgroundColor = '#1f2937'; // Dark gray for removing
-      borderColor = '#4b5563';
-      opacity = getRemovingNodeOpacity(node); // Dynamic opacity based on scroll
+      zIndex = 9;
       break;
     case 'staying':
-      boxClasses += ' border-2 hover:opacity-90';
-      backgroundColor = rainbowColor;
-      borderColor = rainbowColor;
-      opacity = 1; // Normal
+      zIndex = 8;
       break;
     case 'hidden':
-      // This is a parent node that's not normally visible
-      boxClasses += ' border-2 hover:opacity-80';
-      backgroundColor = '#2563eb'; // Blue for parent nodes
-      borderColor = '#3b82f6';
-      opacity = 0.8;
-      scale = 1.2; // Larger size for parent nodes
+      zIndex = 7;
       break;
   }
   
   // Override with preview styling if this is the preview node
   if (isPreview) {
-    boxClasses = 'absolute rounded-lg p-3 shadow-lg border-2 hover:opacity-80';
-    backgroundColor = '#8b5cf6'; // Purple for preview
-    borderColor = '#fbbf24'; // Yellow border
-    opacity = 0.8;
+    boxClasses = 'absolute rounded    ';
+    zIndex = 7;
   }
   
   // Override with parent styling if this is a parent of a removing node
-  if (isParentOfRemoving && state !== 'removing' && !isPreview) {
-    boxClasses = 'absolute rounded-lg p-3 shadow-lg border-2 hover:opacity-80';
-    backgroundColor = '#2563eb'; // Blue for parent of removing
-    borderColor = '#3b82f6';
-    opacity = 0.9;
-    scale = 1.2; // Larger size for parent nodes
+  if (isParentOfRemoving && nodeChildrenHighlighted > 0) {
+    boxClasses = 'absolute rounded bg-gray-800';
+    zIndex = 11;
   }
-  // Only use the timelineBox with the smallest minY (smallest y value)
-  const smallestMinYBox = timelineBoxes.reduce((minBox, box) =>
-    box.y < (minBox ? minBox.y : Infinity) ? box : minBox, null);
-  const minY = smallestMinYBox ? smallestMinYBox.y : Infinity;
-  const maxY = smallestMinYBox ? smallestMinYBox.y + smallestMinYBox.height : 0;
-  const nodeChildrenHighlighted = node.childrenHighlighted;
+
+  // Format dates for display
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short' 
+    });
+  };
   return (
     <>
       {/* Main node box */}
@@ -102,20 +87,56 @@ const SkillsListNode = ({
       )}
       
       {/* Timeline box (only the one with smallest minY) */}
-      {smallestMinYBox && (
-        <TimelineBox
-          key={smallestMinYBox.id}
-          timelineBox={smallestMinYBox}
-          x={animatedX}
-          width={adjustedBoxWidth}
-          state={state}
-          nodeChildrenHighlighted={nodeChildrenHighlighted}
-          isPreview={isPreview}
-          rainbowColor={rainbowColor}
-          isParentOfRemoving={isParentOfRemoving}
-          getRemovingNodeOpacity={getRemovingNodeOpacity}
-        />
-      )}
+      {timelineBoxes.map((timelineBox) => (
+        
+    <div
+    key={timelineBox.startDate+'-'+timelineBox.name+'-'+timelineBox.company+'-'+timelineBox.endDate+'-'+index}
+    className={boxClasses}
+    style={{
+      left: `${animatedX}px`,
+      top: `${timelineBox.y}px`,
+      width: `${timelineBox.name == 'root' ? 0 : adjustedBoxWidth}px`,
+      height: `${timelineBox.height}px`,
+      opacity:isParentOfRemoving ? !(nodeChildrenHighlighted > 0) ? 0 : 1 : 1,
+      backgroundColor: rainbowColor,
+      zIndex: zIndex,
+      // transform: 'translateX(-50%)', // Center the box
+      transition: 'all 0.3s ease'
+    }}
+    onMouseEnter={(event) => {
+      console.log('Timeline box hovered:', timelineBox);
+      onHover(timelineBox, true, event);
+    }}
+    onMouseLeave={(event) => {
+      console.log('Timeline box unhovered:', timelineBox);
+      onHover(timelineBox, false, event);
+    }}
+  >
+    {/* Show content only if box is tall enough */}
+    {timelineBox.height > 20 && timelineBox.name != 'root' && (
+      <div  className="flex flex-col h-full justify-center items-center text-center">
+        <div
+          className="text-lg font-semibold text-white leading-tight"
+          style={{
+            writingMode: 'vertical-rl',
+            transform: 'rotate(180deg)',
+            textAlign: 'center',
+            adjustedBoxWidth: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            overflow: 'hidden',
+          }}
+        >
+          {timelineBox.name.split('_').join(' ').toUpperCase()}
+        </div>
+      </div>
+    )}
+  </div>
+      ))}
     </>
   );
 };

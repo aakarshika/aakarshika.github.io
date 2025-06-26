@@ -2,91 +2,190 @@
   {
     "Skill": "node_js",
     "Start Date": "2019-04",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Expert"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Expert",
+    "company": "MdThink"
   },
   {
     "Skill": "postgresql",
     "Start Date": "2019-04",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Expert"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Expert",
+    "company": "MdThink"
   },
   {
     "Skill": "react",
     "Start Date": "2020-01",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Advanced"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Advanced",
+    "company": "Twirly App"
   },
   {
     "Skill": "kotlin_multiplatform",
     "Start Date": "2023-10",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Intermediate"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Intermediate",
+    "company": "Daywise"
   },
   {
     "Skill": "android",
     "Start Date": "2015-06",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Advanced"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Advanced",
+    "company": "Multiple Projects"
   },
   {
-    "Skill": "huggingface",
+    "Skill": "hugging_face_transformers",
     "Start Date": "2023-10",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Intermediate"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Intermediate",
+    "company": "Daywise"
   },
   {
     "Skill": "aws",
     "Start Date": "2019-04",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Advanced"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Advanced",
+    "company": "MdThink"
   },
   {
     "Skill": "typescript",
     "Start Date": "2020-01",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Intermediate"
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Intermediate",
+    "company": "MdThink"
   },
   {
     "Skill": "angular",
     "Start Date": "2019-04",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Advanced"
+    "End Date": "2022-12",
+    "Expertise Level Achieved": "Advanced",
+    "company": "MdThink"
   },
   {
     "Skill": "swiftui",
     "Start Date": "2022-06",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Beginner"
+    "End Date": "2024-06",
+    "Expertise Level Achieved": "Beginner",
+    "company": "Personal Projects"
   },
   {
     "Skill": "machine_learning",
     "Start Date": "2016-01",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Advanced"
+    "End Date": "2018-12",
+    "Expertise Level Achieved": "Advanced",
+    "company": "GMU"
   },
   {
     "Skill": "unity",
     "Start Date": "2021-06",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Beginner"
+    "End Date": "2023-12",
+    "Expertise Level Achieved": "Beginner",
+    "company": "Personal Projects"
   },
   {
     "Skill": "blender",
     "Start Date": "2021-06",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Beginner"
+    "End Date": "2023-12",
+    "Expertise Level Achieved": "Beginner",
+    "company": "Personal Projects"
   },
   {
     "Skill": "python",
     "Start Date": "2016-01",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Advanced"
+    "End Date": "2018-12",
+    "Expertise Level Achieved": "Advanced",
+    "company": "GMU"
   },
   {
     "Skill": "mvvm",
     "Start Date": "2020-01",
-    "End Date": "2025-06",
-    "Expertise Level Achieved": "Intermediate"
-  }
+    "End Date": "2025-01",
+    "Expertise Level Achieved": "Intermediate",
+    "company": "Daywise"
+  },
+    {
+      "Skill": "postgresql",
+      "Start Date": "2019-04",
+      "End Date": "2025-01",
+      "Expertise Level Achieved": "Advanced",
+      "company": "MdThink"
+    },
+    {
+      "Skill": "aws_lambda",
+      "Start Date": "2020-01",
+      "End Date": "2025-01",
+      "Expertise Level Achieved": "Advanced",
+      "company": "MdThink"
+    },
+    {
+      "Skill": "aws_ec2",
+      "Start Date": "2020-01",
+      "End Date": "2025-01",
+      "Expertise Level Achieved": "Advanced",
+      "company": "MdThink"
+    },
+    {
+      "Skill": "aws_s3",
+      "Start Date": "2020-01",
+      "End Date": "2025-01",
+      "Expertise Level Achieved": "Advanced",
+      "company": "MdThink"
+    },
+    {
+      "Skill": "python",
+      "Start Date": "2016-01",
+      "End Date": "2018-12",
+      "Expertise Level Achieved": "Advanced",
+      "company": "GMU"
+    },
+    {
+      "Skill": "pytorch",
+      "Start Date": "2017-01",
+      "End Date": "2018-12",
+      "Expertise Level Achieved": "Intermediate",
+      "company": "GMU"
+    },
+    {
+      "Skill": "hugging_face_transformers",
+      "Start Date": "2024-01",
+      "End Date": "2025-01",
+      "Expertise Level Achieved": "Intermediate",
+      "company": "Daywise"
+    },
+    {
+      "Skill": "nlp",
+      "Start Date": "2016-01",
+      "End Date": "2018-12",
+      "Expertise Level Achieved": "Intermediate",
+      "company": "GMU"
+    },
+    {
+      "Skill": "opencv",
+      "Start Date": "2016-01",
+      "End Date": "2018-12",
+      "Expertise Level Achieved": "Intermediate",
+      "company": "GMU"
+    },
+    {
+      "Skill": "scikit_learn",
+      "Start Date": "2017-01",
+      "End Date": "2018-12",
+      "Expertise Level Achieved": "Intermediate",
+      "company": "GMU"
+    },
+    {
+      "Skill": "pl_sql",
+      "Start Date": "2019-04",
+      "End Date": "2025-01",
+      "Expertise Level Achieved": "Intermediate",
+      "company": "MdThink"
+    },
+    {
+      "Skill": "query_optimization",
+      "Start Date": "2019-04",
+      "End Date": "2025-01",
+      "Expertise Level Achieved": "Advanced",
+      "company": "MdThink"
+    }
 ]

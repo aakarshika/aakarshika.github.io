@@ -1,25 +1,13 @@
 import { useMemo } from 'react';
-import { shouldScaleNode } from '../../utils/skillDataUtils';
+import { isLeafNode } from '../../utils/skillDataUtils';
 import { calculateInitialNodePositions } from '../../utils/treeUtils';
 
 /**
  * Custom hook for SkillsList data processing
  * Handles node filtering, state calculation, and positioning logic
  */
-export function useSkillsListData({ treeNodes, scaleUpLeafNodes }) {
+export function useSkillsListData({ treeNodes }) {
   return useMemo(() => {
-    if (!scaleUpLeafNodes) {
-      return {
-        visibleNodes: [],
-        removingNodes: [],
-        parentNodes: [],
-        nextNode: null,
-        positioning: null,
-        getNodeState: () => 'hidden',
-        findParentNode: () => null
-      };
-    }
-
     // Derive highlighted nodes from treeNodes.isHighlighted
     const highlightedNodes = new Set(
       treeNodes.filter(node => node.isHighlighted).map(node => node.name)
@@ -27,7 +15,7 @@ export function useSkillsListData({ treeNodes, scaleUpLeafNodes }) {
 
     // Get current unhighlighted leaf nodes
     const currentUnhighlightedLeafNodes = treeNodes.filter(node => {
-      const isLeaf = shouldScaleNode(node, treeNodes, scaleUpLeafNodes);
+      const isLeaf = isLeafNode(node, treeNodes);
       return isLeaf && !node.isHighlighted;
     });
 
@@ -39,7 +27,7 @@ export function useSkillsListData({ treeNodes, scaleUpLeafNodes }) {
     }
 
     const nextUnhighlightedLeafNodes = treeNodes.filter(node => {
-      const isLeaf = shouldScaleNode(node, treeNodes, scaleUpLeafNodes);
+      const isLeaf = isLeafNode(node, treeNodes);
       return isLeaf && !nextHighlightedNodes.has(node.name);
     });
 
@@ -88,8 +76,10 @@ export function useSkillsListData({ treeNodes, scaleUpLeafNodes }) {
     });
 
     // Calculate positioning using shared utility
+    // Use a reasonable default width that accounts for typical padding
+    const estimatedContainerWidth = window.innerWidth - 200; // Account for typical padding
     const positioning = calculateInitialNodePositions(visibleNodes, treeNodes, {
-      screenWidth: window.innerWidth,
+      screenWidth: estimatedContainerWidth,
       containerPadding: 10,
       boxMargin: 10
     });
@@ -106,5 +96,5 @@ export function useSkillsListData({ treeNodes, scaleUpLeafNodes }) {
       getNodeState,
       findParentNode
     };
-  }, [treeNodes, scaleUpLeafNodes]);
+  }, [treeNodes]);
 } 

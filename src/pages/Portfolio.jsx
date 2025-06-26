@@ -100,7 +100,8 @@ const Portfolio = () => {
                   isActive={activeStopperId === stopper.id} 
                   onScrollHandoff={(direction) => {
                     handleScrollHandoff(direction, stopper.id);
-                  }} 
+                  }}
+                  scrollY={scrollY}
                 /> 
                 : <div />
               }

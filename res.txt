@@ -1,0 +1,52 @@
+
+     Aakarshika Priydarshi   				  Software Development Engineer
+                 	+1 (571) 338-9698   aakarshika93@gmail.com
+
+Scalable systems • AWS Cloud  • Cross-Platform Applications  •  ML Integration •   Pro Mobile App Developer
+EXPERIENCE
+MdThink,  Maryland		Node.js, PostgreSQL, Python, Angular, AWS (Lambda, EC2, S3)
+  Senior Software Developer										2022 - PRESENT
+Led architecture and full-stack development for public service apps serving 50K+ daily users.
+Designed RESTful APIs and real-time services with optimized SQL. Migrated the PostgreSQL DB to Aurora with RLS.
+Reduced server startup latency by 40% through Node.js upgrades and async I/O restructuring.
+Applied security best practices, including RBAC, encryption, and scalable session handling.
+Deployed AWS  infrastructure using CI/CD and integrated observability tooling.
+Directed agile sprints, mentored junior devs, and enforced high-quality code standards.
+Full Stack Developer											APR 2019 - 2022
+Maintained and enhanced cross-functional backend features for government platforms.
+Collaborated on frontend logic and client-server sync with focus on mobile-friendly performance.
+Resolved production issues in real time and coordinated BA for testing cycles.
+GMU, Virginia			OpenCV, Matplot, Conda, PyTorch
+Machine Learning Research Assistant								2016 - 2018 
+Developed ML pipelines for image genre classification using CNNs (40+% baseline accuracy).
+Conducted sentiment analysis using NLTK and bag-of-words on local restaurant reviews. 
+Prototyped Android interface for mobile ML consumption.
+PROJECTS
+Twirly App
+  Full Stack Developer  		React, Supabase, Postgres, Tailwind, Framer Motion			2025 - PRESENT
+Designed and developed a real-time social comparison platform for mobile and web using React with Capacitor.
+Built a live voting system with Supabase subscriptions and PostgreSQL Row Level Security (RLS).
+Created interactive user flow, animated visualizations, and dynamic updates.
+Implemented mobile-first UI with smooth transitions (Framer Motion) and infinite scroll for TikTok-style browsing.
+Enabled beta testing with Sentry integration, offline support, and feedback collection via Supabase functions.
+
+Daywise
+  	Full Stack Developer		Kotlin Multiplatform, Hugging Face, GPT, ML personalization		2024 - PRESENT
+Built an ADHD-friendly To-Do mobile app using LLMs for predictive, personalized tasking. 
+Architected shared business logic for Android/iOS using Kotlin Multiplatform.
+Designed mobile UI with MVVM, Compose, and adaptive UX for cross-device consistency.
+Used chatgpt to improve user experience by predictive behavioral analysis.
+SKILLS
+Languages & Frameworks: Python, Java, Node.js, Kotlin, TypeScript, React, Angular, SwiftUI
+Frontend: React, Angular, Tailwind CSS, HTML/CSS, Kotlin (Multiplatform), SwiftUI
+Cloud & DevOps: AWS (Lambda, EC2, S3, Kinesis, RDS), Docker, Kubernetes, Jenkins, GitHub, NewRelic
+Databases: PostgreSQL, MySQL, Oracle, MongoDB, Query Optimization, PL/SQL
+Realtime & Streaming: WebSockets, Supabase, Pub/Sub, Live event lifecycle services
+Machine Learning: Hugging Face Transformers, PyTorch, scikit-learn, NLP, OpenCV
+Architecture & Tools: REST, CI/CD, Git, Linux, Agile, JIRA, Microservices, Web Security
+3D UX: Unity, Blender, 3D interactive VR App Development
+EDUCATION
+George Mason University, VA - Master of Science in Computer Science					2016 - 2018
+JSS Academy of Technical Education, India - B. Tech in Computer Science & Engineering			2012 - 2016
+
+

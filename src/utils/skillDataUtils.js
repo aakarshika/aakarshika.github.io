@@ -14,12 +14,9 @@ export function normalizeName(name) {
  * Determines if a node should be scaled up based on its state
  * @param {Object} node - Node object
  * @param {Array} treeNodes - All tree nodes for reference
- * @param {boolean} scaleUpLeafNodes - Whether scaling is enabled
  * @returns {boolean} True if node should be scaled up
  */
-export function shouldScaleNode(node, treeNodes, scaleUpLeafNodes) {
-  if (!scaleUpLeafNodes) return false;
-  
+export function isLeafNode(node, treeNodes) {
   // If it's a literal leaf node (no children)
   if (!node.children || node.children.length === 0) {
     return true;
@@ -39,6 +36,7 @@ export function shouldScaleNode(node, treeNodes, scaleUpLeafNodes) {
  * @returns {Object} Mapping of skill names to their timeline entries
  */
 export function buildSkillToTimelineMapping() {
+  console.log('🔍 Building skill to timeline mapping');
   const mapping = {};
   
   skillsData.forEach(entry => {
@@ -51,7 +49,7 @@ export function buildSkillToTimelineMapping() {
       startDate: entry['Start Date'],
       endDate: entry['End Date'],
       expertise: entry['Expertise Level Achieved'],
-      company: entry['Where Tag'],
+      company: entry['company'],
       description: entry['1 line Description on how I used it']
     });
   });
@@ -64,6 +62,7 @@ export function buildSkillToTimelineMapping() {
  * @returns {Object} Mapping of category paths to skill arrays
  */
 export function buildCategoryToSkillsMapping() {
+  console.log('🔍 Building category to skills mapping');
   const mapping = {};
   
   // Create a mapping of normalized skill names to original skill names
