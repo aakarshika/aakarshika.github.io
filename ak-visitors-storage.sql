@@ -4,8 +4,21 @@ CREATE TABLE IF NOT EXISTS public.visitor_fingerprints (
   fingerprint text NOT NULL UNIQUE,
   object_name text NOT NULL,
   filter varchar(255) NOT NULL,
+  message text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Add message column if it doesn't exist (for existing tables)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'visitor_fingerprints' 
+    AND column_name = 'message'
+  ) THEN
+    ALTER TABLE public.visitor_fingerprints ADD COLUMN message text;
+  END IF;
+END $$;
 
 -- Enable RLS on the storage.objects table if not already enabled
 ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;

@@ -16,7 +16,7 @@ const Portfolio = () => {
   // const containerRef = useRef(null);
   
   // Use extracted hooks
-  const { picturesList, handleCapture } = useVisitorPortfolio();
+  const { picturesList, handleCapture, handleDelete, fingerprint } = useVisitorPortfolio();
   
   // Define stoppers configuration
   const stoppersConfig = [
@@ -47,7 +47,7 @@ const Portfolio = () => {
     {
       id: 'interactive',
       componentType: 'none',
-      componentFun: () => <PicSection progress={activePageName == 'interactive' ? pageProgress : 0} pictures={picturesList} onCapture={handleCapture} />,
+      componentFun: () => <PicSection progress={activePageName == 'interactive' ? pageProgress : 0} pictures={picturesList} onCapture={handleCapture} currentFingerprint={fingerprint} onDelete={handleDelete} />,
       ref: useRef(null)
     },
     {
