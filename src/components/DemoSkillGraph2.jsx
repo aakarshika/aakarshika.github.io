@@ -2,14 +2,16 @@ import React from 'react';
 import { useBarVisualization } from '../hooks/useBarVisualization';
 import { useNodeRemoval } from '../hooks/useNodeRemoval';
 import { Eye, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useScrolling } from '../hooks/useScrolling';
+const SPEED_PER_NODE = 100;
+import { getRainbowColor } from '../utils/constants';
 
 /**
  * Demo Skill Graph 2 Component
  * Shows bars for each node with calculated y-coordinates and heights from timeline data
  */
 const DemoSkillGraph2 = ({ flatNodes }) => {
-  const TIME_LABEL_MARGIN = 50;
   // Use the removal system
   const {
     removedNodeIds,
@@ -21,11 +23,10 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
     isNoneRemoved
   } = useNodeRemoval({ flatNodes });
 
-  // Get the next node to remove for purple highlighting
+  const svgRef = useRef(null);
   const nextNodeToRemove = getNextNodeToRemove();
-
   const [showDetails, setShowDetails] = useState(false);
-
+  const [expectedIndex, setExpectedIndex] = useState(0);
   const {
     dimensions,
     positionedBars,
@@ -37,6 +38,46 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
     getNodeColor
   } = useBarVisualization({ flatNodes, removedNodeIds, nextNodeToRemove });
 
+  const { xOffset } = useScrolling({
+    containerRef: svgRef,
+    currentNodeId: nextNodeToRemove,
+    positionedBars,
+    sensitivity: 0.5,
+    maxOffset: (flatNodes.length-1 ) * SPEED_PER_NODE
+  });
+
+  // Update expected index when xOffset changes
+  useEffect(() => {
+    if (isProcessing) return;
+    setExpectedIndex(Math.floor(xOffset / SPEED_PER_NODE));
+  }, [xOffset, isProcessing]);
+
+  // Sync removedNodeIds count with expected index
+  useEffect(() => {
+    const currentRemovedCount = removedNodeIds.length;
+    
+    if (currentRemovedCount < expectedIndex) {
+      // Need to remove more nodes
+      const nodesToRemove = expectedIndex - currentRemovedCount;
+      for (let i = 0; i < nodesToRemove; i++) {
+        if (!isAllRemoved()) {
+          removeNext();
+        }
+      }
+    } else if (currentRemovedCount >= expectedIndex) {
+      // Need to unremove nodes
+      const nodesToUnremove = currentRemovedCount - expectedIndex;
+      for (let i = 0; i < nodesToUnremove; i++) {
+        if (!isNoneRemoved()) {
+          unremovePrevious();
+        }
+      }
+    }
+  }, [expectedIndex]);
+
+  const activeNodeId = nextNodeToRemove;
+  const progress = xOffset % 100;
+
   if (!flatNodes || flatNodes.length === 0) {
     return (
       <div className="flex items-center justify-center h-96 text-gray-400">
@@ -45,7 +86,7 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
     );
   }
 
-  const { width, height, barWidth } = dimensions;
+  const { width, height } = dimensions;
 
   // Find siblings of the next node to remove
   const getSiblingBox = () => {
@@ -93,12 +134,14 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
       height: boxHeight,
       familyCount: familyMembers.length,
       hasParent: !!visibleParent,
+      parentNode: visibleParent,
       siblingCount: visibleSiblings.length
     };
   };
 
   const siblingBox = getSiblingBox();
 
+  console.log(siblingBox);
   // Function to combine intersecting timeline boxes
   const combineIntersectingBoxes = (timelineBoxes) => {
     if (!timelineBoxes || timelineBoxes.length <= 1) return timelineBoxes;
@@ -136,63 +179,84 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
     return combinedBoxes;
   };
 
+  // Get the color for the sibling box
+  const getSiblingBoxColor = () => {
+    if (!siblingBox) return null;
+    
+    if (siblingBox.hasParent) {
+      const c = getRainbowColor(
+        positionedBars.findIndex(node => node.name === siblingBox.parentNode.name),
+        positionedBars.length
+      )
+      console.log(c, siblingBox.parentNode.name, "parent");
+      // Parent is visible, use parent's color
+      return c;
+    } else {
+      var c = null;
+      // Parent is not visible, use next node's color
+      const nextNodeIndex = positionedBars.findIndex(node => node.id === nextNodeToRemove);
+      if (nextNodeIndex !== -1) {
+        c =  getRainbowColor(nextNodeIndex, positionedBars.length);
+        console.log(c, nextNodeToRemove,nextNodeIndex, "current");
+        return c;
+
+      }
+      // Fallback to first color if next node not found
+      c = 'black';
+      console.log(c, "not current");
+
+      return c;
+    }
+  };
+
+  const siblingBoxColor = getSiblingBoxColor();
+
   return (
     <div className="w-full h-full flex flex-col items-center">
       <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
         Skills Timeline Bars
       </h2>
 
-      {/* Control Buttons */}
-      <div className="mb-6 flex space-x-4">
-        <button
-          onClick={removeNext}
-          disabled={isProcessing || isAllRemoved()}
-          className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-            isProcessing || isAllRemoved()
-              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl'
-          }`}
-        >
-          {isProcessing ? 'Processing...' : isAllRemoved() ? 'All Removed' : 'Remove Next'}
-        </button>
-        
-        <button
-          onClick={unremovePrevious}
-          disabled={isProcessing || isNoneRemoved()}
-          className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-            isProcessing || isNoneRemoved()
-              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
-          }`}
-        >
-          {isProcessing ? 'Processing...' : isNoneRemoved() ? 'None Removed' : 'Unremove Previous'}
-        </button>
-      </div>
-      
+
       <div className="relative rounded-lg">
         {/* SVG Container */}
         <svg 
-          width={width+TIME_LABEL_MARGIN} 
+          ref={svgRef}
+          width={width + 100 } 
           height={height} 
           className="block"
         >
-          {/* Sibling box - render first so it's behind the bars */}
-          {siblingBox && (
-            <rect
-              x={siblingBox.x + TIME_LABEL_MARGIN}
-              y={siblingBox.y}
-              width={siblingBox.width}
-              height={siblingBox.height}
-              fill="none"
-              stroke="rgba(255, 215, 0, 0.6)"
-              strokeWidth={3}
-              strokeDasharray="8,4"
-              rx={8}
-            />
-          )}
+        {/* Sibling box - render first so it's behind the bars */}
+        {siblingBox && (
+          <rect
+            x={siblingBox.x }
+            y={siblingBox.y}
+            width={siblingBox.width}
+            height={siblingBox.height}
+            fill={siblingBoxColor}
+            stroke="rgba(255, 215, 0, 0.1)"
+            strokeWidth={3}
+            opacity={0.3}
+            rx={8}
+          />
+        )}
+        {/* Sibling box - render first so it's behind the bars */}
+        {siblingBox && (
+          <rect
+            x={siblingBox.x }
+            y={siblingBox.y}
+            width={siblingBox.width}
+            height={siblingBox.height}
+            fill='rgba(255, 255, 255, 0.5)'
+            stroke="rgba(255, 215, 0, 0.1)"
+            strokeWidth={3}
+            opacity={0.3}
+            rx={8}
+          />
+        )}
 
           {/* Grid lines for time */}
-          {gridLines.map((line, i) => (
+          {/* {gridLines.map((line, i) => (
             <line
               key={`grid-${i}`}
               x1={0}
@@ -202,10 +266,10 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
               stroke="rgba(255, 255, 255, 0.1)"
               strokeWidth={1}
             />
-          ))}
+          ))} */}
 
           {/* Y-axis labels (time) */}
-          {timeLabels.map((label, i) => (
+          {/* {timeLabels.map((label, i) => (
             <text
               key={`time-${i}`}
               x={0}
@@ -216,52 +280,66 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
             >
               {label.label}
             </text>
-          ))}
+          ))} */}
 
           {/* Render timeline bars for each node */}
           {positionedBars.map((node, index) => {
             const isParentInList = positionedBars.find(n => n.id === node.parentId);
-            const nodeColor = getNodeColor(node);
-            
-            // Combine intersecting timeline boxes for this node
             const combinedTimelineBoxes = combineIntersectingBoxes(node.timelineBoxes);
+            const nodeColor = getRainbowColor(index, positionedBars.length);
+            
+            const parentCenterX = isParentInList ? isParentInList.x : node.x;
+            const parentDistance = node.x - parentCenterX;
+            
+            let nodeLeftX = node.barX;
+            let nodeCenterX = node.x;
+            let scaleX = 0;
+            let scaleY = 0;
+            
+            if (nextNodeToRemove === node.id) {
+              const moveX = parentDistance * (progress / 100);
+              nodeLeftX = nodeLeftX - moveX;
+              nodeCenterX = nodeCenterX - moveX;
+              scaleX = progress / 4;
+              scaleY = progress / 4;
+            }
+            // console.log(node);
+            if(node.removedChildrenCount > 0){
+              scaleX = 100 / 4;
+              scaleY = 100 / 4;
+            }
             
             return (
               <g key={node.id}>
-                {/* Background bar (full height) */}
-                {/* <rect
-                  x={node.barX}
-                  y={0}
-                  width={node.barWidth}
-                  height={height}
-                  fill="rgba(255, 255, 255, 0.05)"
-                  stroke="rgba(255, 255, 255, 0.1)"
-                  strokeWidth={1}
-                  rx={4}
-                /> */}
-
                 {/* Timeline boxes as colored bars with labels */}
                 {combinedTimelineBoxes && combinedTimelineBoxes.map((box, boxIndex) => (
                   <g key={`${node.id}-box-${boxIndex}`}>
-                    {/* Timeline box */}
+                    {/* Timeline box rectangle */}
                     <rect
-                      x={node.barX + TIME_LABEL_MARGIN + 2}
-                      y={box.y}
-                      width={node.barWidth - 4}
-                      height={box.height}
-                      fill={nodeColor.fill}
-                      stroke={nodeColor.stroke}
+                      x={nodeLeftX - scaleX / 2}
+                      y={box.y - scaleY / 2}
+                      width={node.barWidth + scaleX}
+                      height={box.height + scaleY}
+                      fill={nodeColor}
+                      stroke="white"
                       strokeWidth={1}
                       rx={3}
                     />
                     
                     {/* Node name label on timeline box */}
                     <text
-                      x={node.x + TIME_LABEL_MARGIN}
-                      y={box.y + box.height / 2}
+                      x={nodeCenterX}
+                      y={
+                        // Check if text fits in the box after rotation
+                        // For rotated text, we compare the text width to the box height
+                        // If text is too long, position it above the box
+                        node.name.length * 10 > box.height + scaleY
+                          ? box.y - scaleY -  (node.name.length * 10) / 2 // start above box
+                          : box.y + (box.height + scaleY) / 2 // center of the box
+                      }
                       textAnchor="middle"
                       fill="white"
-                      fontSize="16"
+                      fontSize="14"
                       style={{
                         transform: 'rotate(-90deg)',
                         transformOrigin: 'center',
@@ -269,22 +347,24 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
                       }}
                       fontFamily="sans-serif"
                       fontWeight="600"
-                      dominantBaseline="middle"
+                      dominantBaseline={
+                        node.name.length * 8 > box.height + scaleY ? 'auto' : 'middle'
+                      }
                     >
-                      {node.name.replace(/_/g, ' ')} {isParentInList ? '/\\' : ''}
+                      {node.name.replace(/_/g, ' ').toUpperCase()}
                     </text>
                   </g>
                 ))}
 
                 {/* Node type indicator at the top */}
-                <circle
-                  cx={node.x +TIME_LABEL_MARGIN}
+                {/* <circle
+                  cx={nodeCenterX}
                   cy={15}
                   r={4}
-                  fill={nodeColor.fill.replace('0.7', '1')}
+                  fill={nodeColor}
                   stroke="white"
                   strokeWidth={1}
-                />
+                /> */}
               </g>
             );
           })}
@@ -318,6 +398,12 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
             <div>Blue = Original leaf OR all children removed</div>
             <div>Green = Parent with visible children</div>
             <div>Golden dashed box = Family of the next node to be removed</div>
+          </div>
+          <div className="text-xs text-yellow-400 mt-2 border-t border-gray-600 pt-2">
+            <div>Active: {activeNodeId ? flatNodes.find(n => n.id === activeNodeId)?.name : 'None'}</div>
+            <div>Expected Index: {Math.floor(xOffset / SPEED_PER_NODE)}</div>
+            <div>Current Removed: {removedNodeIds.length}</div>
+            <div>xOffset: {xOffset.toFixed(1)}</div>
           </div>
         </div>)}
 
@@ -378,22 +464,6 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
         </div>
       </div>)}
 
-      {/* Instructions */}
-      <div className="mt-4 text-center text-gray-300 text-sm">
-        <p>Each bar represents a skill/category with timeline data</p>
-        <p className="text-xs text-gray-500 mt-1">
-          Y-axis: Time progression | Bar height: Duration | Bar position: Start time
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Removed nodes are filtered out and positions auto-adjust
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Purple = Next node to be removed | Blue = Leaf nodes or parents with all children removed
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Golden dashed box = Family of the next node to be removed
-        </p>
-      </div>
     </div>
   );
 };
