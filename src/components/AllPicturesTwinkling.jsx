@@ -7,7 +7,7 @@ const AllPicturesTwinkling = ({ pictures, progress = 0, size = { width: 210, hei
   if (!pictures || pictures.length === 0) {
     return <div className="text-white text-sm">No pictures yet.</div>;
   }
-  // console.log("currentFingerprint", currentFingerprint);
+  // // console.log("currentFingerprint", currentFingerprint);
   return (
     <div className="relative w-full h-full "
     style={{
@@ -44,7 +44,7 @@ const AllPicturesTwinkling = ({ pictures, progress = 0, size = { width: 210, hei
                       objectFit: 'cover'
                     }}
                     onError={(e) => {
-                      console.log("Error loading image", e, pic);
+                      // console.log("Error loading image", e, pic);
                     }}
                     alt={`Captured ${idx + 1}`}
                     loading="lazy"
@@ -53,7 +53,7 @@ const AllPicturesTwinkling = ({ pictures, progress = 0, size = { width: 210, hei
                   {isOwnImage && (
                     <button
                       onClick={(e) => {
-                        console.log("Deleting image", pic.object_name, pic.id);
+                        // console.log("Deleting image", pic.object_name, pic.id);
                         // e.stopPropagation();
                         onDelete(pic.object_name, pic.id);
                       }}

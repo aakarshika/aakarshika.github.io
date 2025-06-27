@@ -309,17 +309,17 @@ const calculateParentYCoordinates = (node, nodeName, skillToTimeline, categoryTo
  * @returns {Object} Complete tree with timeline data and y-coordinates
  */
 export const initializeTreeWithTimeline = (yZoom = 600) => {
-  console.log('🌳 Initializing tree with timeline data...');
+  // console.log('🌳 Initializing tree with timeline data...');
   
   // Step 1: Get JSON data (already imported)
-  console.log('📊 Loaded skills data:', skillsData.length, 'entries');
+  // console.log('📊 Loaded skills data:', skillsData.length, 'entries');
   
   // Step 2: Build mappings
   const skillToTimeline = buildSkillToTimelineMapping();
   const categoryToSkills = buildCategoryToSkillsMapping();
   
-  console.log('🗺️ Built skill mappings:', Object.keys(skillToTimeline).length, 'skills');
-  console.log('📁 Built category mappings:', Object.keys(categoryToSkills).length, 'categories');
+  // console.log('🗺️ Built skill mappings:', Object.keys(skillToTimeline).length, 'skills');
+  // console.log('📁 Built category mappings:', Object.keys(categoryToSkills).length, 'categories');
   
   // Step 3: Build the tree
   const { tree: hierarchyTree } = buildHierarchy();
@@ -333,7 +333,7 @@ export const initializeTreeWithTimeline = (yZoom = 600) => {
     }
   });
   
-  console.log('🌿 Filtered tree roots:', Object.keys(filteredTree));
+  // console.log('🌿 Filtered tree roots:', Object.keys(filteredTree));
   
   // Step 5: Calculate time range for y-coordinates
   const allDates = skillsData.flatMap(item => [
@@ -344,7 +344,7 @@ export const initializeTreeWithTimeline = (yZoom = 600) => {
   const endTime = Math.max(...allDates);
   const timeRange = endTime - startTime;
   
-  console.log('⏰ Time range:', new Date(startTime).toLocaleDateString(), 'to', new Date(endTime).toLocaleDateString());
+  // console.log('⏰ Time range:', new Date(startTime).toLocaleDateString(), 'to', new Date(endTime).toLocaleDateString());
   
   // Step 6: Calculate y-coordinates for each node (no x positions)
   const processNodeWithYCoordinates = (node, nodeName, parentId = null) => {
@@ -394,8 +394,8 @@ export const initializeTreeWithTimeline = (yZoom = 600) => {
     processedTree[rootName] = processNodeWithYCoordinates(rootNode, rootName);
   });
   
-  console.log('✅ Tree initialization complete');
-  console.log('📈 Timeline boxes calculated for all nodes');
+  // console.log('✅ Tree initialization complete');
+  // console.log('📈 Timeline boxes calculated for all nodes');
   
   return {
     tree: processedTree,

@@ -134,12 +134,12 @@ export function useSkillsTree() {
       
       if (nextNode) {
         const totalNodes = Object.values(nodesByLevel).flat().length;
-        // console.log(`🎯 ${nextNode} (Level ${level}) (${highlightedNodeNames.size + 1}/${totalNodes})`);
+        // // console.log(`🎯 ${nextNode} (Level ${level}) (${highlightedNodeNames.size + 1}/${totalNodes})`);
         return nextNode;
       }
     }
     
-    // console.log('🏁 All nodes highlighted!');
+    // // console.log('🏁 All nodes highlighted!');
     return null;
   };
 

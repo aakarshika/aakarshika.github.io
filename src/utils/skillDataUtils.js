@@ -36,7 +36,7 @@ export function isLeafNode(node, treeNodes) {
  * @returns {Object} Mapping of skill names to their timeline entries
  */
 export function buildSkillToTimelineMapping() {
-  console.log('🔍 Building skill to timeline mapping');
+  // console.log('🔍 Building skill to timeline mapping');
   const mapping = {};
   
   skillsData.forEach(entry => {
@@ -62,7 +62,7 @@ export function buildSkillToTimelineMapping() {
  * @returns {Object} Mapping of category paths to skill arrays
  */
 export function buildCategoryToSkillsMapping() {
-  console.log('🔍 Building category to skills mapping');
+  // console.log('🔍 Building category to skills mapping');
   const mapping = {};
   
   // Create a mapping of normalized skill names to original skill names
@@ -120,7 +120,7 @@ export function getNodeTimelineData(nodeName, node, skillToTimeline, categoryToS
   
   // Debug for tech node
   if (nodeName === 'tech') {
-    // console.log('🔍 Processing tech node:', {
+    // // console.log('🔍 Processing tech node:', {
     //   nodeName,
     //   hasChildren: !!node.children,
     //   childrenKeys: node.children ? Object.keys(node.children) : [],
@@ -163,13 +163,13 @@ export function getNodeTimelineData(nodeName, node, skillToTimeline, categoryToS
   } else {
     // This is a parent node, collect data from all children
     if (nodeName === 'tech') {
-      // console.log('🔍 Tech node collecting from children:', Object.keys(node.children));
+      // // console.log('🔍 Tech node collecting from children:', Object.keys(node.children));
     }
     
     Object.values(node.children).forEach(child => {
       const childData = getNodeTimelineData(child.name, child, skillToTimeline, categoryToSkills);
       if (nodeName === 'tech') {
-        // console.log(`🔍 Tech node child ${child.name} returned ${childData.length} entries`);
+        // // console.log(`🔍 Tech node child ${child.name} returned ${childData.length} entries`);
       }
       timelineData.push(...childData);
     });
@@ -188,7 +188,7 @@ export function getNodeTimelineData(nodeName, node, skillToTimeline, categoryToS
   });
   
   if (nodeName === 'tech') {
-    // console.log('🔍 Tech node final result:', {
+    // // console.log('🔍 Tech node final result:', {
     //   totalEntries: timelineData.length,
     //   uniqueEntries: uniqueData.length,
     //   sampleEntries: uniqueData.slice(0, 3)

@@ -59,7 +59,7 @@ const ContactSection = () => {
         throw error;
       }
 
-      console.log('Contact message saved successfully:', data);
+      // console.log('Contact message saved successfully:', data);
       setSubmitStatus('success');
       
       // Clear form and close after a short delay

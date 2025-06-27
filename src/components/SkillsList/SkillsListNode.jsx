@@ -104,11 +104,11 @@ const SkillsListNode = ({
       transition: 'all 0.3s ease'
     }}
     onMouseEnter={(event) => {
-      console.log('Timeline box hovered:', timelineBox);
+      // console.log('Timeline box hovered:', timelineBox);
       onHover(timelineBox, true, event);
     }}
     onMouseLeave={(event) => {
-      console.log('Timeline box unhovered:', timelineBox);
+      // console.log('Timeline box unhovered:', timelineBox);
       onHover(timelineBox, false, event);
     }}
   >

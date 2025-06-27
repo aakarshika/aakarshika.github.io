@@ -48,7 +48,7 @@ export function useSkillsListData({ treeNodes }) {
       const isCurrentlyVisible = currentUnhighlightedLeafNodes.some(n => n && n.name === node.name);
       const willBeVisible = nextUnhighlightedLeafNodes.some(n => n && n.name === node.name);
       // if(node.name === 'django_rest_framework') {
-        // console.log(node.name, node.isHighlighted);
+        // // console.log(node.name, node.isHighlighted);
       // }
       // if (isCurrentlyVisible && nextUnhighlightedLeafNodes.length === 1 && nextUnhighlightedLeafNodes[0].name === node.name) {
       //   return 'removing';

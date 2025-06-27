@@ -19,7 +19,7 @@ import { createWheelHandler } from '../utils/scrollEventUtils';
 
 const myWheelHandler = (e) => {
   // Your wheel event logic here
-  console.log('Wheel delta:', e.deltaY);
+  // console.log('Wheel delta:', e.deltaY);
 };
 
 const configuredHandler = createWheelHandler(myWheelHandler);

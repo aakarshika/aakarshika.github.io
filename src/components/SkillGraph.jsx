@@ -21,7 +21,7 @@ const SkillGraph = ({ isActive, onScrollHandoff, scrollY = 0 }) => {
   // Get flat list of all nodes
   const flatNodes = getFlatNodeList(treeData);
 
-  console.log('🔍 Flat nodes:', flatNodes);
+  // console.log('🔍 Flat nodes:', flatNodes);
 
 
   const {
@@ -37,7 +37,7 @@ const SkillGraph = ({ isActive, onScrollHandoff, scrollY = 0 }) => {
     position: { x: 0, y: 0 }
   });
 
-  // console.log('SkillGraph: isActive:', isActive);
+  // // console.log('SkillGraph: isActive:', isActive);
   // Handle animation completion for both forward and backward directions
   const onAnimationComplete = (direction) => {
     if (direction === 'forward') {
@@ -54,7 +54,7 @@ const SkillGraph = ({ isActive, onScrollHandoff, scrollY = 0 }) => {
   const containerWidth = timelineContainerRef.current?.offsetWidth || window.innerWidth;
 
   const onHover = (timelineBox, isHovered, event) => {
-    console.log('onHover called:', { timelineBox, isHovered, event, scrollY });
+    // console.log('onHover called:', { timelineBox, isHovered, event, scrollY });
     if (isHovered) {
       // Calculate responsive positioning
       const tooltipWidth = 280; // max-w-sm = 24rem = 384px, but we'll use 280px
@@ -88,10 +88,10 @@ const SkillGraph = ({ isActive, onScrollHandoff, scrollY = 0 }) => {
         data: timelineBox,
         position: { x, y }
       };
-      console.log('Setting tooltip:', newTooltip);
+      // console.log('Setting tooltip:', newTooltip);
       setTooltip(newTooltip);
     } else {
-      console.log('Hiding tooltip');
+      // console.log('Hiding tooltip');
       setTooltip({
         visible: false,
         data: null,
@@ -229,7 +229,6 @@ const SkillGraph = ({ isActive, onScrollHandoff, scrollY = 0 }) => {
       </div>
 
       {/* Tooltip Popup - moved outside main container */}
-      {console.log('Tooltip render check:', { visible: tooltip.visible, data: tooltip.data })}
       {tooltip.visible && tooltip.data && (
         <div
           className="fixed z-[9999] bg-gray-900 text-white p-4 rounded-lg shadow-2xl border border-gray-700 max-w-sm transition-all duration-200 ease-in-out opacity-100 scale-100"

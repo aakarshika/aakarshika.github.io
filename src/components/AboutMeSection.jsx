@@ -9,7 +9,7 @@ import table from '../assets/table.png';
 import { calculateAnimations } from '../utils/progressAnimationUtils';
 
 const AboutMeSection = ({ progress }) => {
-  // console.log("AboutMeSection progress:", progress);
+  // // console.log("AboutMeSection progress:", progress);
 
   // Animation configuration using fade and slide animations
   const animationConfig = [
@@ -102,10 +102,10 @@ const AboutMeSection = ({ progress }) => {
 
   // Calculate all animations using the utility
   const animations = calculateAnimations(animationConfig, progress);
-  // console.log("AboutMeSection progress:", progress);
-  // console.log("AboutMeSection animations:", animations);
-  // console.log("Title fade value:", animations.title?.fade);
-  // console.log("Title slideY value:", animations.title?.slideY);
+  // // console.log("AboutMeSection progress:", progress);
+  // // console.log("AboutMeSection animations:", animations);
+  // // console.log("Title fade value:", animations.title?.fade);
+  // // console.log("Title slideY value:", animations.title?.slideY);
 
 
   return (

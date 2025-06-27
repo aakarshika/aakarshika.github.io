@@ -16,7 +16,7 @@ const HorizontalScrollWrapper = ({
   // Handle scroll handoff after render
   useEffect(() => {
     if (handoffDirection) {
-      // console.log('Handing off control:', handoffDirection);
+      // // console.log('Handing off control:', handoffDirection);
       onScrollHandoff(handoffDirection);
       setHandoffDirection(null);
     }
@@ -28,7 +28,7 @@ const HorizontalScrollWrapper = ({
     // if (!(progress < 40 || progress > 60)) return;
 
     const handleWheel = (e) => {
-      // console.log("handleWheel", e);
+      // // console.log("handleWheel", e);
       
       const deltaX = e.deltaY * 2;
       setScrollX(prev => {
@@ -55,7 +55,7 @@ const HorizontalScrollWrapper = ({
     };
 
     const handleTouchMove = (e) => {
-      // console.log("handleTouchMove", e);
+      // // console.log("handleTouchMove", e);
     };
 
     // Use the utility function to set up event listeners

@@ -106,7 +106,7 @@ export function useScrollAnimation({
   // Handle scroll handoff after render
   useEffect(() => {
     if (handoffDirection && onScrollHandoff) {
-      // console.log('Handing off control:', handoffDirection);
+      // // console.log('Handing off control:', handoffDirection);
       onScrollHandoff(handoffDirection);
       setHandoffDirection(null);
     }
@@ -148,7 +148,7 @@ export function useScrollAnimation({
         const newProgress = prev + progressChange;
         
         if (newDirection === 'merging' && removingNodes.length === 0 && newProgress >= 1.0) {
-          console.log("REACHED START");
+          // console.log("REACHED START");
           if (!isAtBoundary && onScrollHandoff) {
             setIsAtBoundary(true);
             setHandoffDirection('next');
@@ -157,7 +157,7 @@ export function useScrollAnimation({
           return 1;
         }
         if (newDirection === 'splitting' && highlightedNodes.length === 0 && newProgress <= 0.0) {
-          console.log("REACHED END");
+          // console.log("REACHED END");
           if (!isAtBoundary && onScrollHandoff) {
             setIsAtBoundary(true);
             setHandoffDirection('previous');
