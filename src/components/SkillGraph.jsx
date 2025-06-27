@@ -4,6 +4,8 @@ import { useSkillsListData } from './SkillsList/useSkillsListData';
 import { useScrollAnimation } from './SkillsList/useScrollAnimation';
 import { useTimelineData } from './SkillsList/useTimelineData';
 import SkillsListNode from './SkillsList/SkillsListNode';
+import { initializeTreeWithTimeline, getFlatNodeList } from '../utils/treeInitializer';
+import DemoSkillGraph2 from './DemoSkillGraph2';
 
 /**
  * SkillGraph Component
@@ -12,6 +14,16 @@ import SkillsListNode from './SkillsList/SkillsListNode';
  * Displays the skills tree visualization with scroll-based merging/splitting.
  */
 const SkillGraph = ({ isActive, onScrollHandoff, scrollY = 0 }) => {
+
+  // Initialize the tree
+  const treeData = initializeTreeWithTimeline(600);
+  
+  // Get flat list of all nodes
+  const flatNodes = getFlatNodeList(treeData);
+
+  console.log('🔍 Flat nodes:', flatNodes);
+
+
   const {
     treeNodes,
     handleHighlightNext,
@@ -134,6 +146,19 @@ const SkillGraph = ({ isActive, onScrollHandoff, scrollY = 0 }) => {
   if (visibleNodes.length === 0) return null;
 
   const y = 50; // Fixed vertical position
+
+
+  return (
+
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black py-20">
+      <div className="w-full h-full flex flex-col">
+        <DemoSkillGraph2 flatNodes={flatNodes} />
+      </div>
+    </div>
+  );
+
+
+
 
   return (
     <>
