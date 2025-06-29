@@ -141,7 +141,6 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
 
   const siblingBox = getSiblingBox();
 
-  console.log(siblingBox);
   // Function to combine intersecting timeline boxes
   const combineIntersectingBoxes = (timelineBoxes) => {
     if (!timelineBoxes || timelineBoxes.length <= 1) return timelineBoxes;
@@ -188,7 +187,6 @@ const DemoSkillGraph2 = ({ flatNodes }) => {
         positionedBars.findIndex(node => node.name === siblingBox.parentNode.name),
         positionedBars.length
       )
-      console.log(c, siblingBox.parentNode.name, "parent");
       // Parent is visible, use parent's color
       return c;
     } else {

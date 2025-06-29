@@ -185,7 +185,63 @@
       "Skill": "query_optimization",
       "Start Date": "2019-04",
       "End Date": "2025-01",
-      "Expertise Level Achieved": "Advanced",
+      "Expertise Level Achieved": "Intermediate",
       "company": "MdThink"
-    }
+    },
+  {
+    "Skill": "gym_consistency",
+    "Start Date": "2022-03",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate",
+    "description": "Finally figured out how to stick to a workout routine without getting bored. Started with basic strength training, then got into powerlifting. The key was finding exercises I actually enjoyed instead of forcing myself to do stuff I hated."
+  },
+  {
+    "Skill": "running_meditation",
+    "Start Date": "2023-01",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Beginner",
+    "description": "Discovered that running is basically moving meditation. Started with short jogs around the neighborhood, gradually built up to longer distances. It's become my go-to way to clear my head and process ideas."
+  },
+  {
+    "Skill": "sleep_optimization",
+    "Start Date": "2022-08",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate",
+    "description": "Realized I was chronically sleep-deprived and it was affecting everything. Started tracking sleep patterns, experimented with different routines, and finally found what works for me. Game changer for productivity and mood."
+  },
+  {
+    "Skill": "digital_detox",
+    "Start Date": "2023-06",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate",
+    "description": "Got tired of being constantly distracted by my phone. Started with small changes like no phone in bedroom, then gradually reduced social media usage. Now I actually have time to think and be bored, which is surprisingly valuable."
+  },
+  {
+    "Skill": "creative_crafting",
+    "Start Date": "2021-12",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Beginner",
+    "description": "Picked up woodworking and basic crafting as a way to work with my hands instead of just staring at screens. Started with simple projects, learned from mistakes, and discovered that building physical things is incredibly satisfying."
+  },
+  {
+    "Skill": "mindful_eating",
+    "Start Date": "2023-03",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Beginner",
+    "description": "Stopped eating like I was in a race. Started paying attention to hunger cues, eating slower, and actually tasting my food. Sounds simple but it completely changed my relationship with food and energy levels."
+  },
+  {
+    "Skill": "nature_connection",
+    "Start Date": "2022-09",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Beginner",
+    "description": "Started spending more time outdoors, even if it's just walking in local parks. Realized how disconnected I was from nature and how much it affects my mental state. Now I make it a point to get outside regularly."
+  },
+  {
+    "Skill": "stress_management",
+    "Start Date": "2022-11",
+    "End Date": "2025-06",
+    "Expertise Level Achieved": "Intermediate",
+    "description": "Developed a toolkit for handling stress that actually works for me. Breathing exercises, regular breaks, setting boundaries, and learning to say no. It's an ongoing process but I'm much better at recognizing when I'm overwhelmed."
+  }
 ]

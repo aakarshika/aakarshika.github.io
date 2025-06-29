@@ -1,5 +1,6 @@
 import skillsData from '../../skills_timeline.json';
 import { skillCategoryPaths } from '../hooks/skillCategoryPaths';
+import { ROOT_NODE_NAME } from './constants';
 
 /**
  * Parse date string to timestamp
@@ -175,8 +176,12 @@ const getNodeTimelineData = (nodeName, node, skillToTimeline, categoryToSkills) 
  */
 const buildHierarchy = () => {
   const tree = {};
+  skillCategoryPaths.push(ROOT_NODE_NAME);
   
   skillCategoryPaths.forEach(path => {
+    if (path !== ROOT_NODE_NAME) {
+      path = ROOT_NODE_NAME + '.' + path;
+    }
     const parts = path.split('.');
     let currentLevel = tree;
     
