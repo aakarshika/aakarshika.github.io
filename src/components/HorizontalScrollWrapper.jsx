@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { setupScrollEventListeners } from '../utils/scrollEventUtils';
 
 const HorizontalScrollWrapper = ({ 
+  id,
   isActive, 
   progress,
   onScrollHandoff, 
   children, 
   slideCount = 3, // Number of slides/pages
-  className = "h-screen bg-gradient-to-r from-purple-900 to-black relative overflow-hidden"
+  className = "h-screen bg-gradient-to-r from-purple-900 to-black relative overflow-hidden",
+  handleHover
 }) => {
   const containerRef = useRef(null);
   const [scrollX, setScrollX] = useState(0);
@@ -16,7 +18,7 @@ const HorizontalScrollWrapper = ({
   // Handle scroll handoff after render
   useEffect(() => {
     if (handoffDirection) {
-      // console.log('Handing off control:', handoffDirection);
+      // // console.log('Handing off control:', handoffDirection);
       onScrollHandoff(handoffDirection);
       setHandoffDirection(null);
     }
@@ -28,7 +30,7 @@ const HorizontalScrollWrapper = ({
     // if (!(progress < 40 || progress > 60)) return;
 
     const handleWheel = (e) => {
-      // console.log("handleWheel", e);
+      // // console.log("handleWheel", e);
       
       const deltaX = e.deltaY * 2;
       setScrollX(prev => {
@@ -55,7 +57,7 @@ const HorizontalScrollWrapper = ({
     };
 
     const handleTouchMove = (e) => {
-      // console.log("handleTouchMove", e);
+      // // console.log("handleTouchMove", e);
     };
 
     // Use the utility function to set up event listeners
@@ -77,8 +79,13 @@ const HorizontalScrollWrapper = ({
   }, [isActive, slideCount]);
 
   return (
-    <div className={className}>
-      <div className="h-screen flex items-center transition-all duration-1000 ease-out">
+    <div className={className}
+    // onMouseLeave={() => handleHover(false)}
+    >
+      <div className="h-screen flex items-center transition-all duration-1000 ease-out"
+      onMouseEnter={() => handleHover(true, id)}
+      onMouseLeave={() => handleHover(false, id)}
+      >
         <div 
           ref={containerRef}
           className="flex w-max h-full items-center"

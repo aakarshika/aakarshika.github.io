@@ -4,8 +4,10 @@ import {
   isContactFullyVisible 
 } from '../utils/portfolioUtils';
 
-export const useScrollManagement = (stoppersConfig) => {
+export const useScrollManagement = ({stoppersConfig}) => {
   // Custom scroll state
+  const [hovered, setHovered] = useState(true);
+  const [hoveredSection, setHoveredSection] = useState('projects');
     const sectionCount = stoppersConfig.length;
     const viewHeight = window.innerHeight;
     const maxScrollY = sectionCount * window.innerHeight - window.innerHeight;
@@ -33,14 +35,13 @@ export const useScrollManagement = (stoppersConfig) => {
       });
     }
 
-  const [scrollParallelly, setScrollParallelly] = useState(false);
   
   useEffect(() => {
     activeStopperIdRef.current = activeStopperId;
   }, [activeStopperId]);
 
   useEffect(() => {
-    // console.log("scrollY", scrollY);
+    // // console.log("scrollY", scrollY);
 
     const matlabKaY = scrollY + viewHeight/2;
     const activePageProgress = 100*((matlabKaY%viewHeight)/viewHeight);
@@ -69,27 +70,25 @@ export const useScrollManagement = (stoppersConfig) => {
     }
     if(((direction == 'next' && activePageProgress >= 45 ) || (direction == 'previous' && activePageProgress <= 55 ))
       && !handoffsReceived.find(h => h.direction == direction && h.stopperId == ovrAllPage?.id)
-      && ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == ovrAllPage?.componentType) ){
+      && ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == ovrAllPage?.componentType) 
+      && hovered && hoveredSection == ovrAllPage.id
+    ){
       setCenterStuck(ovrAllPage);
     } else {
       setCenterStuck(null);
     }
 
-    // if(!activePage) {
-    //   console.log("--------------------------------");
-    // } else {
-    //   console.log(pageProgress.toFixed(), `\"${activePage?.id}\"`,
-    // centerStuck ? "centerStuck": ""  ,
-    // direction,
-    // handoffsReceived.length,
-    // handoffsReceived.find(h => h.direction == direction && h.stopperId == activePage?.id) ? "found": ""
-    // );
-    // }
-  }, [scrollY]);
+  }, [scrollY, hovered]);
 
+
+  const handleHover = (isHovered, section) => {
+    console.log("handleHover", isHovered, section);
+    setHovered(isHovered);
+    setHoveredSection(section);
+  };
 
   const handleScrollHandoff = (direction, stopperId) => {
-    console.log("changing hands", direction, stopperId);
+    // console.log("changing hands", direction, stopperId);
     setHandoffsReceived([{ direction, stopperId }]);
     setCenterStuck(null);
     setActiveStopperId(null);
@@ -122,11 +121,12 @@ export const useScrollManagement = (stoppersConfig) => {
           if(((newDirection == 'next' && activePageProgress >= 50) 
             || newDirection == 'previous' && activePageProgress <= 50) 
             && !handoffsReceived.find(h => h.direction == newDirection && h.stopperId == ovrAllPage?.id)
-            && ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == ovrAllPage.componentType) ){
+            && ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == ovrAllPage.componentType)
+            && hovered && hoveredSection == ovrAllPage.id
+          ){
             shouldCenterStuck = true;
           }
-          
-          if(shouldCenterStuck || centerStuck){
+          if((shouldCenterStuck || centerStuck) ){
             return ovrAllPage.top;
           }
         }
@@ -170,7 +170,7 @@ export const useScrollManagement = (stoppersConfig) => {
       document.body.style.overflow = '';
       document.body.style.height = '';
     };
-  }, [activeStopperId, scrollParallelly, stoppersConfig]);
+  }, [activeStopperId, stoppersConfig, hovered]);
 
   return {
     scrollY,
@@ -179,5 +179,6 @@ export const useScrollManagement = (stoppersConfig) => {
     pageProgress,
     handleScrollHandoff,
     handoffsReceived,
+    handleHover
   };
 }; 

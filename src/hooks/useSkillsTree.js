@@ -13,8 +13,6 @@ import { TREE_LAYOUT } from '../utils/constants';
  */
 export function useSkillsTree() {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showOnlyWithData, setShowOnlyWithData] = useState(true);
-  const [scaleUpLeafNodes, setScaleUpLeafNodes] = useState(true);
   
   // Remove highlightedNodes state - we'll derive it from treeNodes.isHighlighted
   const [highlightedNodeNames, setHighlightedNodeNames] = useState(new Set());
@@ -72,10 +70,6 @@ export function useSkillsTree() {
    * @returns {Object} Filtered hierarchy tree
    */
   const getFilteredHierarchy = () => {
-    if (!showOnlyWithData) {
-      return hierarchyTree;
-    }
-    
     const filteredTree = {};
     Object.entries(hierarchyTree).forEach(([rootName, rootNode]) => {
       const filteredRoot = filterNodeWithData(rootNode, rootName);
@@ -102,22 +96,19 @@ export function useSkillsTree() {
         nodesByLevel[level] = [];
       }
       
-      // Only add nodes that have timeline data when toggle is on
-      if (showOnlyWithData) {
-        const skillToTimeline = buildSkillToTimelineMapping();
-        const categoryToSkills = buildCategoryToSkillsMapping();
-        const mockNode = {
-          children: node.children ? Object.fromEntries(
-            Object.entries(node.children).map(([childName, childNode]) => [
-              childName, 
-              { name: childName, children: childNode.children || {} }
-            ])
-          ) : {}
-        };
-        const timelineData = getNodeTimelineData(node.name, mockNode, skillToTimeline, categoryToSkills);
-        if (timelineData.length === 0) {
-          return; // Skip nodes without timeline data
-        }
+      const skillToTimeline = buildSkillToTimelineMapping();
+      const categoryToSkills = buildCategoryToSkillsMapping();
+      const mockNode = {
+        children: node.children ? Object.fromEntries(
+          Object.entries(node.children).map(([childName, childNode]) => [
+            childName, 
+            { name: childName, children: childNode.children || {} }
+          ])
+        ) : {}
+      };
+      const timelineData = getNodeTimelineData(node.name, mockNode, skillToTimeline, categoryToSkills);
+      if (timelineData.length === 0) {
+        return; // Skip nodes without timeline data
       }
       
       nodesByLevel[level].push(node.name);
@@ -143,12 +134,12 @@ export function useSkillsTree() {
       
       if (nextNode) {
         const totalNodes = Object.values(nodesByLevel).flat().length;
-        // console.log(`🎯 ${nextNode} (Level ${level}) (${highlightedNodeNames.size + 1}/${totalNodes})`);
+        // // console.log(`🎯 ${nextNode} (Level ${level}) (${highlightedNodeNames.size + 1}/${totalNodes})`);
         return nextNode;
       }
     }
     
-    // console.log('🏁 All nodes highlighted!');
+    // // console.log('🏁 All nodes highlighted!');
     return null;
   };
 
@@ -286,11 +277,10 @@ export function useSkillsTree() {
     return nodes;
   };
 
-  const treeNodes = useMemo(() => buildTreeData(), [highlightedNodeNames, showOnlyWithData]);
+  const treeNodes = useMemo(() => buildTreeData(), [highlightedNodeNames]);
 
   return {
 
-    scaleUpLeafNodes,
     
     // Data
     treeNodes,

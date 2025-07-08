@@ -1,4 +1,3 @@
-
 /**
  * Comprehensive skill category paths based on skills in skills_timeline.json
  * Each path represents a hierarchical category structure
@@ -45,13 +44,6 @@ export const skillCategoryPaths = [
   
   // DevOps & CI/CD
   'tech.devops.jenkins',
-  'tech.devops.aws',
-  'tech.devops.aws.ec2',
-  'tech.devops.aws.lambda',
-  'tech.devops.aws.s3',
-  'tech.devops.aws.dynamodb',
-  'tech.devops.aws.cloudfront',
-  'tech.devops.aws.cloudwatch',
   'tech.devops.docker',
   'tech.devops.kubernetes',
   'tech.devops.terraform',
@@ -71,10 +63,6 @@ export const skillCategoryPaths = [
   'tech.teaching.ta',
 
 
-  'mind_and_body.health.fitness.gym',
-  'mind_and_body.health.fitness.running',
-  'mind_and_body.leisure.art.crafting',
-  'mind_and_body.leisure.art.painting',
 
     // Backend Technologies
     'tech.backend.nodejs',
@@ -110,25 +98,30 @@ export const skillCategoryPaths = [
     'tech.database.postgresql',
     'tech.database.postgresql.rls',
     'tech.database.mongodb',
+    'tech.database.pl_sql',
     'tech.database.query_optimization',
     'tech.database.supabase',
   
     // Cloud & DevOps
     'tech.devops.aws',
-    'tech.devops.aws.ec2',
-    'tech.devops.aws.lambda',
-    'tech.devops.aws.s3',
-    'tech.devops.aws.kinesis',
-    'tech.devops.aws.rds',
+    'tech.devops.aws.aws_ec2',
+    'tech.devops.aws.aws_lambda',
+    'tech.devops.aws.aws_s3',
+    'tech.devops.aws.aws_kinesis',
+    'tech.devops.aws.aws_rds',
+    'tech.devops.aws.aws_dynamodb',
+    'tech.devops.aws.aws_cloudfront',
+    'tech.devops.aws.aws_cloudwatch',
     'tech.devops.cicd.jenkins',
     'tech.devops.container.docker',
   
     // Machine Learning & AI
     'tech.machine_learning',
     'tech.machine_learning.pytorch',
-    'tech.machine_learning.huggingface',
+    'tech.machine_learning.hugging_face_transformers',
     'tech.machine_learning.transformers',
     'tech.machine_learning.nlp',
+    'tech.machine_learning.scikit_learn',
     'tech.machine_learning.opencv',
     'tech.machine_learning.fine_tuning',
   
@@ -144,10 +137,48 @@ export const skillCategoryPaths = [
     // Realtime & Interaction
   
     // Project & Delivery
-    'agile.process.agile',
-    'agile.process.scrum',
-    'agile.process.code_review',
-    'agile.process.beta_testing',
-    'agile.process.crash_reporting.sentry'
+    'tech.agile.process.agile',
+    'tech.agile.process.scrum',
+    'tech.agile.process.code_review',
+    'tech.agile.process.beta_testing',
+    'tech.agile.process.crash_reporting.sentry',
+
+  // Mind & Body Wellness
+  'mind_and_body.fitness.gym_consistency',
+  'mind_and_body.fitness.running_meditation',
+  'mind_and_body.fitness.strength_training',
+  'mind_and_body.fitness.cardio',
+  'mind_and_body.fitness.mobility',
+  
+  // Sleep & Recovery
+  'mind_and_body.wellness.sleep_optimization',
+  'mind_and_body.wellness.stress_management',
+  'mind_and_body.wellness.mindful_eating',
+  'mind_and_body.wellness.digital_detox',
+  
+  // Creative & Hobbies
+  'creativity.woodworking',
+  'creativity.nature_connection',
+  'creativity.creative_crafting',
+  'creativity.diy_projects',
+  'creativity.hand_skills',
+  
+  // Nature & Connection
+  'mind_and_body.nature.connection',
+  'mind_and_body.nature.outdoor_activities',
+  'mind_and_body.nature.walking',
+  'mind_and_body.nature.mindfulness',
+  
+  // Personal Development
+  'mind_and_body.personal.habit_building',
+  'mind_and_body.personal.boundary_setting',
+  'mind_and_body.personal.self_awareness',
+  'mind_and_body.personal.life_balance',
+
+  // Lifestyle & Wellness
+  'mind_and_body.lifestyle.minimalism',
+  'mind_and_body.lifestyle.intentional_living',
+  'mind_and_body.lifestyle.work_life_balance',
+  'mind_and_body.lifestyle.energy_management'
   ];
   

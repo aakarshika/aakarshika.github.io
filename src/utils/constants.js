@@ -2,6 +2,9 @@
  * Constants for the Skills Tree visualization
  */
 
+// Root node name for the entire skills tree
+export const ROOT_NODE_NAME = 'awesomeness';
+
 // SVG margins
 export const SVG_MARGIN = { 
   top: 50, 

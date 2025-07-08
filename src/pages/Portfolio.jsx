@@ -7,17 +7,15 @@ import PicSection from '../components/PicSection';
 import ContactSection from '../components/ContactSection';
 import HeroSection from '../components/HeroSection';
 import SkillGraph from '../components/SkillGraph';
-import PortfolioOverlays from '../components/PortfolioOverlays';
 import { useVisitorPortfolio } from '../hooks/useVisitorPortfolio';
 import { useScrollManagement } from '../hooks/useScrollManagement';
-import { useAnimationEffects } from '../hooks/useAnimationEffects';
+import { useState } from 'react';
 
 const Portfolio = () => {
   // const containerRef = useRef(null);
   
   // Use extracted hooks
   const { picturesList, handleCapture, handleDelete, fingerprint } = useVisitorPortfolio();
-  
   // Define stoppers configuration
   const stoppersConfig = [
     {
@@ -59,7 +57,7 @@ const Portfolio = () => {
   ];
 
   // Use scroll management hook
-  const { scrollY, activeStopperId, activePageName, pageProgress,  handleScrollHandoff } = useScrollManagement(stoppersConfig);
+  const { scrollY, activeStopperId, activePageName, pageProgress,  handleScrollHandoff, handleHover } = useScrollManagement({stoppersConfig});
   
   return (
     <div 
@@ -87,11 +85,13 @@ const Portfolio = () => {
           return stopper.componentType === 'horizontalStopper' ? (
             <div key={stopper.id + ' ' + idx} ref={stopper.ref}>
               <VeeSection
+                id={stopper.id}
                 isActive={activeStopperId === stopper.id}
                 progress={activePageName == stopper.id ? pageProgress : 0}
                 onScrollHandoff={(direction) => handleScrollHandoff(direction, stopper.id)}
                 content={<stopper.componentFun />}
-              />
+                handleHover={handleHover}
+                />
             </div>
           ) : stopper.componentType === 'customHorizontalStopper' ? (
             <div key={stopper.id + ' ' + idx} ref={stopper.ref}>
@@ -100,13 +100,18 @@ const Portfolio = () => {
                   isActive={activeStopperId === stopper.id} 
                   onScrollHandoff={(direction) => {
                     handleScrollHandoff(direction, stopper.id);
-                  }} 
+                  }}
+                  scrollY={scrollY}
+                  handleHover={handleHover}
                 /> 
                 : <div />
               }
             </div>
           ) : (
-            <div key={stopper.id + ' ' + idx} ref={stopper.ref}>
+            <div key={stopper.id + ' ' + idx} ref={stopper.ref}
+            // onMouseEnter={() => setHovered(true)}
+            // onMouseLeave={() => setHovered(false)}
+            >
               <stopper.componentFun />
             </div>
           );
