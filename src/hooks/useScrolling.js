@@ -14,32 +14,30 @@ export const useScrolling = ({
   currentNodeId,
   sensitivity = 0.5,
   maxOffset,
-  isActive = true
+  isActive
 }) => {
   const [xOffset, setXOffset] = useState(0);
-  const animationRef = useRef(null);
+  const animationRef = containerRef;
 
-  useEffect(() => {
-    // console.log('xOffset', xOffset);
-  }, [xOffset]);
   // Handle wheel events
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !isActive || !currentNodeId) return;
+    if (!container || !currentNodeId) return;
 
     const wheelHandler = (e) => {
-      e.preventDefault();
+      if (!isActive) return;
+      // e.preventDefault();
       
       const deltaY = e.deltaY;
       
       setXOffset(prevOffset => {
+        // console.log("prevOffset", prevOffset, "deltaY", deltaY, "sensitivity", sensitivity, "maxOffset", maxOffset);
         // Calculate new offset based on scroll direction
         // Positive deltaY (scrolling down) moves left, negative moves right
         const newOffset = prevOffset + (deltaY * sensitivity);
         
         // Clamp the offset to the maximum allowed range
-        const clampedOffset = Math.max(0, Math.min(maxOffset, newOffset));
-        
+        const clampedOffset = Math.max(-1, Math.min(maxOffset+1, newOffset));
         
         return clampedOffset;
       });
@@ -54,7 +52,7 @@ export const useScrolling = ({
         clearTimeout(animationRef.current);
       }
     };
-  }, [containerRef]);
+  }, [containerRef, currentNodeId, sensitivity, maxOffset, isActive]);
 
   // Reset offset when current node changes
   // useEffect(() => {

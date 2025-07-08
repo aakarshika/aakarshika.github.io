@@ -1,0 +1,152 @@
+SkillGraph/Timeline Visualization - Function Call Order and Triggers
+============================================================
+
+1. src/components/SkillGraph.jsx
+--------------------------------
+- SkillGraph (component)
+  - useEffect(() => { ... }, [])
+    - Trigger: Component mount
+    - Calls: initializeTreeWithTimeline (from treeInitializer.js)
+    - Calls: getFlatNodeList (from treeInitializer.js)
+  - useSkillsTree (hook) ❌ UNUSED - Highlighting system not used in DemoSkillGraph2
+    - Used for highlighting logic
+  - useSkillsListData (hook) ❌ UNUSED - Highlighting-based logic not used
+    - Used for visible nodes, parent/child logic
+  - useTimelineData (hook) ❌ UNUSED - Highlighting-based timeline processing not used
+    - Used for timeline box y-coords
+  - useScrollAnimation (hook) ❌ UNUSED - Highlighting-based animation not used
+    - Used for scroll-based animation
+  - Renders: <DemoSkillGraph2 flatNodes={flatNodes} />
+
+2. src/components/DemoSkillGraph2.jsx
+-------------------------------------
+- DemoSkillGraph2 (component)
+  - useNodeRemoval (hook) ✅ USED - Core removal logic
+    - Manages removedNodeIds, removal logic
+  - useBarVisualization (hook) ✅ USED - Bar positioning and layout
+    - Handles bar layout, color, etc
+  - useScrolling (hook) ✅ USED - Scroll handling
+    - Trigger: Scroll events on SVG
+    - Provides xOffset
+  - useEffect(() => { ... }, [xOffset, isProcessing])
+    - Trigger: xOffset or isProcessing changes
+    - Updates expectedIndex
+  - useEffect(() => { ... }, [expectedIndex])
+    - Trigger: expectedIndex changes
+    - Syncs removedNodeIds with expectedIndex
+
+3. src/hooks/useSkillsTree.js ❌ COMPLETELY UNUSED
+-----------------------------
+- useSkillsTree (hook)
+  - useMemo(() => buildHierarchy(), [])
+    - Trigger: Mount
+  - filterNodeWithData
+    - Called by getFilteredHierarchy
+  - getFilteredHierarchy
+    - Called by pickNextNode, buildTreeData
+  - pickNextNode
+    - Called by handleHighlightNext, buildTreeData
+  - handleHighlightNext ❌ Never called
+    - Called by animation complete or user action
+  - handleUnhighlightLast ❌ Never called
+    - Called by animation complete or user action
+  - buildTreeData
+    - Called by useMemo(() => buildTreeData(), [highlightedNodeNames])
+
+4. src/hooks/useNodeRemoval.js ✅ USED
+------------------------------
+- useNodeRemoval (hook)
+  - pickNextNodeToRemove
+    - Called by removeNext, getNextNodeToRemove
+  - removeNext
+    - Called by user action or effect
+  - unremovePrevious
+    - Called by user action or effect
+  - getNextNodeToRemove
+    - Used for highlighting
+  - isAllRemoved, isNoneRemoved
+    - Used for logic in DemoSkillGraph2
+
+5. src/hooks/useScrolling.js ✅ USED
+----------------------------
+- useScrolling (hook)
+  - useEffect(() => { ... }, [containerRef])
+    - Trigger: Mount, containerRef change
+    - Adds wheel event listener
+    - Updates xOffset on scroll
+  - useEffect(() => { ... }, [])
+    - Trigger: Unmount
+    - Cleans up
+
+6. src/components/SkillsList/useSkillsListData.js ❌ UNUSED
+-------------------------------------------------
+- useSkillsListData (hook)
+  - useMemo(() => { ... }, [treeNodes])
+    - Trigger: treeNodes change
+    - Calculates visibleNodes, removingNodes, parentNodes, positioning, etc.
+
+7. src/components/SkillsList/useTimelineData.js ❌ UNUSED
+-----------------------------------------------
+- useTimelineData (hook)
+  - useMemo(() => { ... }, [treeNodes, yZoom])
+    - Trigger: treeNodes or yZoom change
+    - Calculates nodeTimelineBoxes, time range, etc.
+
+8. src/utils/treeInitializer.js ✅ USED (partially)
+-------------------------------
+- initializeTreeWithTimeline
+  - Called on SkillGraph mount
+  - Calls: buildSkillToTimelineMapping, buildCategoryToSkillsMapping, buildHierarchy, filterNodeWithData, processNodeWithYCoordinates
+- getFlatNodeList
+  - Called on SkillGraph mount
+- getNodeTimelineData
+  - Called recursively by tree building and filtering
+- calculateTimelineYCoordinates, calculateParentYCoordinates
+  - Used during tree building
+
+============================================================
+
+REDUNDANT/EXCESSIVE RECALCULATIONS:
+===================================
+
+1. getNodeTimelineData() - Called 3+ times per node:
+   - During tree initialization (treeInitializer.js)
+   - During highlighting filtering (useSkillsTree.js) ❌ UNUSED
+   - During timeline processing (useTimelineData.js) ❌ UNUSED
+
+2. pickNextNodeToRemove() - Called multiple times per render:
+   - On every render in getNextNodeToRemove()
+   - When actually removing nodes
+
+3. Tree rebuilding (useSkillsTree) - Entire tree rebuilt for unused highlighting:
+   - buildTreeData() called when highlightedNodeNames changes
+   - filterNodeWithData() called recursively
+   - All highlighting state calculated but never used
+
+4. Positioning calculations (useSkillsListData) - Recalculated for unused highlighting:
+   - calculateInitialNodePositions() called when treeNodes change
+   - But treeNodes only change due to highlighting (which is unused)
+
+============================================================
+
+CURRENT FLOW (what actually happens):
+====================================
+1. Component mount: initializeTreeWithTimeline() → getFlatNodeList() → DemoSkillGraph2
+2. Scroll: useScrolling() → xOffset → expectedIndex → removedNodeIds
+3. Removal: useNodeRemoval() → pickNextNodeToRemove() → removeNext()/unremovePrevious()
+4. Visualization: useBarVisualization() → positionedBars (based on removedNodeIds)
+
+UNUSED FLOW (highlighting system):
+=================================
+1. useSkillsTree() → buildTreeData() → treeNodes with highlighting state
+2. useSkillsListData() → visibleNodes based on highlighting
+3. useTimelineData() → timeline boxes for highlighting system
+4. useScrollAnimation() → highlighting-based animations
+
+============================================================
+
+// Triggers summary:
+// - Component mount: initializeTreeWithTimeline, getFlatNodeList, buildHierarchy
+// - Scroll: useScrolling (xOffset), triggers effects in DemoSkillGraph2
+// - State change (highlight, removal): useSkillsTree, useNodeRemoval, useSkillsListData, useTimelineData
+// - Tree data change: recalculates visible nodes, timeline boxes, etc. 

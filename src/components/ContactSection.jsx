@@ -107,13 +107,13 @@ const ContactSection = () => {
             {/* Success/Error Messages */}
             {submitStatus === 'success' && (
               <div className="mb-6 p-4 bg-green-900 border border-green-500 rounded-lg text-green-300">
-                Thank you {formData.name}! Your message has been saved successfully.
+                Thank you {formData.name}! Your message is sent.
               </div>
             )}
             
             {submitStatus === 'error' && (
               <div className="mb-6 p-4 bg-red-900 border border-red-500 rounded-lg text-red-300">
-                Sorry, there was an error saving your message. Please try again.
+                Sorry, there was an error sending your message. Please try again.
               </div>
             )}
 

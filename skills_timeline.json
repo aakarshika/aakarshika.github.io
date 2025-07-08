@@ -243,5 +243,12 @@
     "End Date": "2025-06",
     "Expertise Level Achieved": "Intermediate",
     "description": "Developed a toolkit for handling stress that actually works for me. Breathing exercises, regular breaks, setting boundaries, and learning to say no. It's an ongoing process but I'm much better at recognizing when I'm overwhelmed."
+  },
+  {
+    "Skill": "ta",
+    "Start Date": "2020-08",
+    "End Date": "2021-06",
+    "Expertise Level Achieved": "Intermediate",
+    "company": "JSS Academy of Technical Education"
   }
 ]

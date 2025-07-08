@@ -8,7 +8,6 @@ import { useState } from 'react';
  */
 export const useNodeRemoval = ({ flatNodes }) => {
   const [removedNodeIds, setRemovedNodeIds] = useState([]);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   /**
    * Pick the next node to be removed based on priority system
@@ -47,10 +46,6 @@ export const useNodeRemoval = ({ flatNodes }) => {
    * Remove the next node based on priority system
    */
   const removeNext = () => {
-    if (isProcessing) return;
-    
-    setIsProcessing(true);
-    
     try {
       const nextNodeId = pickNextNodeToRemove();
       if (nextNodeId) {
@@ -59,7 +54,6 @@ export const useNodeRemoval = ({ flatNodes }) => {
     } catch (error) {
       console.error('Error removing node:', error);
     } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -67,16 +61,13 @@ export const useNodeRemoval = ({ flatNodes }) => {
    * Unremove the last removed node
    */
   const unremovePrevious = () => {
-    if (isProcessing || removedNodeIds.length === 0) return;
-    
-    setIsProcessing(true);
+    if (removedNodeIds.length === 0) return;
     
     try {
       setRemovedNodeIds(prev => prev.slice(0, -1));
     } catch (error) {
       console.error('Error unremoving node:', error);
     } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -106,7 +97,6 @@ export const useNodeRemoval = ({ flatNodes }) => {
 
   return {
     removedNodeIds,
-    isProcessing,
     removeNext,
     unremovePrevious,
     getNextNodeToRemove,

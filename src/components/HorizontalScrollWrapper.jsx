@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { setupScrollEventListeners } from '../utils/scrollEventUtils';
 
 const HorizontalScrollWrapper = ({ 
+  id,
   isActive, 
   progress,
   onScrollHandoff, 
   children, 
   slideCount = 3, // Number of slides/pages
-  className = "h-screen bg-gradient-to-r from-purple-900 to-black relative overflow-hidden"
+  className = "h-screen bg-gradient-to-r from-purple-900 to-black relative overflow-hidden",
+  handleHover
 }) => {
   const containerRef = useRef(null);
   const [scrollX, setScrollX] = useState(0);
@@ -77,8 +79,13 @@ const HorizontalScrollWrapper = ({
   }, [isActive, slideCount]);
 
   return (
-    <div className={className}>
-      <div className="h-screen flex items-center transition-all duration-1000 ease-out">
+    <div className={className}
+    // onMouseLeave={() => handleHover(false)}
+    >
+      <div className="h-screen flex items-center transition-all duration-1000 ease-out"
+      onMouseEnter={() => handleHover(true, id)}
+      onMouseLeave={() => handleHover(false, id)}
+      >
         <div 
           ref={containerRef}
           className="flex w-max h-full items-center"

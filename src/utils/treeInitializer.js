@@ -139,11 +139,7 @@ const getNodeTimelineData = (nodeName, node, skillToTimeline, categoryToSkills) 
     
     // Try case-insensitive/partial matching
     Object.keys(skillToTimeline).forEach(skillNorm => {
-      if (
-        skillNorm === normalizedNodeName ||
-        skillNorm.includes(normalizedNodeName) ||
-        normalizedNodeName.includes(skillNorm)
-      ) {
+      if (skillNorm === normalizedNodeName) {
         timelineData.push(...skillToTimeline[skillNorm]);
       }
     });
@@ -154,7 +150,9 @@ const getNodeTimelineData = (nodeName, node, skillToTimeline, categoryToSkills) 
       timelineData.push(...childData);
     });
   }
-  
+  if(node.name === "teaching" || node.name === "ta" || node.name === "tech"){
+    console.log(node.name, timelineData, "timelineData before deduplication");
+  }
   // Remove duplicates based on start date, end date, and company
   const uniqueData = [];
   const seen = new Set();
@@ -167,6 +165,10 @@ const getNodeTimelineData = (nodeName, node, skillToTimeline, categoryToSkills) 
     }
   });
   
+  if(node.name === "teaching" || node.name === "ta" || node.name === "tech"){
+    console.log(node.name, uniqueData, "uniqueData after deduplication");
+  }
+
   return uniqueData;
 };
 
@@ -314,6 +316,7 @@ const calculateParentYCoordinates = (node, nodeName, skillToTimeline, categoryTo
  * @returns {Object} Complete tree with timeline data and y-coordinates
  */
 export const initializeTreeWithTimeline = (yZoom = 600) => {
+  console.log("initializing tree with timeline data");
   // console.log('🌳 Initializing tree with timeline data...');
   
   // Step 1: Get JSON data (already imported)
