@@ -228,7 +228,7 @@ const DemoSkillGraph2 = ({ isActive,  flatNodes ,handleScrollHandoff, handleHove
     <div className="w-full h-full flex flex-col items-center" 
     >
       <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-        Skills Timeline Bars
+        Skills Gained Along the Way
       </h2>
 
 
