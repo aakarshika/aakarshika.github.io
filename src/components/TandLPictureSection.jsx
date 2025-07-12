@@ -3,6 +3,8 @@ import Webcam from 'react-webcam';
 import { Camera } from 'lucide-react';
 // Placeholder for AllPicturesTwinkling (to be implemented)
 import AllPicturesTwinkling from './AllPicturesTwinkling';
+import HandPoseOverlay from './HandPoseOverlay';
+import { useHandPoseDetection } from '../hooks/useHandPoseDetection';
 // import ImageFilters from 'react-image-filters'; // Not needed for live preview
 
 
@@ -86,6 +88,15 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
     const videoSource = useRef(null);
     const targetNode = useRef(null);
     const ownImage = currentFingerprint && pictures.some(pic => pic?.fingerprint === currentFingerprint);
+    
+    // Hand pose detection hook
+    const {
+        isModelLoaded,
+        isDetecting,
+        detectedGestures,
+        startDetection,
+        stopDetection,
+    } = useHandPoseDetection();
 
     // Setup Seriously.js pipeline for live preview
     useEffect(() => {
@@ -117,6 +128,26 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
             seriouslyInstance.current = null;
         };
     }, [cameraOpen, filter]);
+
+    // Start hand pose detection when camera opens
+    useEffect(() => {
+        if (cameraOpen && isModelLoaded && webcamRef.current?.video) {
+            startDetection(webcamRef.current.video);
+        } else if (!cameraOpen) {
+            stopDetection();
+        }
+    }, [cameraOpen, isModelLoaded, startDetection, stopDetection]);
+
+    // Handle gesture-based capture
+    useEffect(() => {
+        if (detectedGestures.length > 0 && !isCountingDown) {
+            const gesture = detectedGestures[0];
+            if (gesture.name === 'thumbs_up' && gesture.confidence > 0.5) {
+                // Thumbs up gesture triggers capture
+                handleCapture();
+            }
+        }
+    }, [detectedGestures, isCountingDown]);
 
     // Start countdown and capture after 3 seconds
     const startCountdown = useCallback(() => {
@@ -165,7 +196,7 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         </div>
             {cameraOpen && !ownImage && (
                 <div className="p-12 pt-60 h-full flex flex-col items-center justify-center gap-4 relative z-10">
-                    <div className="mb-4 flex gap-2">
+                    <div className="mb-4 flex gap-2 items-center">
                         <label className="text-white">Filter:</label>
                         <select
                             value={filter}
@@ -177,6 +208,13 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                                 <option key={key} value={key}>{val.label}</option>
                             ))}
                         </select>
+                        <div className="ml-4 text-sm text-white">
+                            {isModelLoaded ? (
+                                <span className="text-green-400">✓ Hand detection ready</span>
+                            ) : (
+                                <span className="text-yellow-400">Loading hand detection...</span>
+                            )}
+                        </div>
                     </div>
                     <Webcam
                         audio={false}
@@ -186,13 +224,20 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                         style={{ zIndex: 0 }}
                         videoConstraints={{ width: 256, height: 256 }}
                     />
-                    <canvas
-                        ref={canvasRef}
-                        width={256}
-                        height={256}
-                        className="rounded-lg w-64 h-64 object-cover"
-                        style={{ zIndex: 1 }}
-                    />
+                    <div className="relative">
+                        <canvas
+                            ref={canvasRef}
+                            width={256}
+                            height={256}
+                            className="rounded-lg w-64 h-64 object-cover"
+                            style={{ zIndex: 1 }}
+                        />
+                        <HandPoseOverlay
+                            detectedGestures={detectedGestures}
+                            videoWidth={256}
+                            videoHeight={256}
+                        />
+                    </div>
                     
                     {/* Countdown overlay */}
                     {isCountingDown && (
@@ -218,6 +263,16 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                             {message.length}/100
                         </div>
                     </div>
+                    
+                    {/* Gesture instructions */}
+                    <div className="mt-4 p-3 bg-gray-800 rounded-lg">
+                        <h4 className="text-white text-sm font-semibold mb-2">Hand Gestures:</h4>
+                        <div className="text-xs text-gray-300 space-y-1">
+                            <div>👍 <strong>Thumbs up:</strong> Auto-capture photo</div>
+                            <div>✌️ <strong>Peace sign:</strong> Detected</div>
+                            <div>👌 <strong>OK sign:</strong> Detected</div>
+                        </div>
+                    </div>
                     <button
                         className={`mt-4 px-4 py-2 rounded transition cursor-pointer ${
                             isCountingDown 
@@ -227,7 +282,7 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                         onClick={handleCapture}
                         disabled={isCountingDown}
                     >
-                        {isCountingDown ? 'Capturing...' : 'Capture'}
+                        {isCountingDown ? 'Capturing...' : 'Capture (or thumbs up!)'}
                     </button>
                     <button
                         className="mt-2 px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer"
