@@ -26,9 +26,24 @@
     <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.edge.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.vignette.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.filmgrain.js"></script>
-    <!-- TensorFlow.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.15.0/dist/tf-backend-webgl.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection@2.0.0/dist/hand-pose-detection.min.js"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1620248257/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js"></script>
+    <!-- Fingerpose -->
+    <script src="https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.js"></script>
+    <script>
+      // Fallback: Try to load Fingerpose from alternative source if first fails
+      setTimeout(() => {
+        if (typeof window.Fingerpose === 'undefined') {
+          console.log('Trying alternative Fingerpose source...');
+          const script = document.createElement('script');
+          script.src = 'https://unpkg.com/fingerpose@0.1.0/dist/fingerpose.js';
+          script.onload = () => console.log('Fingerpose loaded from alternative source');
+          script.onerror = () => console.log('Fingerpose failed to load from alternative source');
+          document.head.appendChild(script);
+        }
+      }, 2000);
+    </script>
   </body>
 </html>

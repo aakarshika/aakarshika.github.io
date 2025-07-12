@@ -4,6 +4,7 @@ import { Camera } from 'lucide-react';
 // Placeholder for AllPicturesTwinkling (to be implemented)
 import AllPicturesTwinkling from './AllPicturesTwinkling';
 import HandPoseOverlay from './HandPoseOverlay';
+import GestureGuide from './GestureGuide';
 import { useHandPoseDetection } from '../hooks/useHandPoseDetection';
 // import ImageFilters from 'react-image-filters'; // Not needed for live preview
 
@@ -84,6 +85,7 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
     const canvasRef = useRef(null);
     const [filter, setFilter] = useState('sepia');
     const [message, setMessage] = useState('');
+    const [showGestureGuide, setShowGestureGuide] = useState(false);
     const seriouslyInstance = useRef(null);
     const videoSource = useRef(null);
     const targetNode = useRef(null);
@@ -94,8 +96,11 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         isModelLoaded,
         isDetecting,
         detectedGestures,
+        allHands,
+        useFallback,
         startDetection,
         stopDetection,
+        loadingStatus,
     } = useHandPoseDetection();
 
     // Setup Seriously.js pipeline for live preview
@@ -128,26 +133,6 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
             seriouslyInstance.current = null;
         };
     }, [cameraOpen, filter]);
-
-    // Start hand pose detection when camera opens
-    useEffect(() => {
-        if (cameraOpen && isModelLoaded && webcamRef.current?.video) {
-            startDetection(webcamRef.current.video);
-        } else if (!cameraOpen) {
-            stopDetection();
-        }
-    }, [cameraOpen, isModelLoaded, startDetection, stopDetection]);
-
-    // Handle gesture-based capture
-    useEffect(() => {
-        if (detectedGestures.length > 0 && !isCountingDown) {
-            const gesture = detectedGestures[0];
-            if (gesture.name === 'thumbs_up' && gesture.confidence > 0.5) {
-                // Thumbs up gesture triggers capture
-                handleCapture();
-            }
-        }
-    }, [detectedGestures, isCountingDown]);
 
     // Start countdown and capture after 3 seconds
     const startCountdown = useCallback(() => {
@@ -184,6 +169,26 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         startCountdown();
     }, [isCountingDown, startCountdown]);
 
+    // Start hand pose detection when camera opens
+    useEffect(() => {
+        if (cameraOpen && isModelLoaded && webcamRef.current?.video) {
+            startDetection(webcamRef.current.video);
+        } else if (!cameraOpen) {
+            stopDetection();
+        }
+    }, [cameraOpen, isModelLoaded, startDetection, stopDetection]);
+
+    // Handle gesture-based capture
+    useEffect(() => {
+        if (detectedGestures.length > 0 && !isCountingDown) {
+            const gesture = detectedGestures[0];
+            if (gesture.name === 'thumbs_up' && gesture.confidence > 0.5) {
+                // Thumbs up gesture triggers capture
+                handleCapture();
+            }
+        }
+    }, [detectedGestures, isCountingDown, handleCapture]);
+
     return (
         <div className="tstart relative h-full w-full items-center justify-center mb-60">
         <div className="absolute top-0 left-0 w-full h-full p-12 pt-60">
@@ -210,11 +215,32 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                         </select>
                         <div className="ml-4 text-sm text-white">
                             {isModelLoaded ? (
-                                <span className="text-green-400">✓ Hand detection ready</span>
+                                useFallback ? (
+                                    <span className="text-orange-400">⚠ Manual capture only</span>
+                                ) : (
+                                    <span className="text-green-400">✓ Hand detection ready</span>
+                                )
                             ) : (
-                                <span className="text-yellow-400">Loading hand detection...</span>
+                                <span className="text-yellow-400">Loading: {loadingStatus}</span>
                             )}
                         </div>
+                        {useFallback && (
+                            <div className="ml-4 text-xs text-orange-400">
+                                (Hand detection unavailable - use manual capture)
+                                <br />
+                                <span className="text-gray-400">Debug: {loadingStatus}</span>
+                            </div>
+                        )}
+                        {allHands.length > 0 && (
+                            <div className="ml-4 text-xs text-blue-300">
+                                Tracking {allHands.length} hand{allHands.length > 1 ? 's' : ''}
+                            </div>
+                        )}
+                        {detectedGestures.length > 0 && (
+                            <div className="ml-4 text-xs text-green-300">
+                                Detected: {detectedGestures.map(g => `${g.name} (${Math.round(g.confidence * 100)}%)`).join(', ')}
+                            </div>
+                        )}
                     </div>
                     <Webcam
                         audio={false}
@@ -234,8 +260,13 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                         />
                         <HandPoseOverlay
                             detectedGestures={detectedGestures}
+                            allHands={allHands}
                             videoWidth={256}
                             videoHeight={256}
+                        />
+                        <GestureGuide
+                            isVisible={showGestureGuide}
+                            onClose={() => setShowGestureGuide(false)}
                         />
                     </div>
                     
@@ -266,7 +297,15 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                     
                     {/* Gesture instructions */}
                     <div className="mt-4 p-3 bg-gray-800 rounded-lg">
-                        <h4 className="text-white text-sm font-semibold mb-2">Hand Gestures:</h4>
+                        <div className="flex justify-between items-center mb-2">
+                            <h4 className="text-white text-sm font-semibold">Hand Gestures:</h4>
+                            <button
+                                onClick={() => setShowGestureGuide(true)}
+                                className="text-blue-400 hover:text-blue-300 text-xs underline"
+                            >
+                                View Guide
+                            </button>
+                        </div>
                         <div className="text-xs text-gray-300 space-y-1">
                             <div>👍 <strong>Thumbs up:</strong> Auto-capture photo</div>
                             <div>✌️ <strong>Peace sign:</strong> Detected</div>
@@ -305,6 +344,8 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                 </div>
                 </div>
             )}
+            
+
         </div>
     );
 };

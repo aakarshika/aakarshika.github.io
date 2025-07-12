@@ -1,7 +1,11 @@
 import React from 'react';
 
-const HandPoseOverlay = ({ detectedGestures, videoWidth, videoHeight }) => {
-  if (!detectedGestures || detectedGestures.length === 0) {
+const HandPoseOverlay = ({ detectedGestures, videoWidth, videoHeight, allHands }) => {
+  // Always show skeleton if we have hand data, even without detected gestures
+  const handsToShow = allHands && allHands.length > 0 ? allHands : 
+                     (detectedGestures && detectedGestures.length > 0 ? detectedGestures.map(g => g.hand) : []);
+  
+  if (handsToShow.length === 0) {
     return null;
   }
 
@@ -11,7 +15,8 @@ const HandPoseOverlay = ({ detectedGestures, videoWidth, videoHeight }) => {
 
     // Draw keypoints
     keypoints.forEach((keypoint, index) => {
-      const { x, y } = keypoint;
+      const x = keypoint.x * videoWidth;
+      const y = keypoint.y * videoHeight;
       ctx.beginPath();
       ctx.arc(x, y, 3, 0, 2 * Math.PI);
       ctx.fillStyle = '#00ff00';
@@ -34,8 +39,8 @@ const HandPoseOverlay = ({ detectedGestures, videoWidth, videoHeight }) => {
     connections.forEach(([start, end]) => {
       if (keypoints[start] && keypoints[end]) {
         ctx.beginPath();
-        ctx.moveTo(keypoints[start].x, keypoints[start].y);
-        ctx.lineTo(keypoints[end].x, keypoints[end].y);
+        ctx.moveTo(keypoints[start].x * videoWidth, keypoints[start].y * videoHeight);
+        ctx.lineTo(keypoints[end].x * videoWidth, keypoints[end].y * videoHeight);
         ctx.strokeStyle = '#00ff00';
         ctx.lineWidth = 2;
         ctx.stroke();
@@ -50,17 +55,19 @@ const HandPoseOverlay = ({ detectedGestures, videoWidth, videoHeight }) => {
     const wrist = hand.keypoints[0];
     if (!wrist) return;
 
+    const x = wrist.x * videoWidth;
+    const y = wrist.y * videoHeight;
     const label = `${gesture.name} (${Math.round(gesture.confidence * 100)}%)`;
     
     // Draw background rectangle
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(wrist.x - 50, wrist.y - 40, 100, 30);
+    ctx.fillRect(x - 50, y - 40, 100, 30);
     
     // Draw text
     ctx.fillStyle = '#ffffff';
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(label, wrist.x, wrist.y - 20);
+    ctx.fillText(label, x, y - 20);
   };
 
   return (
@@ -74,9 +81,12 @@ const HandPoseOverlay = ({ detectedGestures, videoWidth, videoHeight }) => {
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, videoWidth, videoHeight);
             
-            detectedGestures.forEach(({ name, confidence, hand }) => {
+            handsToShow.forEach((hand, index) => {
               drawKeypoints(hand, ctx);
-              drawGestureLabel({ name, confidence }, hand, ctx);
+              // Only show gesture labels for detected gestures
+              if (detectedGestures && detectedGestures[index]) {
+                drawGestureLabel(detectedGestures[index], hand, ctx);
+              }
             });
           }
         }}
