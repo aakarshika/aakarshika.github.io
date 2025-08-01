@@ -30,20 +30,45 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1620248257/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js"></script>
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    
     <!-- Fingerpose -->
     <script src="https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.js"></script>
     <script>
-      // Fallback: Try to load Fingerpose from alternative source if first fails
+      // Enhanced fallback: Try multiple sources for Fingerpose
       setTimeout(() => {
         if (typeof window.Fingerpose === 'undefined') {
-          console.log('Trying alternative Fingerpose source...');
-          const script = document.createElement('script');
-          script.src = 'https://unpkg.com/fingerpose@0.1.0/dist/fingerpose.js';
-          script.onload = () => console.log('Fingerpose loaded from alternative source');
-          script.onerror = () => console.log('Fingerpose failed to load from alternative source');
-          document.head.appendChild(script);
+          console.log('Primary Fingerpose failed, trying alternative sources...');
+          
+          const sources = [
+            'https://unpkg.com/fingerpose@0.1.0/dist/fingerpose.js',
+            'https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/fingerpose/0.1.0/fingerpose.js'
+          ];
+          
+          let currentSource = 0;
+          
+          const tryNextSource = () => {
+            if (currentSource >= sources.length) {
+              console.error('All Fingerpose sources failed to load');
+              return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = sources[currentSource];
+            script.onload = () => console.log(`Fingerpose loaded from source ${currentSource + 1}: ${sources[currentSource]}`);
+            script.onerror = () => {
+              console.log(`Fingerpose failed from source ${currentSource + 1}: ${sources[currentSource]}`);
+              currentSource++;
+              tryNextSource();
+            };
+            document.head.appendChild(script);
+          };
+          
+          tryNextSource();
         }
-      }, 2000);
+      }, 3000);
     </script>
   </body>
 </html>

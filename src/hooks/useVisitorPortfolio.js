@@ -73,23 +73,23 @@ export const useVisitorPortfolio = () => {
     const imageBlob = dataURLtoBlob(imageSrc);
     const fileName = `${Date.now()}_${fingerprint}.jpg`;
     try {
-      const { error: uploadError } = await supabase.storage
-        .from('aakarshika-visitors')
-        .upload(fileName, imageBlob, {
-          cacheControl: '3600',
-          upsert: false
-        });
-      if (uploadError) throw uploadError;
-      const { error: insertError } = await supabase
-        .from('visitor_fingerprints')
-        .insert({
-          fingerprint,
-          object_name: fileName,
-          filter,
-          message: message.trim()
-        });
-      if (insertError) throw insertError;
-      await fetchPortfolio();
+      // const { error: uploadError } = await supabase.storage
+      //   .from('aakarshika-visitors')
+      //   .upload(fileName, imageBlob, {
+      //     cacheControl: '3600',
+      //     upsert: false
+      //   });
+      // if (uploadError) throw uploadError;
+      // const { error: insertError } = await supabase
+      //   .from('visitor_fingerprints')
+      //   .insert({
+      //     fingerprint,
+      //     object_name: fileName,
+      //     filter,
+      //     message: message.trim()
+      //   });
+      // if (insertError) throw insertError;
+      // await fetchPortfolio();
     } catch (err) {
       console.error('Error uploading visitor picture:', err);
     }

@@ -3,9 +3,11 @@ import Webcam from 'react-webcam';
 import { Camera } from 'lucide-react';
 // Placeholder for AllPicturesTwinkling (to be implemented)
 import AllPicturesTwinkling from './AllPicturesTwinkling';
-import HandPoseOverlay from './HandPoseOverlay';
+import MultiModelHandPoseOverlay from './MultiModelHandPoseOverlay';
+import GestureCaptureTimer from './GestureCaptureTimer';
 import GestureGuide from './GestureGuide';
-import { useHandPoseDetection } from '../hooks/useHandPoseDetection';
+import Fireworks from './Fireworks';
+import { useMultiModelGestureDetection } from '../hooks/useMultiModelGestureDetection';
 // import ImageFilters from 'react-image-filters'; // Not needed for live preview
 
 
@@ -79,8 +81,6 @@ function dataURLtoBlob(dataurl) {
 
 const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint, onDelete }) => {
     const [cameraOpen, setCameraOpen] = useState(false);
-    const [countdown, setCountdown] = useState(0);
-    const [isCountingDown, setIsCountingDown] = useState(false);
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
     const [filter, setFilter] = useState('sepia');
@@ -91,17 +91,27 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
     const targetNode = useRef(null);
     const ownImage = currentFingerprint && pictures.some(pic => pic?.fingerprint === currentFingerprint);
     
-    // Hand pose detection hook
+    // Multi-model gesture detection hook
     const {
-        isModelLoaded,
+        isInitialized,
         isDetecting,
-        detectedGestures,
-        allHands,
-        useFallback,
+        loadingStatus,
         startDetection,
         stopDetection,
-        loadingStatus,
-    } = useHandPoseDetection();
+        getAllDetectedGestures,
+        getAllHands,
+        getModelStatus,
+    } = useMultiModelGestureDetection();
+
+    // State for gesture-based capture
+    const [isGestureCaptureActive, setIsGestureCaptureActive] = useState(false);
+    const [isFireworksActive, setIsFireworksActive] = useState(false);
+    const [gestureCooldown, setGestureCooldown] = useState(false);
+    const [consecutiveDetections, setConsecutiveDetections] = useState(0);
+    const lastGestureTime = useRef(0);
+    const gestureDetectionTimes = useRef([]);
+    const lastDetectionTime = useRef(0);
+    const [gestureProgress, setGestureProgress] = useState(0);
 
     // Setup Seriously.js pipeline for live preview
     useEffect(() => {
@@ -134,60 +144,111 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         };
     }, [cameraOpen, filter]);
 
-    // Start countdown and capture after 3 seconds
-    const startCountdown = useCallback(() => {
-        setIsCountingDown(true);
-        setCountdown(3);
-        
-        const timer = setInterval(() => {
-            setCountdown((prev) => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    setIsCountingDown(false);
-                    setCountdown(0);
-                    // Auto-capture after countdown
-                    if (canvasRef.current) {
-                        requestAnimationFrame(() => {
-                            const imageSrc = canvasRef.current.toDataURL('image/jpeg');
-                            if (onCapture) onCapture(imageSrc, filter, message);
-                            setTimeout(() => {
-                                setCameraOpen(false);
-                                setMessage(''); // Reset message after capture
-                            }, 120);
-                        });
-                    }
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-    }, [filter, message, onCapture]);
 
-    // Capture from canvas (filtered) and call onCapture
-    const handleCapture = useCallback(() => {
-        if (isCountingDown) return; // Prevent multiple captures during countdown
-        startCountdown();
-    }, [isCountingDown, startCountdown]);
 
-    // Start hand pose detection when camera opens
+
+
+    // Start multi-model gesture detection when camera opens
     useEffect(() => {
-        if (cameraOpen && isModelLoaded && webcamRef.current?.video) {
+        if (cameraOpen && isInitialized && webcamRef.current?.video) {
             startDetection(webcamRef.current.video);
         } else if (!cameraOpen) {
             stopDetection();
         }
-    }, [cameraOpen, isModelLoaded, startDetection, stopDetection]);
+    }, [cameraOpen, isInitialized, startDetection, stopDetection]);
 
-    // Handle gesture-based capture
+    // Handle gesture-based capture with fireworks
     useEffect(() => {
-        if (detectedGestures.length > 0 && !isCountingDown) {
-            const gesture = detectedGestures[0];
-            if (gesture.name === 'thumbs_up' && gesture.confidence > 0.5) {
-                // Thumbs up gesture triggers capture
-                handleCapture();
+        const detectedGestures = getAllDetectedGestures();
+        const thumbsUpGestures = detectedGestures.filter(g => g.name === 'thumbs_up');
+        
+        // Robust detection requirements
+        const confidenceThreshold = 0.85;
+        const cooldownPeriod = 3000; // 3 seconds cooldown
+        const requiredDetectionsPerSecond = 5; // 5 detections per second (every 0.2s)
+        const requiredSustainedTime = 1000; // 1 second sustained detection
+        const currentTime = Date.now();
+        
+        // Check if any gesture is detected with threshold+ confidence
+        const hasHighConfidenceGesture = 
+            thumbsUpGestures.some(g => g.confidence >= confidenceThreshold);
+        
+        // Track detection times for sustained detection
+        if (hasHighConfidenceGesture && !gestureCooldown) {
+            // Only add if enough time has passed since last detection (0.2s minimum)
+            if (currentTime - lastDetectionTime.current >= 200) {
+                gestureDetectionTimes.current.push(currentTime);
+                lastDetectionTime.current = currentTime;
+                
+                // Keep only detections from the last 1.5 seconds
+                const cutoffTime = currentTime - 1500;
+                gestureDetectionTimes.current = gestureDetectionTimes.current.filter(time => time > cutoffTime);
             }
+        } else if (!hasHighConfidenceGesture) {
+            // Reset detection times if no gesture detected
+            gestureDetectionTimes.current = [];
         }
-    }, [detectedGestures, isCountingDown, handleCapture]);
+        
+        // Check if we have sustained detection for 1 second
+        const hasSustainedDetection = gestureDetectionTimes.current.length >= requiredDetectionsPerSecond &&
+            (gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0]) >= requiredSustainedTime;
+        
+        // Calculate progress percentage for visual feedback
+        if (gestureDetectionTimes.current.length > 0) {
+            const timeSpan = gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0];
+            const progress = Math.min((timeSpan / requiredSustainedTime) * 100, 100);
+            setGestureProgress(progress);
+        } else {
+            setGestureProgress(0);
+        }
+        
+        // Only log when fireworks are triggered
+        if (hasSustainedDetection && 
+            !gestureCooldown && 
+            !isFireworksActive && 
+            !isGestureCaptureActive &&
+            (currentTime - lastGestureTime.current) > cooldownPeriod) {
+            console.log(`🎆 Fireworks triggered! Sustained detection: ${gestureDetectionTimes.current.length} detections over ${Math.round((gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0]) / 100) / 10}s`);
+        }
+        
+        // Start fireworks only when sustained detection is achieved
+        if (hasSustainedDetection && 
+            !gestureCooldown && 
+            !isFireworksActive && 
+            !isGestureCaptureActive &&
+            (currentTime - lastGestureTime.current) > cooldownPeriod) {
+            
+            console.log(`🎆 Fireworks triggered! Sustained detection achieved`);
+            setIsFireworksActive(true);
+            setGestureCooldown(true);
+            lastGestureTime.current = currentTime;
+            
+            // Reset cooldown after 3 seconds
+            setTimeout(() => {
+                setGestureCooldown(false);
+                gestureDetectionTimes.current = [];
+            }, cooldownPeriod);
+        }
+    }, [getAllDetectedGestures, isGestureCaptureActive, isFireworksActive, gestureCooldown]);
+
+    // Handle fireworks completion and photo capture
+    const handleFireworksComplete = useCallback(() => {
+        console.log('🎆 Fireworks complete! Capturing photo...');
+        if (canvasRef.current) {
+            requestAnimationFrame(() => {
+                const imageSrc = canvasRef.current.toDataURL('image/jpeg');
+                if (onCapture) onCapture(imageSrc, filter, message);
+                setTimeout(() => {
+                    setCameraOpen(false);
+                    setMessage('');
+                    setIsFireworksActive(false);
+                    setIsGestureCaptureActive(false);
+                    setGestureCooldown(false);
+                    setConsecutiveDetections(0);
+                }, 120);
+            });
+        }
+    }, [filter, message, onCapture]);
 
     return (
         <div className="tstart relative h-full w-full items-center justify-center mb-60">
@@ -200,145 +261,199 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         />
         </div>
             {cameraOpen && !ownImage && (
-                <div className="p-12 pt-60 h-full flex flex-col items-center justify-center gap-4 relative z-10">
-                    <div className="mb-4 flex gap-2 items-center">
-                        <label className="text-white">Filter:</label>
-                        <select
-                            value={filter}
-                            onChange={e => setFilter(e.target.value)}
-                            className="rounded px-2 py-1 bg-gray-700 text-white"
-                            disabled={isCountingDown}
-                        >
-                            {Object.entries(FILTERS).map(([key, val]) => (
-                                <option key={key} value={key}>{val.label}</option>
-                            ))}
-                        </select>
-                        <div className="ml-4 text-sm text-white">
-                            {isModelLoaded ? (
-                                useFallback ? (
-                                    <span className="text-orange-400">⚠ Manual capture only</span>
-                                ) : (
-                                    <span className="text-green-400">✓ Hand detection ready</span>
-                                )
-                            ) : (
-                                <span className="text-yellow-400">Loading: {loadingStatus}</span>
+                <div className="p-12 pt-60 h-full flex items-center justify-center gap-8 relative z-10">
+                    {/* Main Camera Area - Large */}
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                        <Webcam
+                            audio={false}
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            className="rounded-lg w-full h-full object-cover absolute opacity-0 pointer-events-none"
+                            style={{ zIndex: 0 }}
+                            videoConstraints={{ width: 384, height: 384 }}
+                        />
+                        <div className="relative w-full h-full">
+                            <canvas
+                                ref={canvasRef}
+                                width={384}
+                                height={384}
+                                className="rounded-lg w-full h-full object-cover"
+                                style={{ zIndex: 1 }}
+                            />
+                            <MultiModelHandPoseOverlay
+                                modelStatus={getModelStatus()}
+                                videoWidth={384}
+                                videoHeight={384}
+                                showConfidenceScores={false}
+                                showModelNames={false}
+                            />
+                            <GestureGuide
+                                isVisible={showGestureGuide}
+                                onClose={() => setShowGestureGuide(false)}
+                            />
+                            
+                            {/* Gesture Progress Indicator */}
+                            {gestureProgress > 0 && !isFireworksActive && (
+                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+                                    <div className="bg-black bg-opacity-50 rounded-full p-2">
+                                        <div className="w-32 h-3 bg-gray-700 rounded-full overflow-hidden">
+                                            <div 
+                                                className={`h-full rounded-full transition-all duration-200 ease-out ${
+                                                    gestureProgress >= 100 
+                                                        ? 'bg-gradient-to-r from-green-400 to-green-500 animate-pulse' 
+                                                        : 'bg-gradient-to-r from-yellow-400 to-orange-500'
+                                                }`}
+                                                style={{ width: `${gestureProgress}%` }}
+                                            />
+                                        </div>
+                                        <div className={`text-xs text-center mt-1 ${
+                                            gestureProgress >= 100 ? 'text-green-300 font-semibold' : 'text-white'
+                                        }`}>
+                                            {gestureProgress >= 100 ? '🎆 Ready!' : `${Math.round(gestureProgress)}% - Hold thumbs up`}
+                                        </div>
+                                    </div>
+                                </div>
                             )}
-                        </div>
-                        {useFallback && (
-                            <div className="ml-4 text-xs text-orange-400">
-                                (Hand detection unavailable - use manual capture)
-                                <br />
-                                <span className="text-gray-400">Debug: {loadingStatus}</span>
-                            </div>
-                        )}
-                        {allHands.length > 0 && (
-                            <div className="ml-4 text-xs text-blue-300">
-                                Tracking {allHands.length} hand{allHands.length > 1 ? 's' : ''}
-                            </div>
-                        )}
-                        {detectedGestures.length > 0 && (
-                            <div className="ml-4 text-xs text-green-300">
-                                Detected: {detectedGestures.map(g => `${g.name} (${Math.round(g.confidence * 100)}%)`).join(', ')}
-                            </div>
-                        )}
-                    </div>
-                    <Webcam
-                        audio={false}
-                        ref={webcamRef}
-                        screenshotFormat="image/jpeg"
-                        className="rounded-lg w-64 h-64 object-cover absolute opacity-0 pointer-events-none"
-                        style={{ zIndex: 0 }}
-                        videoConstraints={{ width: 256, height: 256 }}
-                    />
-                    <div className="relative">
-                        <canvas
-                            ref={canvasRef}
-                            width={256}
-                            height={256}
-                            className="rounded-lg w-64 h-64 object-cover"
-                            style={{ zIndex: 1 }}
-                        />
-                        <HandPoseOverlay
-                            detectedGestures={detectedGestures}
-                            allHands={allHands}
-                            videoWidth={256}
-                            videoHeight={256}
-                        />
-                        <GestureGuide
-                            isVisible={showGestureGuide}
-                            onClose={() => setShowGestureGuide(false)}
-                        />
-                    </div>
-                    
-                    {/* Countdown overlay */}
-                    {isCountingDown && (
-                        <div className="absolute inset-0 flex items-center justify-center z-20">
-                            <div className="bg-black bg-opacity-50 rounded-full w-32 h-32 flex items-center justify-center">
-                                <span className="text-6xl font-bold text-white">{countdown}</span>
-                            </div>
-                        </div>
-                    )}
-                    
-                    <div className="flex flex-col gap-2 w-64">
-                        <label className="text-white text-sm">Message (optional):</label>
-                        <input
-                            type="text"
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value.slice(0, 100))}
-                            placeholder="Add a message..."
-                            maxLength={100}
-                            className="rounded px-3 py-2 bg-gray-700 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            disabled={isCountingDown}
-                        />
-                        <div className="text-xs text-white text-right">
-                            {message.length}/100
+                            
+                            {/* Fireworks Effect */}
+                            <Fireworks
+                                isActive={isFireworksActive}
+                                onComplete={handleFireworksComplete}
+                                duration={10000}
+                            />
                         </div>
                     </div>
-                    
-                    {/* Gesture instructions */}
-                    <div className="mt-4 p-3 bg-gray-800 rounded-lg">
-                        <div className="flex justify-between items-center mb-2">
-                            <h4 className="text-white text-sm font-semibold">Hand Gestures:</h4>
+
+                    {/* Controls Sidebar */}
+                    <div className="w-80 flex flex-col gap-6">
+                        {/* Filter and Status */}
+                        <div className="bg-gray-800 rounded-lg p-4">
+                            <div className="flex flex-col gap-3">
+                                <div className="flex items-center gap-2">
+                                    <label className="text-white text-sm font-medium">Filter:</label>
+                                    <select
+                                        value={filter}
+                                        onChange={e => setFilter(e.target.value)}
+                                        className="rounded px-3 py-2 bg-gray-700 text-white text-sm flex-1"
+                                    >
+                                        {Object.entries(FILTERS).map(([key, val]) => (
+                                            <option key={key} value={key}>{val.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                
+                                <div className="text-sm text-white space-y-2">
+                                    {isInitialized ? (
+                                        <div className="text-green-400">✓ Hand tracking active</div>
+                                    ) : (
+                                        <div className="text-yellow-400">Loading: {loadingStatus}</div>
+                                    )}
+                                    {getAllHands().length > 0 && (
+                                        <div className="text-green-300">✋ Hand detected</div>
+                                    )}
+                                    {(() => {
+                                        const detectedGestures = getAllDetectedGestures();
+                                        const thumbsUpGestures = detectedGestures.filter(g => g.name === 'thumbs_up');
+                                        
+                                        if (isFireworksActive) {
+                                            return <div className="text-purple-300">✨ Fireworks active!</div>;
+                                        } else if (gestureCooldown) {
+                                            return <div className="text-orange-300">⏳ Cooldown</div>;
+                                        } else if (thumbsUpGestures.length > 0) {
+                                            const detectionCount = gestureDetectionTimes.current.length;
+                                            const timeSpan = detectionCount > 1 ? 
+                                                Math.round((gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0]) / 100) / 10 : 0;
+                                            return (
+                                                <div className="text-yellow-300">
+                                                    👍 Thumbs up: {Math.round(gestureProgress)}% complete
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    })()}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Message Input */}
+                        <div className="bg-gray-800 rounded-lg p-4">
+                            <label className="text-white text-sm font-medium mb-2 block">Message (optional):</label>
+                            <input
+                                type="text"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value.slice(0, 100))}
+                                placeholder="Add a message..."
+                                maxLength={100}
+                                className="w-full rounded px-3 py-2 bg-gray-700 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <div className="text-xs text-gray-400 text-right mt-1">
+                                {message.length}/100
+                            </div>
+                        </div>
+                        
+                        {/* Gesture Instructions */}
+                        <div className="bg-gray-800 rounded-lg p-4">
+                            <div className="flex justify-between items-center mb-3">
+                                <h4 className="text-white text-sm font-semibold">Gesture:</h4>
+                                <button
+                                    onClick={() => setShowGestureGuide(true)}
+                                    className="text-blue-400 hover:text-blue-300 text-xs underline"
+                                >
+                                    Guide
+                                </button>
+                            </div>
+                            <div className="text-xs text-gray-300 space-y-2">
+                                <div>👍 <strong>Hold thumbs up for 1 second</strong> to trigger fireworks</div>
+                                <div className="text-blue-300">🎯 Hand skeleton shows detection</div>
+                            </div>
+                        </div>
+
+                        {/* Debug and Close Buttons */}
+                        <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                                <button
+                                    className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer text-xs font-medium"
+                                    onClick={() => {
+                                        const gestures = getAllDetectedGestures();
+                                        console.log('Current gestures:', gestures.length > 0 ? gestures : 'None');
+                                        console.log('Hands detected:', getAllHands().length);
+                                    }}
+                                >
+                                    Debug
+                                </button>
+                                <button
+                                    className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition cursor-pointer text-xs font-medium"
+                                    onClick={() => {
+                                        console.log('🎆 Manual fireworks trigger!');
+                                        setIsFireworksActive(true);
+                                    }}
+                                >
+                                    Test Fireworks
+                                </button>
+                            </div>
                             <button
-                                onClick={() => setShowGestureGuide(true)}
-                                className="text-blue-400 hover:text-blue-300 text-xs underline"
+                                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer text-sm font-medium"
+                                onClick={() => {
+                                    setCameraOpen(false);
+                                    setMessage(''); // Reset message when closing
+                                }}
                             >
-                                View Guide
+                                Close Camera
                             </button>
                         </div>
-                        <div className="text-xs text-gray-300 space-y-1">
-                            <div>👍 <strong>Thumbs up:</strong> Auto-capture photo</div>
-                            <div>✌️ <strong>Peace sign:</strong> Detected</div>
-                            <div>👌 <strong>OK sign:</strong> Detected</div>
-                        </div>
                     </div>
-                    <button
-                        className={`mt-4 px-4 py-2 rounded transition cursor-pointer ${
-                            isCountingDown 
-                                ? 'bg-gray-500 cursor-not-allowed' 
-                                : 'bg-blue-500 hover:bg-blue-600 text-white'
-                        }`}
-                        onClick={handleCapture}
-                        disabled={isCountingDown}
-                    >
-                        {isCountingDown ? 'Capturing...' : 'Capture (or thumbs up!)'}
-                    </button>
-                    <button
-                        className="mt-2 px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer"
-                        onClick={() => {
-                            setCameraOpen(false);
-                            setMessage(''); // Reset message when canceling
-                            setIsCountingDown(false);
-                            setCountdown(0);
-                        }}
-                        disabled={isCountingDown}
-                    >
-                        Cancel
-                    </button>
                 </div>
             )}
             {!cameraOpen && !ownImage && (
-                <div className="p-12 pt-60 h-full flex items-center justify-center gap-4  z-2" onClick={() => setCameraOpen(true)}>
+                <div className="p-12 pt-60 h-full flex items-center justify-center gap-4  z-2" onClick={() => {
+                    // Reset all states when opening camera
+                    setIsFireworksActive(false);
+                    setIsGestureCaptureActive(false);
+                    setGestureCooldown(false);
+                    setConsecutiveDetections(0);
+                    setMessage('');
+                    setCameraOpen(true);
+                }}>
                   <div className=' items-center justify-center bg-gradient-to-b from-black to-gray-900 rounded-lg p-20 gap-4 z-10'>
                     <Camera className="w-10 h-10" />
                 </div>
