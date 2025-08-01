@@ -63,35 +63,42 @@ export const useVisitorPortfolio = () => {
   };
 
   const handleCapture = async (imageSrc, filter, message = '') => {
-    if (!fingerprint) {
-      console.warn('Fingerprint not ready yet, retrying...');
-      // Wait a bit and try again
-      setTimeout(() => handleCapture(imageSrc, filter, message), 100);
-      return;
-    }
-
-    const imageBlob = dataURLtoBlob(imageSrc);
-    const fileName = `${Date.now()}_${fingerprint}.jpg`;
+    console.log('🖼️ handleCapture called with:', { 
+      imageSrcLength: imageSrc?.length, 
+      filter, 
+      message, 
+      fingerprint 
+    });
+    
+    // Save image locally instead of uploading
     try {
-      // const { error: uploadError } = await supabase.storage
-      //   .from('aakarshika-visitors')
-      //   .upload(fileName, imageBlob, {
-      //     cacheControl: '3600',
-      //     upsert: false
-      //   });
-      // if (uploadError) throw uploadError;
-      // const { error: insertError } = await supabase
-      //   .from('visitor_fingerprints')
-      //   .insert({
-      //     fingerprint,
-      //     object_name: fileName,
-      //     filter,
-      //     message: message.trim()
-      //   });
-      // if (insertError) throw insertError;
-      // await fetchPortfolio();
+      const imageBlob = dataURLtoBlob(imageSrc);
+      const fileName = `capture_${Date.now()}.jpg`;
+      
+      // Create a download link
+      const url = URL.createObjectURL(imageBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      URL.revokeObjectURL(url);
+      
+      console.log('✅ Image saved locally as:', fileName);
+      console.log('📦 Image blob size:', imageBlob.size);
+      
+      // Show success message
+      alert(`Image saved as ${fileName}! Check your Downloads folder.`);
+      
     } catch (err) {
-      console.error('Error uploading visitor picture:', err);
+      console.error('Error saving image locally:', err);
+      alert('Error saving image. Check console for details.');
     }
   };
 

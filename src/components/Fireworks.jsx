@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { CAMERA_CONFIG } from '../utils/cameraConfig';
 
-const Fireworks = ({ isActive, onComplete, duration = 10000 }) => {
+const Fireworks = ({ isActive, onComplete, duration = CAMERA_CONFIG.FIREWORKS_DURATION }) => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const [particles, setParticles] = useState([]);
@@ -142,8 +143,8 @@ const Fireworks = ({ isActive, onComplete, duration = 10000 }) => {
   return (
     <canvas
       ref={canvasRef}
-      width={256}
-      height={256}
+      width={CAMERA_CONFIG.VIDEO_WIDTH}
+      height={CAMERA_CONFIG.VIDEO_HEIGHT}
       className="absolute top-0 left-0 w-full h-full pointer-events-none rounded-lg"
       style={{
         position: 'absolute',

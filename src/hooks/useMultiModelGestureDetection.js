@@ -41,7 +41,7 @@ class LightweightGestureModel {
         });
         
         this.detectorRef.setOptions({
-          maxNumHands: 1,
+          maxNumHands: 2,
           modelComplexity: 0,
           minDetectionConfidence: 0.6,
           minTrackingConfidence: 0.6
@@ -51,14 +51,6 @@ class LightweightGestureModel {
           try {
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
               console.log('Hand detected!', results.multiHandLandmarks.length, 'hand(s)');
-              
-              const landmarks = results.multiHandLandmarks[0];
-              const keypoints3D = landmarks.map((landmark, index) => ({
-                x: landmark.x,
-                y: landmark.y,
-                z: landmark.z,
-                name: `landmark_${index}`
-              }));
               
               // Store hands for skeleton display
               const hands = results.multiHandLandmarks.map(landmarks => ({
@@ -73,8 +65,23 @@ class LightweightGestureModel {
               this.hands = hands;
               console.log('Model hands updated:', this.hands.length, 'hands');
               
-              // Detect gestures
-              this.detectedGestures = this.detectGestures(keypoints3D);
+              // Detect gestures for all hands
+              this.detectedGestures = [];
+              results.multiHandLandmarks.forEach((landmarks, handIndex) => {
+                const keypoints3D = landmarks.map((landmark, index) => ({
+                  x: landmark.x,
+                  y: landmark.y,
+                  z: landmark.z,
+                  name: `landmark_${index}`
+                }));
+                
+                const handGestures = this.detectGestures(keypoints3D);
+                // Add hand index to gestures for identification
+                handGestures.forEach(gesture => {
+                  gesture.handIndex = handIndex;
+                });
+                this.detectedGestures.push(...handGestures);
+              });
               
               if (this.detectedGestures.length > 0) {
                 console.log('Gestures detected:', this.detectedGestures);

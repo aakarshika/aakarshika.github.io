@@ -8,6 +8,7 @@ import GestureCaptureTimer from './GestureCaptureTimer';
 import GestureGuide from './GestureGuide';
 import Fireworks from './Fireworks';
 import { useMultiModelGestureDetection } from '../hooks/useMultiModelGestureDetection';
+import { CAMERA_CONFIG } from '../utils/cameraConfig';
 // import ImageFilters from 'react-image-filters'; // Not needed for live preview
 
 
@@ -83,6 +84,10 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
     const [cameraOpen, setCameraOpen] = useState(false);
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
+    const overlayRef = useRef(null);
+    const fireworksRef = useRef(null);
+    const cameraContainerRef = useRef(null);
+    const captureAreaRef = useRef(null);
     const [filter, setFilter] = useState('sepia');
     const [message, setMessage] = useState('');
     const [showGestureGuide, setShowGestureGuide] = useState(false);
@@ -162,11 +167,11 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         const detectedGestures = getAllDetectedGestures();
         const thumbsUpGestures = detectedGestures.filter(g => g.name === 'thumbs_up');
         
-        // Robust detection requirements
-        const confidenceThreshold = 0.85;
-        const cooldownPeriod = 3000; // 3 seconds cooldown
-        const requiredDetectionsPerSecond = 5; // 5 detections per second (every 0.2s)
-        const requiredSustainedTime = 1000; // 1 second sustained detection
+        // Use centralized configuration
+        const confidenceThreshold = CAMERA_CONFIG.GESTURE_CONFIDENCE_THRESHOLD;
+        const cooldownPeriod = CAMERA_CONFIG.GESTURE_COOLDOWN_PERIOD;
+        const requiredDetectionsPerSecond = CAMERA_CONFIG.GESTURE_REQUIRED_DETECTIONS_PER_SECOND;
+        const requiredSustainedTime = CAMERA_CONFIG.GESTURE_REQUIRED_SUSTAINED_TIME;
         const currentTime = Date.now();
         
         // Check if any gesture is detected with threshold+ confidence
@@ -175,8 +180,8 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         
         // Track detection times for sustained detection
         if (hasHighConfidenceGesture && !gestureCooldown) {
-            // Only add if enough time has passed since last detection (0.2s minimum)
-            if (currentTime - lastDetectionTime.current >= 200) {
+            // Only add if enough time has passed since last detection
+            if (currentTime - lastDetectionTime.current >= CAMERA_CONFIG.GESTURE_MINIMUM_DETECTION_INTERVAL) {
                 gestureDetectionTimes.current.push(currentTime);
                 lastDetectionTime.current = currentTime;
                 
@@ -231,24 +236,99 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         }
     }, [getAllDetectedGestures, isGestureCaptureActive, isFireworksActive, gestureCooldown]);
 
+    // Function to capture composite image with all overlays
+    const captureCompositeImage = useCallback(() => {
+        if (!canvasRef.current || !captureAreaRef.current) {
+            console.error('Required refs not available for composite capture');
+            return null;
+        }
+
+        try {
+            // Create a temporary canvas for the composite image
+            const compositeCanvas = document.createElement('canvas');
+            const compositeCtx = compositeCanvas.getContext('2d');
+            const width = CAMERA_CONFIG.VIDEO_WIDTH;
+            const height = CAMERA_CONFIG.VIDEO_HEIGHT;
+            
+            compositeCanvas.width = width;
+            compositeCanvas.height = height;
+
+            // 1. Draw the filtered video canvas (base layer)
+            compositeCtx.drawImage(canvasRef.current, 0, 0, width, height);
+
+            // 2. Draw the hand pose overlay if it exists
+            if (overlayRef.current) {
+                const overlayCanvas = overlayRef.current.querySelector('canvas');
+                if (overlayCanvas) {
+                    compositeCtx.drawImage(overlayCanvas, 0, 0, width, height);
+                }
+            }
+
+            // 3. Draw the fireworks overlay if it exists and is active
+            if (fireworksRef.current && isFireworksActive) {
+                const fireworksCanvas = fireworksRef.current.querySelector('canvas');
+                if (fireworksCanvas) {
+                    compositeCtx.drawImage(fireworksCanvas, 0, 0, width, height);
+                }
+            }
+
+            // 4. Draw the gesture progress indicator if it exists
+            const progressIndicator = captureAreaRef.current.querySelector('.absolute.bottom-4');
+            if (progressIndicator && gestureProgress > 0 && !isFireworksActive) {
+                // Convert DOM element to canvas (simplified approach)
+                // For now, we'll just add a text overlay
+                compositeCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                compositeCtx.fillRect(width/2 - 80, height - 60, 160, 40);
+                compositeCtx.fillStyle = '#FFFFFF';
+                compositeCtx.font = '12px Arial';
+                compositeCtx.textAlign = 'center';
+                compositeCtx.fillText(`Gesture Progress: ${Math.round(gestureProgress)}%`, width/2, height - 35);
+            }
+
+            // Convert to data URL using centralized settings
+            const compositeImageSrc = compositeCanvas.toDataURL(CAMERA_CONFIG.IMAGE_FORMAT, CAMERA_CONFIG.IMAGE_QUALITY);
+            console.log('Composite image captured, length:', compositeImageSrc.length);
+            
+            return compositeImageSrc;
+        } catch (error) {
+            console.error('Error creating composite image:', error);
+            return null;
+        }
+    }, [gestureProgress, isFireworksActive]);
+
     // Handle fireworks completion and photo capture
     const handleFireworksComplete = useCallback(() => {
-        console.log('🎆 Fireworks complete! Capturing photo...');
-        if (canvasRef.current) {
-            requestAnimationFrame(() => {
-                const imageSrc = canvasRef.current.toDataURL('image/jpeg');
-                if (onCapture) onCapture(imageSrc, filter, message);
-                setTimeout(() => {
-                    setCameraOpen(false);
-                    setMessage('');
-                    setIsFireworksActive(false);
-                    setIsGestureCaptureActive(false);
-                    setGestureCooldown(false);
-                    setConsecutiveDetections(0);
-                }, 120);
-            });
-        }
-    }, [filter, message, onCapture]);
+        console.log('🎆 Fireworks complete! Capturing composite photo...');
+        
+        // Use requestAnimationFrame to ensure all overlays are rendered
+        requestAnimationFrame(() => {
+            const compositeImageSrc = captureCompositeImage();
+            
+            if (compositeImageSrc) {
+                console.log('Composite image captured successfully');
+                console.log('Calling onCapture with:', { filter, message });
+                
+                if (onCapture) {
+                    onCapture(compositeImageSrc, filter, message);
+                    console.log('onCapture called successfully');
+                } else {
+                    console.warn('onCapture function is not provided');
+                }
+            } else {
+                console.error('Failed to capture composite image');
+            }
+            
+            setTimeout(() => {
+                setCameraOpen(false);
+                setMessage('');
+                setIsFireworksActive(false);
+                setIsGestureCaptureActive(false);
+                setGestureCooldown(false);
+                setConsecutiveDetections(0);
+                console.log('Camera closed and states reset');
+            }, CAMERA_CONFIG.FIREWORKS_CAPTURE_DELAY);
+        });
+    }, [captureCompositeImage, filter, message, onCapture]);
 
     return (
         <div className="tstart relative h-full w-full items-center justify-center mb-60">
@@ -262,37 +342,43 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
         </div>
             {cameraOpen && !ownImage && (
                 <div className="p-12 pt-60 h-full flex items-center justify-center gap-8 relative z-10">
-                    {/* Main Camera Area - Large */}
-                    <div className="flex-1 flex flex-col items-center justify-center">
-                        <Webcam
-                            audio={false}
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            className="rounded-lg w-full h-full object-cover absolute opacity-0 pointer-events-none"
-                            style={{ zIndex: 0 }}
-                            videoConstraints={{ width: 384, height: 384 }}
-                        />
-                        <div className="relative w-full h-full">
+                    {/* CAPTURE AREA - Everything that will be in the final image */}
+                    <div className="flex-1 flex flex-col items-center justify-center" ref={captureAreaRef}>
+                        <div className="relative" ref={cameraContainerRef}>
+                            {/* Hidden webcam for video source */}
+                            <Webcam
+                                audio={false}
+                                ref={webcamRef}
+                                screenshotFormat="image/jpeg"
+                                className="absolute opacity-0 pointer-events-none"
+                                style={{ zIndex: 0 }}
+                                videoConstraints={{ 
+                                    width: CAMERA_CONFIG.VIDEO_WIDTH, 
+                                    height: CAMERA_CONFIG.VIDEO_HEIGHT 
+                                }}
+                            />
+                            
+                            {/* Main capture canvas with filtered video */}
                             <canvas
                                 ref={canvasRef}
-                                width={384}
-                                height={384}
+                                width={CAMERA_CONFIG.VIDEO_WIDTH}
+                                height={CAMERA_CONFIG.VIDEO_HEIGHT}
                                 className="rounded-lg w-full h-full object-cover"
                                 style={{ zIndex: 1 }}
                             />
-                            <MultiModelHandPoseOverlay
-                                modelStatus={getModelStatus()}
-                                videoWidth={384}
-                                videoHeight={384}
-                                showConfidenceScores={false}
-                                showModelNames={false}
-                            />
-                            <GestureGuide
-                                isVisible={showGestureGuide}
-                                onClose={() => setShowGestureGuide(false)}
-                            />
                             
-                            {/* Gesture Progress Indicator */}
+                            {/* Hand pose skeleton overlay - WILL BE CAPTURED */}
+                            <div ref={overlayRef}>
+                                <MultiModelHandPoseOverlay
+                                    modelStatus={getModelStatus()}
+                                    videoWidth={CAMERA_CONFIG.VIDEO_WIDTH}
+                                    videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
+                                    showConfidenceScores={false}
+                                    showModelNames={false}
+                                />
+                            </div>
+                            
+                            {/* Gesture Progress Indicator - WILL BE CAPTURED */}
                             {gestureProgress > 0 && !isFireworksActive && (
                                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
                                     <div className="bg-black bg-opacity-50 rounded-full p-2">
@@ -315,17 +401,24 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                                 </div>
                             )}
                             
-                            {/* Fireworks Effect */}
-                            <Fireworks
-                                isActive={isFireworksActive}
-                                onComplete={handleFireworksComplete}
-                                duration={10000}
-                            />
+                            {/* Fireworks Effect - WILL BE CAPTURED */}
+                            <div ref={fireworksRef}>
+                                <Fireworks
+                                    isActive={isFireworksActive}
+                                    onComplete={handleFireworksComplete}
+                                    duration={CAMERA_CONFIG.FIREWORKS_DURATION}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Controls Sidebar */}
+                    {/* UI CONTROLS - Everything that will NOT be captured in the image */}
                     <div className="w-80 flex flex-col gap-6">
+                        {/* Gesture Guide - UI only, not captured */}
+                        <GestureGuide
+                            isVisible={showGestureGuide}
+                            onClose={() => setShowGestureGuide(false)}
+                        />
                         {/* Filter and Status */}
                         <div className="bg-gray-800 rounded-lg p-4">
                             <div className="flex flex-col gap-3">
@@ -349,7 +442,9 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                                         <div className="text-yellow-400">Loading: {loadingStatus}</div>
                                     )}
                                     {getAllHands().length > 0 && (
-                                        <div className="text-green-300">✋ Hand detected</div>
+                                        <div className="text-green-300">
+                                            ✋ {getAllHands().length === 1 ? 'Hand' : 'Hands'} detected ({getAllHands().length})
+                                        </div>
                                     )}
                                     {(() => {
                                         const detectedGestures = getAllDetectedGestures();
@@ -405,6 +500,7 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                             <div className="text-xs text-gray-300 space-y-2">
                                 <div>👍 <strong>Hold thumbs up for 1 second</strong> to trigger fireworks</div>
                                 <div className="text-blue-300">🎯 Hand skeleton shows detection</div>
+                                <div className="text-blue-300">🤲 Both hands supported</div>
                             </div>
                         </div>
 
@@ -429,6 +525,18 @@ const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint
                                     }}
                                 >
                                     Test Fireworks
+                                </button>
+                                <button
+                                    className="px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition cursor-pointer text-xs font-medium"
+                                    onClick={() => {
+                                        console.log('📸 Manual capture test!');
+                                        const compositeImageSrc = captureCompositeImage();
+                                        if (compositeImageSrc && onCapture) {
+                                            onCapture(compositeImageSrc, filter, message);
+                                        }
+                                    }}
+                                >
+                                    Test Capture
                                 </button>
                             </div>
                             <button
