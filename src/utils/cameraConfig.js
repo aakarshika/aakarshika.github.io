@@ -156,7 +156,7 @@ export const DETECTION_CONFIG = {
   
   // Pose Detection
   POSE: {
-    enabled: false, // Disabled for now
+    enabled: true, // Enable pose detection
     maxNumPoses: 1,
     minDetectionConfidence: 0.5,
     
@@ -310,6 +310,64 @@ export const getGestureConfig = (modelType, gestureName) => {
 
 export const getEffectConfig = (effectType) => {
   return EFFECT_TYPES[effectType.toUpperCase()] || null;
+};
+
+// 3D Positioning Analysis Functions
+export const analyzePose3DPosition = (poseLandmarks) => {
+  if (!poseLandmarks || poseLandmarks.length === 0) return null;
+  
+  const landmarks = poseLandmarks[0];
+  
+  // Calculate average depth
+  const avgDepth = landmarks.reduce((sum, landmark) => sum + landmark.z, 0) / landmarks.length;
+  
+  // Analyze body parts for front/back positioning
+  const nose = landmarks[0]; // Nose landmark
+  const leftShoulder = landmarks[11];
+  const rightShoulder = landmarks[12];
+  const leftHip = landmarks[23];
+  const rightHip = landmarks[24];
+  
+  // Determine if person is facing camera (front) or away (back)
+  const shoulderWidth = Math.abs(leftShoulder.x - rightShoulder.x);
+  const hipWidth = Math.abs(leftHip.x - rightHip.x);
+  const isFacingCamera = shoulderWidth > hipWidth * 0.8; // Shoulders wider than hips when facing camera
+  
+  // Calculate position in screen space
+  const centerX = (leftShoulder.x + rightShoulder.x) / 2;
+  const centerY = (leftShoulder.y + rightShoulder.y) / 2;
+  
+  // Determine screen position
+  let screenPosition = 'center';
+  if (centerX < 0.3) screenPosition = 'left';
+  else if (centerX > 0.7) screenPosition = 'right';
+  
+  let verticalPosition = 'center';
+  if (centerY < 0.3) verticalPosition = 'top';
+  else if (centerY > 0.7) verticalPosition = 'bottom';
+  
+  return {
+    depth: avgDepth,
+    depthStatus: avgDepth < -0.3 ? 'Close' : avgDepth < 0 ? 'Medium' : 'Far',
+    isFacingCamera,
+    orientation: isFacingCamera ? 'Front' : 'Back',
+    screenPosition: `${screenPosition}-${verticalPosition}`,
+    centerX,
+    centerY,
+    shoulderWidth,
+    hipWidth
+  };
+};
+
+export const getPoseLandmarkNames = () => {
+  return [
+    'nose', 'left_eye_inner', 'left_eye', 'left_eye_outer', 'right_eye_inner', 'right_eye', 'right_eye_outer',
+    'left_ear', 'right_ear', 'mouth_left', 'mouth_right', 'left_shoulder', 'right_shoulder',
+    'left_elbow', 'right_elbow', 'left_wrist', 'right_wrist', 'left_pinky', 'right_pinky',
+    'left_index', 'right_index', 'left_thumb', 'right_thumb', 'left_hip', 'right_hip',
+    'left_knee', 'right_knee', 'left_ankle', 'right_ankle', 'left_heel', 'right_heel',
+    'left_foot_index', 'right_foot_index'
+  ];
 };
 
 // Legacy compatibility (for existing code)

@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import { POSE_CONNECTIONS } from '@mediapipe/pose';
 
+const keyPoints = [0, 11, 12, 23, 24, 25, 26]; // nose, shoulders, hips, knees
+
 const PoseOverlay = ({ 
   poseResults, 
   videoWidth, 
@@ -21,8 +23,8 @@ const PoseOverlay = ({
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw pose if results exist
-    if (poseResults.poseLandmarks) {
-      const landmarks = poseResults.poseLandmarks;
+    if (poseResults.landmarks && poseResults.landmarks.length > 0) {
+      const landmarks = poseResults.landmarks[0]; // Get the first pose's landmarks
       
       // Draw pose connections
       if (showConnections) {
@@ -32,14 +34,31 @@ const PoseOverlay = ({
         });
       }
 
-      // Draw pose landmarks
-      if (showLandmarks) {
-        drawLandmarks(ctx, landmarks, {
-          color: '#FF0000',
-          lineWidth: 1,
-          radius: 4,
-          fillColor: '#FF0000'
-        });
+      // Draw key skeleton points
+      if (showLandmarks && landmarks.length >= 33) {
+        try {
+          ctx.fillStyle = '#FFFF00';
+          for (let i = 0; i < keyPoints.length; i++) {
+            const pointIndex = keyPoints[i];
+            const point = landmarks[pointIndex];
+
+        // for (let i = 0; i < landmarks.length; i++) {
+        //   const point = landmarks[i];
+            
+            if (point && point.x !== undefined && point.y !== undefined) {
+              ctx.beginPath();
+              ctx.arc(point.x * videoWidth, point.y * videoHeight, 8, 0, 2 * Math.PI);
+              ctx.fill();
+              
+              // Add white border
+              ctx.strokeStyle = '#FFFFFF';
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            }
+          }
+        } catch (error) {
+          console.error('Error in manual drawing:', error);
+        }
       }
     }
   }, [poseResults, videoWidth, videoHeight, showConnections, showLandmarks]);
@@ -51,7 +70,7 @@ const PoseOverlay = ({
       height={videoHeight}
       className="absolute top-0 left-0 pointer-events-none"
       style={{
-        zIndex: 14,
+        zIndex: 25, // Increased z-index to be above effects
         mixBlendMode: 'normal',
         position: 'absolute',
         top: 0,

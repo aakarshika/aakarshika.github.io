@@ -4,6 +4,7 @@ import { Camera } from 'lucide-react';
 import AllPicturesTwinkling from './AllPicturesTwinkling';
 import MultiModelHandPoseOverlay from './MultiModelHandPoseOverlay';
 import FaceMeshOverlay from './FaceMeshOverlay';
+import PoseOverlay from './PoseOverlay';
 import Fireworks from './Fireworks';
 import HeartBurst from './HeartBurst';
 import StarBurst from './StarBurst';
@@ -12,11 +13,13 @@ import CountdownTimer from './CountdownTimer';
 import Confetti from './Confetti';
 import Sparkles from './Sparkles';
 import { useMultiModelGestureDetection } from '../hooks/useMultiModelGestureDetection';
+import { useAdditionalModels } from '../hooks/useAdditionalModels';
 import { 
   CAMERA_CONFIG, 
   DETECTION_CONFIG, 
   getGestureConfig, 
-  getEffectConfig 
+  getEffectConfig,
+  analyzePose3DPosition
 } from '../utils/cameraConfig';
 import {
   captureAndSaveImage,
@@ -61,6 +64,13 @@ const TandLPictureSection = ({
     getModelStatus,
   } = useMultiModelGestureDetection();
 
+  // Additional models hook (pose + face mesh)
+  const {
+    isInitialized: isAdditionalModelsInitialized,
+    processFrame: processAdditionalModelsFrame,
+    getPoseResults,
+  } = useAdditionalModels();
+
   // Pipeline state management
   const [isFireworksActive, setIsFireworksActive] = useState(false);
   const [gestureCooldown, setGestureCooldown] = useState(false);
@@ -76,15 +86,6 @@ const TandLPictureSection = ({
   const [detectedGesture, setDetectedGesture] = useState(null);
   const [countdown, setCountdown] = useState(null);
   const effectTimers = useRef({});
-
-  // Debug: Track effect sequence changes
-  useEffect(() => {
-    console.log('Effect sequence changed:', { 
-      effectSequence, 
-      currentEffect, 
-      isFireworksActive 
-    });
-  }, [effectSequence, currentEffect, isFireworksActive]);
 
   // Setup Seriously.js for video filters
   useEffect(() => {
@@ -178,13 +179,22 @@ const TandLPictureSection = ({
   // Step 1: Open camera → All detections start
   useEffect(() => {
     if (cameraOpen && isInitialized && webcamRef.current?.video) {
-      console.log('🎥 Camera opened - starting multi-model detections');
       startDetection(webcamRef.current.video);
+      
+      // Start additional models processing (pose detection)
+      if (isAdditionalModelsInitialized) {
+        const processFrame = () => {
+          if (webcamRef.current?.video && cameraOpen) {
+            processAdditionalModelsFrame(webcamRef.current.video);
+            requestAnimationFrame(processFrame);
+          }
+        };
+        processFrame();
+      }
     } else if (!cameraOpen) {
-      console.log('🎥 Camera closed - stopping all detections');
       stopDetection();
     }
-  }, [cameraOpen, isInitialized, startDetection, stopDetection]);
+  }, [cameraOpen, isInitialized, isAdditionalModelsInitialized, startDetection, stopDetection, processAdditionalModelsFrame]);
 
   // Step 3: Gesture/Expression detected for specified time → Effects triggered
   useEffect(() => {
@@ -313,28 +323,16 @@ const TandLPictureSection = ({
     );
   };
 
-  // Debug: Log face mesh results
-  useEffect(() => {
-    const faceMeshResults = getFaceMeshResults();
-    if (faceMeshResults) {
-      console.log('Face mesh results received:', {
-        hasResults: !!faceMeshResults,
-        hasLandmarks: !!(faceMeshResults.faceLandmarks && faceMeshResults.faceLandmarks.length > 0),
-        landmarkCount: faceMeshResults.faceLandmarks?.length || 0
-      });
-    }
-  }, [getFaceMeshResults]);
-
   return (
     <div className="tstart relative h-full w-full items-center justify-center mb-60">
-      <div className="absolute top-0 left-0 w-full h-full p-12 pt-60">
+      {/* <div className="absolute top-0 left-0 w-full h-full p-12 pt-60">
         <AllPicturesTwinkling 
           pictures={pictures} 
           progress={progress} 
           currentFingerprint={currentFingerprint}
           onDelete={onDelete}
         />
-      </div>
+      </div> */}
       
       {cameraOpen && !ownImage && (
         <div className="p-12 pt-60 h-full flex items-center justify-center gap-8 relative z-10">
@@ -382,6 +380,15 @@ const TandLPictureSection = ({
                   showLips={true}
                   showExpressions={true}
                   detectedExpressions={getDetectedFaceExpressions()}
+                />
+                
+                {/* Pose overlay - Full person outline */}
+                <PoseOverlay
+                  poseResults={getPoseResults()}
+                  videoWidth={CAMERA_CONFIG.VIDEO_WIDTH}
+                  videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
+                  showConnections={true}
+                  showLandmarks={true}
                 />
               </div>
               
@@ -467,6 +474,29 @@ const TandLPictureSection = ({
                 />
               )}
               
+              {/* 3D Position Indicator */}
+              {(() => {
+                const poseResults = getPoseResults();
+                if (poseResults?.landmarks?.length > 0) {
+                  const positionAnalysis = analyzePose3DPosition(poseResults.landmarks);
+                  if (positionAnalysis) {
+                    return (
+                      <div className="absolute top-4 right-4 bg-black bg-opacity-75 text-white text-xs p-3 rounded-lg z-30">
+                        <div className="font-bold mb-1">3D Position</div>
+                        <div>Orientation: {positionAnalysis.orientation}</div>
+                        <div>Depth: {positionAnalysis.depthStatus}</div>
+                        <div>Position: {positionAnalysis.screenPosition}</div>
+                        <div>Z: {positionAnalysis.depth.toFixed(3)}</div>
+                        <div className="mt-2 text-xs text-gray-300">
+                          {positionAnalysis.isFacingCamera ? '👤 Facing Camera' : '👤 Facing Away'}
+                        </div>
+                      </div>
+                    );
+                  }
+                }
+                return null;
+              })()}
+              
               {/* Debug: Show current effect info */}
               {currentEffect && (
                 <div className="absolute top-2 left-2 bg-black bg-opacity-75 text-white text-xs p-2 rounded z-30">
@@ -509,6 +539,12 @@ const TandLPictureSection = ({
                   <div className="text-yellow-400">Loading detection models...</div>
                 )}
                 
+                {isAdditionalModelsInitialized ? (
+                  <div className="text-green-400">✓ Additional models (pose) active</div>
+                ) : (
+                  <div className="text-yellow-400">Loading pose detection...</div>
+                )}
+                
                 {getAllHands().length > 0 && (
                   <div className="text-green-300">✋ Hand detected</div>
                 )}
@@ -516,6 +552,25 @@ const TandLPictureSection = ({
                 {getDetectedFaces().length > 0 && (
                   <div className="text-blue-300">😊 Face detected</div>
                 )}
+                
+                {(() => {
+                  const poseResults = getPoseResults();
+                  if (poseResults?.landmarks?.length > 0) {
+                    const positionAnalysis = analyzePose3DPosition(poseResults.landmarks);
+                    if (positionAnalysis) {
+                      return (
+                        <div className="text-green-300">
+                          🧍 Person detected ({positionAnalysis.orientation} - {positionAnalysis.depthStatus})
+                          <br />
+                          <span className="text-xs text-gray-400">
+                            Position: {positionAnalysis.screenPosition} | Depth: {positionAnalysis.depth.toFixed(2)}
+                          </span>
+                        </div>
+                      );
+                    }
+                  }
+                  return null;
+                })()}
                 
                 {(() => {
                   const detectedGestures = getAllDetectedGestures();
@@ -566,7 +621,7 @@ const TandLPictureSection = ({
             {/* Close Button (only show when not in effect sequence) */}
             {effectSequence === 'idle' && (
               <button
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer text-sm font-medium"
+                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer text-sm font-medium w-full"
                 onClick={() => closeCameraAndReset({
                   setCameraOpen,
                   setMessage,

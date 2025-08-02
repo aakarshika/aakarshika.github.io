@@ -43,11 +43,58 @@ class AdditionalModelsDetection {
         this.faceMeshRef = await FaceLandmarker.createFromModelPath(vision, "/mediapipe/face_landmarker.task");
       }
 
-      this.loadingStatus = 'Initializing Pose Landmarker...';
-      
       // Initialize Pose Landmarker
       if (this.activeModels.pose) {
-        this.poseRef = await PoseLandmarker.createFromModelPath(vision, "/mediapipe/pose_landmarker_lite.task");
+        this.loadingStatus = 'Initializing Pose Landmarker...';
+        
+        try {
+          // Try lite model first
+          this.poseRef = await PoseLandmarker.createFromModelPath(vision, "/mediapipe/pose_landmarker_lite.task");
+          
+          // Configure pose model for better detection
+          if (this.poseRef) {
+            this.poseRef.setOptions({
+              baseOptions: {
+                modelAssetPath: "/mediapipe/pose_landmarker_lite.task",
+                delegate: "GPU"
+              },
+              runningMode: "IMAGE", // Changed from VIDEO to IMAGE mode
+              numPoses: 1,
+              minPoseDetectionConfidence: 0.1, // Very low threshold for easier detection
+              minPosePresenceConfidence: 0.1,  // Very low threshold
+              minTrackingConfidence: 0.1       // Very low threshold
+            });
+          }
+        } catch (error) {
+          console.log('⚠️ Lite pose model failed, trying full model...');
+          try {
+            // Fallback to full model
+            this.poseRef = await PoseLandmarker.createFromModelPath(vision, "/mediapipe/pose_landmarker.task");
+          } catch (fallbackError) {
+            console.error('❌ Both pose models failed to initialize:', fallbackError);
+            console.log('🔄 Trying legacy MediaPipe Pose...');
+            
+            // Try legacy MediaPipe Pose as fallback
+            if (typeof window !== 'undefined' && window.Pose) {
+              try {
+                this.poseRef = new window.Pose({
+                  locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                  }
+                });
+                this.poseRef.setOptions({
+                  modelComplexity: 0,
+                  smoothLandmarks: true,
+                  minDetectionConfidence: 0.1,
+                  minTrackingConfidence: 0.1,
+                  enableSegmentation: false
+                });
+              } catch (legacyError) {
+                console.error('❌ Legacy pose also failed:', legacyError);
+              }
+            }
+          }
+        }
       }
 
       this.loadingStatus = 'Initializing Face Detector...';
@@ -86,17 +133,34 @@ class AdditionalModelsDetection {
       if (this.faceMeshRef) {
         const faceResults = this.faceMeshRef.detect(videoElement);
         this.faceMeshResults = faceResults;
-        if (faceResults.faceLandmarks && faceResults.faceLandmarks.length > 0) {
-          console.log('😊 Face mesh detected:', faceResults.faceLandmarks.length, 'face(s)');
-        }
       }
       
       // Process Pose Landmarker
       if (this.poseRef) {
-        const poseResults = this.poseRef.detect(videoElement);
-        this.poseResults = poseResults;
-        if (poseResults.poseLandmarks && poseResults.poseLandmarks.length > 0) {
-          console.log('🧍 Pose detected');
+        try {
+          let poseResults;
+          
+          // Check if this is legacy MediaPipe Pose
+          if (this.poseRef.onResults) {
+            // Legacy MediaPipe Pose - we need to handle this differently
+            // For legacy, we need to set up the onResults callback
+            if (!this.poseRef._hasCallback) {
+              this.poseRef.onResults((results) => {
+                this.poseResults = results;
+              });
+              this.poseRef._hasCallback = true;
+            }
+            // Send the video frame
+            this.poseRef.send({ image: videoElement });
+            return; // Exit early for legacy format
+          } else {
+            // Tasks Vision format
+            poseResults = this.poseRef.detect(videoElement);
+          }
+          
+          this.poseResults = poseResults;
+        } catch (error) {
+          console.error('❌ Error during pose detection:', error);
         }
       }
       
@@ -104,9 +168,6 @@ class AdditionalModelsDetection {
       if (this.faceDetectionRef) {
         const faceDetectionResults = this.faceDetectionRef.detect(videoElement);
         this.faceDetectionResults = faceDetectionResults;
-        if (faceDetectionResults.detections && faceDetectionResults.detections.length > 0) {
-          console.log('👤 Face detection:', faceDetectionResults.detections.length, 'face(s)');
-        }
       }
       
       // Trigger re-render
