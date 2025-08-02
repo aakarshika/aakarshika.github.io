@@ -3,7 +3,21 @@ import TandLPictureSection from './TandLPictureSection';
 
 import { supabase } from '../../supabase';
 
-const PicSection = ({progress, pictures, onCapture, currentFingerprint, onDelete}) => {
+const PicSection = ({
+  progress, 
+  pictures, 
+  onCapture, 
+  currentFingerprint, 
+  onDelete,
+  // Additional models props
+  additionalModelsInitialized,
+  additionalModelsLoadingStatus,
+  processAdditionalModelsFrame,
+  getFaceMeshResults,
+  getPoseResults,
+  getFaceDetectionResults,
+  toggleAdditionalModel
+}) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-gray-900"
     style={{
@@ -19,6 +33,14 @@ const PicSection = ({progress, pictures, onCapture, currentFingerprint, onDelete
         onCapture={onCapture}
         currentFingerprint={currentFingerprint}
         onDelete={onDelete}
+        // Pass additional models data
+        additionalModelsInitialized={additionalModelsInitialized}
+        additionalModelsLoadingStatus={additionalModelsLoadingStatus}
+        processAdditionalModelsFrame={processAdditionalModelsFrame}
+        getFaceMeshResults={getFaceMeshResults}
+        getPoseResults={getPoseResults}
+        getFaceDetectionResults={getFaceDetectionResults}
+        toggleAdditionalModel={toggleAdditionalModel}
       />
       </div>
       <div className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 text-center">

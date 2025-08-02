@@ -6,13 +6,13 @@ const Fireworks = ({ isActive, onComplete, duration = CAMERA_CONFIG.FIREWORKS_DU
   const animationRef = useRef(null);
   const [particles, setParticles] = useState([]);
 
-  console.log('Fireworks component render:', { isActive, duration });
+  // console.log('Fireworks component render:', { isActive, duration });
 
   useEffect(() => {
-    console.log('Fireworks useEffect:', { isActive, duration });
+    // console.log('Fireworks useEffect:', { isActive, duration });
     
     if (!isActive) {
-      console.log('Fireworks deactivating');
+      // console.log('Fireworks deactivating');
       setParticles([]);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -20,11 +20,11 @@ const Fireworks = ({ isActive, onComplete, duration = CAMERA_CONFIG.FIREWORKS_DU
       return;
     }
 
-    console.log('Fireworks activating!');
+    // console.log('Fireworks activating!');
 
     const canvas = canvasRef.current;
     if (!canvas) {
-      console.log('Fireworks: No canvas element found');
+      // console.log('Fireworks: No canvas element found');
       return;
     }
 
@@ -32,7 +32,7 @@ const Fireworks = ({ isActive, onComplete, duration = CAMERA_CONFIG.FIREWORKS_DU
     const width = canvas.width;
     const height = canvas.height;
     
-    console.log('Fireworks canvas setup:', { width, height, canvas: canvas.offsetWidth, canvasHeight: canvas.offsetHeight });
+    // console.log('Fireworks canvas setup:', { width, height, canvas: canvas.offsetWidth, canvasHeight: canvas.offsetHeight });
 
     // Create multiple firework bursts
     const createFirework = (x, y) => {
@@ -86,13 +86,6 @@ const Fireworks = ({ isActive, onComplete, duration = CAMERA_CONFIG.FIREWORKS_DU
 
       // Clear canvas
       ctx.clearRect(0, 0, width, height);
-
-      // Debug: Draw a visible rectangle to confirm canvas is working
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = 'white';
-      ctx.font = '16px Arial';
-      ctx.fillText('Fireworks Active!', 10, 30);
 
       // Update and draw particles directly
       currentParticles = currentParticles

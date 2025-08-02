@@ -1,112 +1,30 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Hands } from '@mediapipe/hands';
-import { Camera } from '@mediapipe/camera_utils';
-import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 
-// Simple lightweight gesture detection model
-class LightweightGestureModel {
+class SimpleHandDetector {
   constructor(onDataUpdate) {
-    this.name = 'Lightweight';
-    this.color = '#00BFFF';
+    this.onDataUpdate = onDataUpdate;
     this.isLoaded = false;
     this.isDetecting = false;
-    this.detectedGestures = [];
     this.hands = [];
-    this.loadingStatus = 'Initializing...';
+    this.detectedGestures = [];
     this.handsRef = null;
-    this.cameraRef = null;
-    this.onDataUpdate = onDataUpdate; // Callback to trigger re-renders
   }
 
   async initialize() {
     try {
-      this.loadingStatus = 'Loading MediaPipe Hands...';
-      
-      // Initialize MediaPipe Hands
-      this.handsRef = new Hands({
-        locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-        }
+      const vision = await FilesetResolver.forVisionTasks("/mediapipe");
+      this.handsRef = await HandLandmarker.createFromOptions(vision, {
+        baseOptions: { modelAssetPath: "/mediapipe/hand_landmarker.task" },
+        runningMode: "VIDEO",
+        maxNumHands: 1, // Simplified: only one hand
+        minHandDetectionConfidence: 0.5,
+        minHandPresenceConfidence: 0.5,
+        minTrackingConfidence: 0.5
       });
-      
-      this.loadingStatus = 'Configuring detector...';
-      
-      // Configure the hands detector
-      this.handsRef.setOptions({
-        maxNumHands: 2,
-        modelComplexity: 0,
-        minDetectionConfidence: 0.6,
-        minTrackingConfidence: 0.6
-      });
-
-      // Set up the results callback
-      this.handsRef.onResults((results) => {
-        try {
-          if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-            console.log('Hand detected!', results.multiHandLandmarks.length, 'hand(s)');
-            
-            // Store hands for skeleton display
-            const hands = results.multiHandLandmarks.map(landmarks => ({
-              keypoints: landmarks.map((landmark, index) => ({
-                x: landmark.x,
-                y: landmark.y,
-                z: landmark.z,
-                name: `landmark_${index}`
-              }))
-            }));
-            
-            this.hands = hands;
-            console.log('Model hands updated:', this.hands.length, 'hands');
-            
-            // Detect gestures for all hands
-            this.detectedGestures = [];
-            results.multiHandLandmarks.forEach((landmarks, handIndex) => {
-              const keypoints3D = landmarks.map((landmark, index) => ({
-                x: landmark.x,
-                y: landmark.y,
-                z: landmark.z,
-                name: `landmark_${index}`
-              }));
-              
-              const handGestures = this.detectGestures(keypoints3D);
-              // Add hand index to gestures for identification
-              handGestures.forEach(gesture => {
-                gesture.handIndex = handIndex;
-              });
-              this.detectedGestures.push(...handGestures);
-            });
-            
-            if (this.detectedGestures.length > 0) {
-              console.log('Gestures detected:', this.detectedGestures);
-            }
-            
-            // Trigger re-render
-            if (this.onDataUpdate) {
-              this.onDataUpdate();
-            }
-          } else {
-            this.detectedGestures = [];
-            this.hands = [];
-            
-            // Trigger re-render
-            if (this.onDataUpdate) {
-              this.onDataUpdate();
-            }
-          }
-        } catch (error) {
-          console.error('Error processing results:', error);
-          this.detectedGestures = [];
-          this.hands = [];
-        }
-      });
-
       this.isLoaded = true;
-      this.loadingStatus = 'Ready';
-      console.log(`${this.name} model initialized successfully`);
     } catch (error) {
-      console.error(`Error initializing ${this.name} model:`, error);
-      this.loadingStatus = `Error: ${error.message}`;
-      this.isLoaded = false;
+      console.error('Error initializing hand detector:', error);
     }
   }
 
@@ -208,21 +126,7 @@ class LightweightGestureModel {
         gestures.push({ 
           name: 'thumbs_up', 
           confidence: thumbsUpResult.confidence,
-          model: this.name
-        });
-        
-        // Debug logging for thumbs up detection
-        console.log('👍 Enhanced thumbs up detected:', {
-          confidence: thumbsUpResult.confidence,
-          thumbUp: thumb.tip.y < thumb.pip.y,
-          thumbExtended: thumb.tip.y < thumb.mcp.y,
-          thumbAngle: Math.atan2(thumb.tip.y - thumb.mcp.y, thumb.tip.x - thumb.mcp.x),
-          otherFingersCurled: {
-            index: index.tip.y > index.pip.y,
-            middle: middle.tip.y > middle.pip.y,
-            ring: ring.tip.y > ring.pip.y,
-            pinky: pinky.tip.y > pinky.pip.y
-          }
+          model: 'Simple Hand Detector'
         });
       }
       
@@ -230,162 +134,113 @@ class LightweightGestureModel {
         gestures.push({ 
           name: 'ok_sign', 
           confidence: 0.80,
-          model: this.name
+          model: 'Simple Hand Detector'
         });
       }
 
       return gestures;
     } catch (error) {
-      console.error('Error in enhanced gesture detection:', error);
+      console.error('Error in gesture detection:', error);
       return [];
     }
   }
 
   async startDetection(videoElement) {
-    if (!this.isLoaded || !videoElement || this.isDetecting) return;
-
     this.isDetecting = true;
-    console.log('Starting MediaPipe Hands detection...');
-
-    try {
-      // Initialize MediaPipe Camera utility
-      this.cameraRef = new Camera(videoElement, {
-        onFrame: async () => {
-          if (!this.isDetecting || !this.handsRef) {
-            return;
-          }
-
-          try {
-            await this.handsRef.send({ image: videoElement });
-          } catch (error) {
-            console.error('Detection frame error:', error);
-            // Stop detection on error to prevent infinite loop
-            this.stopDetection();
-            return;
-          }
-        },
-        width: 384,
-        height: 384
-      });
-
-      // Start the camera
-      await this.cameraRef.start();
-      console.log('MediaPipe Camera started successfully');
+    if (!this.handsRef) return;
+    
+    const processFrame = async () => {
+      if (!this.isDetecting || !this.handsRef) return;
       
-    } catch (error) {
-      console.error('Error starting MediaPipe Camera:', error);
-      this.stopDetection();
-    }
+      try {
+        if (videoElement.readyState >= 2 && videoElement.videoWidth > 0) {
+          const results = await this.handsRef.detectForVideo(videoElement, Date.now());
+          
+          // Process detected hand
+          if (results.landmarks && results.landmarks.length > 0) {
+            const landmarks = results.landmarks[0];
+            this.hands = [{
+              keypoints: landmarks.map(landmark => ({
+                x: landmark.x,
+                y: landmark.y,
+                z: landmark.z
+              }))
+            }];
+            
+            // Detect gestures
+            this.detectedGestures = [];
+            const gestures = this.detectGestures(this.hands[0].keypoints);
+            this.detectedGestures.push(...gestures);
+          } else {
+            this.hands = [];
+            this.detectedGestures = [];
+          }
+          
+          if (this.onDataUpdate) {
+            this.onDataUpdate();
+          }
+        }
+      } catch (error) {
+        console.error('Detection error:', error);
+      }
+      
+      if (this.isDetecting) {
+        requestAnimationFrame(processFrame);
+      }
+    };
+    
+    processFrame();
   }
 
   stopDetection() {
     this.isDetecting = false;
-    
-    // Stop the camera if it's running
-    if (this.cameraRef) {
-      try {
-        this.cameraRef.stop();
-        console.log('MediaPipe Camera stopped');
-      } catch (error) {
-        console.error('Error stopping MediaPipe Camera:', error);
-      }
-    }
-    
-    this.detectedGestures = [];
     this.hands = [];
+    this.detectedGestures = [];
   }
 
   cleanup() {
     this.stopDetection();
-    
-    // Clean up hands detector
-    if (this.handsRef) {
-      try {
-        this.handsRef.close();
-        console.log('MediaPipe Hands detector closed');
-      } catch (error) {
-        console.error('Error closing hands detector:', error);
-      }
-    }
-    
-    // Clean up camera
-    if (this.cameraRef) {
-      try {
-        this.cameraRef.stop();
-        console.log('MediaPipe Camera cleaned up');
-      } catch (error) {
-        console.error('Error cleaning up camera:', error);
-      }
-    }
   }
 }
 
-// Main hook for gesture detection
 export const useMultiModelGestureDetection = () => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState('Initializing...');
   const [isDetecting, setIsDetecting] = useState(false);
-  const [updateTrigger, setUpdateTrigger] = useState(0); // Add this to trigger re-renders
+  const [updateTrigger, setUpdateTrigger] = useState(0);
   const modelRef = useRef(null);
 
-  // Initialize the model
   useEffect(() => {
     let isMounted = true;
     
     const initializeModel = async () => {
       try {
-        setLoadingStatus('Creating detection model...');
-        
-        // Create model instance
-        const model = new LightweightGestureModel(() => setUpdateTrigger(prev => prev + 1));
+        const model = new SimpleHandDetector(() => setUpdateTrigger(prev => prev + 1));
         modelRef.current = model;
-        
-        setLoadingStatus('Initializing model...');
-        
-        // Initialize the model
         await model.initialize();
         
         if (isMounted) {
           setIsInitialized(model.isLoaded);
-          setLoadingStatus(model.loadingStatus);
-          
-          if (model.isLoaded) {
-            console.log('Gesture detection model initialized successfully');
-          }
         }
-        
       } catch (error) {
-        console.error('Error initializing gesture detection:', error);
-        if (isMounted) {
-          setLoadingStatus(`Error: ${error.message}`);
-          setIsInitialized(false);
-        }
+        console.error('Error initializing:', error);
       }
     };
 
     initializeModel();
-
     return () => {
       isMounted = false;
-      // Cleanup model
       if (modelRef.current) {
         modelRef.current.cleanup();
       }
     };
   }, []);
 
-  // Start detection
   const startDetection = useCallback((videoElement) => {
-    console.log('startDetection called:', { isInitialized, hasVideo: !!videoElement, hasModel: !!modelRef.current });
-    
     if (!isInitialized || !videoElement || !modelRef.current) return;
-
-    console.log('Starting detection...');
     setIsDetecting(true);
     modelRef.current.startDetection(videoElement);
   }, [isInitialized]);
 
-  // Stop detection
   const stopDetection = useCallback(() => {
     setIsDetecting(false);
     if (modelRef.current) {
@@ -393,51 +248,34 @@ export const useMultiModelGestureDetection = () => {
     }
   }, []);
 
-  // Get detected gestures
   const getAllDetectedGestures = useCallback(() => {
     if (!modelRef.current) return [];
     return modelRef.current.detectedGestures;
   }, [updateTrigger]);
 
-  // Get hands data
   const getAllHands = useCallback(() => {
     if (!modelRef.current) return [];
     return modelRef.current.hands || [];
   }, [updateTrigger]);
 
-  // Get model status
   const getModelStatus = useCallback(() => {
     if (!modelRef.current) return [];
-    
-    const status = [{
-      name: modelRef.current.name,
-      color: modelRef.current.color,
+    return [{
+      name: 'Simple Hand Detector',
+      color: '#00BFFF',
       isLoaded: modelRef.current.isLoaded,
-      loadingStatus: modelRef.current.loadingStatus,
       detectedGestures: modelRef.current.detectedGestures,
       hands: modelRef.current.hands
     }];
-    
-    console.log('getModelStatus returning:', status);
-    return status;
   }, [updateTrigger]);
 
   return {
-    // State
     isInitialized,
     isDetecting,
-    loadingStatus,
-    
-    // Methods
     startDetection,
     stopDetection,
-    
-    // Data
     getAllDetectedGestures,
     getAllHands,
-    getModelStatus,
-    
-    // Raw model (for advanced usage)
-    model: modelRef.current
+    getModelStatus
   };
 }; 

@@ -9,13 +9,25 @@ import HeroSection from '../components/HeroSection';
 import SkillGraph from '../components/SkillGraph';
 import { useVisitorPortfolio } from '../hooks/useVisitorPortfolio';
 import { useScrollManagement } from '../hooks/useScrollManagement';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+// import { useAdditionalModels } from '../hooks/useAdditionalModels';
 
 const Portfolio = () => {
   // const containerRef = useRef(null);
   
   // Use extracted hooks
   const { picturesList, handleCapture, handleDelete, fingerprint } = useVisitorPortfolio();
+  
+  // Initialize additional models at Portfolio level
+  // Temporarily disabled to fix camera issue
+  const additionalModelsInitialized = false;
+  const additionalModelsLoadingStatus = "Disabled";
+  const processAdditionalModelsFrame = null;
+  const getFaceMeshResults = () => null;
+  const getPoseResults = () => null;
+  const getFaceDetectionResults = () => null;
+  const toggleAdditionalModel = () => {};
+
   // Define stoppers configuration
   const stoppersConfig = [
     {
@@ -45,7 +57,23 @@ const Portfolio = () => {
     {
       id: 'interactive',
       componentType: 'none',
-      componentFun: () => <PicSection progress={activePageName == 'interactive' ? pageProgress : 0} pictures={picturesList} onCapture={handleCapture} currentFingerprint={fingerprint} onDelete={handleDelete} />,
+      componentFun: () => (
+        <PicSection 
+          progress={activePageName == 'interactive' ? pageProgress : 0} 
+          pictures={picturesList} 
+          onCapture={handleCapture} 
+          currentFingerprint={fingerprint} 
+          onDelete={handleDelete}
+          // Pass additional models data
+          additionalModelsInitialized={additionalModelsInitialized}
+          additionalModelsLoadingStatus={additionalModelsLoadingStatus}
+          processAdditionalModelsFrame={processAdditionalModelsFrame}
+          getFaceMeshResults={getFaceMeshResults}
+          getPoseResults={getPoseResults}
+          getFaceDetectionResults={getFaceDetectionResults}
+          toggleAdditionalModel={toggleAdditionalModel}
+        />
+      ),
       ref: useRef(null)
     },
     {

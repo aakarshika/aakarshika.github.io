@@ -1,576 +1,466 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { Camera } from 'lucide-react';
-// Placeholder for AllPicturesTwinkling (to be implemented)
 import AllPicturesTwinkling from './AllPicturesTwinkling';
 import MultiModelHandPoseOverlay from './MultiModelHandPoseOverlay';
-import GestureCaptureTimer from './GestureCaptureTimer';
-import GestureGuide from './GestureGuide';
 import Fireworks from './Fireworks';
 import { useMultiModelGestureDetection } from '../hooks/useMultiModelGestureDetection';
-import { CAMERA_CONFIG } from '../utils/cameraConfig';
-// import ImageFilters from 'react-image-filters'; // Not needed for live preview
+import { 
+  CAMERA_CONFIG, 
+  DETECTION_CONFIG, 
+  getGestureConfig, 
+  getEffectConfig 
+} from '../utils/cameraConfig';
+import {
+  captureAndSaveImage,
+  startCountdownFromConfig,
+  scheduleEffectSequence,
+  resetForNextGesture,
+  closeCameraAndReset,
+  processGestureDetection,
+  getDetectionStatusMessage
+} from '../utils/detectionPipelineUtils';
 
+const TandLPictureSection = ({ 
+  progress, 
+  pictures, 
+  onCapture, 
+  currentFingerprint, 
+  onDelete
+}) => {
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
+  const overlayRef = useRef(null);
+  const fireworksRef = useRef(null);
+  const captureAreaRef = useRef(null);
+  const [filter, setFilter] = useState('sepia');
+  const [message, setMessage] = useState('');
+  const seriouslyInstance = useRef(null);
+  const videoSource = useRef(null);
+  const targetNode = useRef(null);
+  const ownImage = currentFingerprint && pictures.some(pic => pic?.fingerprint === currentFingerprint);
+  
+  // Hand detection hook
+  const {
+    isInitialized,
+    isDetecting,
+    startDetection,
+    stopDetection,
+    getAllDetectedGestures,
+    getAllHands,
+    getModelStatus,
+  } = useMultiModelGestureDetection();
 
-const FILTERS = {
-  none: { label: 'None', setup: (seriously, src, target) => { target.source = src; } },
-  blur: {
-    label: 'Blur',
-    setup: (seriously, src, target) => {
-      const effect = seriously.effect('blur');
-      effect.amount = 0.07;
-      effect.source = src;
-      target.source = effect;
-    }
-  },
-  sepia: {
-    label: 'Sepia',
-    setup: (seriously, src, target) => {
-      const effect = seriously.effect('sepia');
-      effect.source = src;
-      target.source = effect;
-    }
-  },
-  tvglitch: {
-    label: 'TV Glitch',
-    setup: (seriously, src, target) => {
-      const effect = seriously.effect('tvglitch');
-      effect.source = src;
-      target.source = effect;
-    }
-  },
-  edge: {
-    label: 'Edge Detect',
-    setup: (seriously, src, target) => {
-      const effect = seriously.effect('edge');
-      effect.source = src;
-      target.source = effect;
-    }
-  },
-  vignette: {
-    label: 'Vignette',
-    setup: (seriously, src, target) => {
-      const effect = seriously.effect('vignette');
-      effect.amount = 1.0;
-      effect.source = src;
-      target.source = effect;
-    }
-  },
-  filmgrain: {
-    label: 'Film Grain',
-    setup: (seriously, src, target) => {
-      const effect = seriously.effect('filmgrain');
-      effect.amount = 0.7;
-      effect.source = src;
-      target.source = effect;
-    }
-  },
-};
+  // Pipeline state management
+  const [isFireworksActive, setIsFireworksActive] = useState(false);
+  const [gestureCooldown, setGestureCooldown] = useState(false);
+  const [consecutiveDetections, setConsecutiveDetections] = useState(0);
+  const lastGestureTime = useRef(0);
+  const gestureDetectionTimes = useRef([]);
+  const lastDetectionTime = useRef(0);
+  const [gestureProgress, setGestureProgress] = useState(0);
+  
+  // Effect sequence state
+  const [effectSequence, setEffectSequence] = useState('idle'); // 'idle' | 'effects' | 'capture' | 'closing'
+  const [currentEffect, setCurrentEffect] = useState(null);
+  const [detectedGesture, setDetectedGesture] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+  const effectTimers = useRef({});
 
-function getPictureKey(pic, idx) {
-  if (typeof pic === 'string') return pic;
-  if (pic && pic.src) return pic.src;
-  return String(idx);
-}
+  // Setup Seriously.js for video filters
+  useEffect(() => {
+    if (!cameraOpen || !window.Seriously || !webcamRef.current || !canvasRef.current) return;
 
-// Utility: Convert dataURL to Blob
-function dataURLtoBlob(dataurl) {
-  const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-  for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
-  return new Blob([u8arr], { type: mime });
-}
+    if (seriouslyInstance.current) {
+      seriouslyInstance.current.destroy();
+      seriouslyInstance.current = null;
+    }
 
-const TandLPictureSection = ({ progress, pictures, onCapture, currentFingerprint, onDelete }) => {
-    const [cameraOpen, setCameraOpen] = useState(false);
-    const webcamRef = useRef(null);
-    const canvasRef = useRef(null);
-    const overlayRef = useRef(null);
-    const fireworksRef = useRef(null);
-    const cameraContainerRef = useRef(null);
-    const captureAreaRef = useRef(null);
-    const [filter, setFilter] = useState('sepia');
-    const [message, setMessage] = useState('');
-    const [showGestureGuide, setShowGestureGuide] = useState(false);
-    const seriouslyInstance = useRef(null);
-    const videoSource = useRef(null);
-    const targetNode = useRef(null);
-    const ownImage = currentFingerprint && pictures.some(pic => pic?.fingerprint === currentFingerprint);
+    const seriously = new window.Seriously();
+    seriouslyInstance.current = seriously;
+    const video = webcamRef.current.video;
+    const src = seriously.source(video);
+    const target = seriously.target(canvasRef.current);
+    videoSource.current = src;
+    targetNode.current = target;
+
+    // Apply sepia filter
+    const effect = seriously.effect('sepia');
+    effect.source = src;
+    target.source = effect;
+    seriously.go();
+
+    return () => {
+      seriously.destroy();
+      seriouslyInstance.current = null;
+    };
+  }, [cameraOpen]);
+
+  // Effect sequence management
+  const startEffectSequence = useCallback((gestureConfig) => {
+    const effectConfig = getEffectConfig('COUNTDOWN_TIMER');
     
-    // Multi-model gesture detection hook
-    const {
-        isInitialized,
-        isDetecting,
-        loadingStatus,
-        startDetection,
-        stopDetection,
-        getAllDetectedGestures,
-        getAllHands,
-        getModelStatus,
-    } = useMultiModelGestureDetection();
+    scheduleEffectSequence({
+      gestureConfig,
+      effectTimers,
+      setEffectSequence,
+      setIsFireworksActive,
+      setCurrentEffect,
+      setGestureCooldown,
+      startCountdownFromConfig: () => startCountdownFromConfig(
+        effectConfig,
+        setCountdown,
+        setEffectSequence,
+        () => captureAndSaveImage({
+          webcamRef,
+          canvasRef,
+          overlayRef,
+          fireworksRef,
+          isFireworksActive,
+          message,
+          setMessage
+        })
+      ),
+      captureAndSaveImage: () => captureAndSaveImage({
+        webcamRef,
+        canvasRef,
+        overlayRef,
+        fireworksRef,
+        isFireworksActive,
+        message,
+        setMessage
+      }),
+      closeCamera: () => closeCameraAndReset({
+        setCameraOpen,
+        setMessage,
+        setIsFireworksActive,
+        setGestureCooldown,
+        setConsecutiveDetections,
+        setGestureProgress,
+        setEffectSequence,
+        setCurrentEffect,
+        setDetectedGesture,
+        setCountdown,
+        gestureDetectionTimes,
+        effectTimers
+      }),
+      resetForNextGesture: () => resetForNextGesture({
+        setEffectSequence,
+        setGestureCooldown,
+        setCurrentEffect,
+        setDetectedGesture,
+        setGestureProgress,
+        gestureDetectionTimes
+      })
+    });
+  }, [isFireworksActive, message, setMessage]);
 
-    // State for gesture-based capture
-    const [isGestureCaptureActive, setIsGestureCaptureActive] = useState(false);
-    const [isFireworksActive, setIsFireworksActive] = useState(false);
-    const [gestureCooldown, setGestureCooldown] = useState(false);
-    const [consecutiveDetections, setConsecutiveDetections] = useState(0);
-    const lastGestureTime = useRef(0);
-    const gestureDetectionTimes = useRef([]);
-    const lastDetectionTime = useRef(0);
-    const [gestureProgress, setGestureProgress] = useState(0);
+  // Step 1: Open camera → All detections start
+  useEffect(() => {
+    if (cameraOpen && isInitialized && webcamRef.current?.video) {
+      console.log('🎥 Camera opened - starting all detections');
+      startDetection(webcamRef.current.video);
+    } else if (!cameraOpen) {
+      console.log('🎥 Camera closed - stopping all detections');
+      stopDetection();
+    }
+  }, [cameraOpen, isInitialized, startDetection, stopDetection]);
 
-    // Setup Seriously.js pipeline for live preview
-    useEffect(() => {
-        if (!cameraOpen) return;
-        if (!window.Seriously) return;
-        if (!webcamRef.current || !canvasRef.current) return;
-        if (!webcamRef.current.video) return;
+  // Step 3: Gesture detected for specified time → Effects triggered
+  useEffect(() => {
+    if (!cameraOpen) return;
+    
+    const detectedGestures = getAllDetectedGestures();
+    const handsConfig = DETECTION_CONFIG.HANDS;
+    
+    // Process gesture detection using utility function
+    const result = processGestureDetection({
+      detectedGestures,
+      detectionConfig: handsConfig,
+      effectSequence,
+      gestureCooldown,
+      setGestureProgress,
+      setDetectedGesture,
+      startEffectSequence,
+      gestureDetectionTimes,
+      lastDetectionTime,
+      lastGestureTime
+    });
+    
+    // Trigger effect sequence if gesture detected
+    if (result.shouldTrigger && result.detectedGesture) {
+      setDetectedGesture(result.detectedGesture);
+      startEffectSequence(result.detectedGesture);
+    }
+  }, [getAllDetectedGestures, effectSequence, cameraOpen, gestureCooldown, startEffectSequence]);
 
-        // Clean up previous instance
-        if (seriouslyInstance.current) {
-            seriouslyInstance.current.destroy();
-            seriouslyInstance.current = null;
-        }
+  // Handle fireworks completion
+  const handleFireworksComplete = useCallback(() => {
+    console.log('🎆 Fireworks complete!');
+    setIsFireworksActive(false);
+    setCurrentEffect(null);
+    // Don't reset effect sequence here - let the timers handle the flow
+  }, []);
 
-        const seriously = new window.Seriously();
-        seriouslyInstance.current = seriously;
-        const video = webcamRef.current.video;
-        const src = seriously.source(video);
-        const target = seriously.target(canvasRef.current);
-        videoSource.current = src;
-        targetNode.current = target;
+  // Close camera function
+  const closeCamera = useCallback(() => {
+    console.log('🔒 Closing camera and resetting states');
+    
+    // Clear all timers
+    Object.values(effectTimers.current).forEach(timer => clearTimeout(timer));
+    effectTimers.current = {};
+    
+    // Reset all states
+    setCameraOpen(false);
+    setMessage('');
+    setIsFireworksActive(false);
+    setGestureCooldown(false);
+    setConsecutiveDetections(0);
+    setGestureProgress(0);
+    setEffectSequence('idle');
+    setCurrentEffect(null);
+    setDetectedGesture(null);
+    setCountdown(null);
+    gestureDetectionTimes.current = [];
+  }, []);
 
-        // Setup selected filter
-        FILTERS[filter].setup(seriously, src, target);
-        seriously.go();
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(effectTimers.current).forEach(timer => clearTimeout(timer));
+    };
+  }, []);
 
-        return () => {
-            seriously.destroy();
-            seriouslyInstance.current = null;
-        };
-    }, [cameraOpen, filter]);
+  // Get current effect duration
+  const getCurrentEffectDuration = () => {
+    if (!currentEffect) return CAMERA_CONFIG.DETECTION_REQUIRED_SUSTAINED_TIME;
+    return currentEffect.duration || 6000;
+  };
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(effectTimers.current).forEach(timer => clearTimeout(timer));
+    };
+  }, []);
 
-
-
-
-    // Start multi-model gesture detection when camera opens
-    useEffect(() => {
-        if (cameraOpen && isInitialized && webcamRef.current?.video) {
-            startDetection(webcamRef.current.video);
-        } else if (!cameraOpen) {
-            stopDetection();
-        }
-    }, [cameraOpen, isInitialized, startDetection, stopDetection]);
-
-    // Handle gesture-based capture with fireworks
-    useEffect(() => {
-        const detectedGestures = getAllDetectedGestures();
-        const thumbsUpGestures = detectedGestures.filter(g => g.name === 'thumbs_up');
-        
-        // Use centralized configuration
-        const confidenceThreshold = CAMERA_CONFIG.GESTURE_CONFIDENCE_THRESHOLD;
-        const cooldownPeriod = CAMERA_CONFIG.GESTURE_COOLDOWN_PERIOD;
-        const requiredDetectionsPerSecond = CAMERA_CONFIG.GESTURE_REQUIRED_DETECTIONS_PER_SECOND;
-        const requiredSustainedTime = CAMERA_CONFIG.GESTURE_REQUIRED_SUSTAINED_TIME;
-        const currentTime = Date.now();
-        
-        // Check if any gesture is detected with threshold+ confidence
-        const hasHighConfidenceGesture = 
-            thumbsUpGestures.some(g => g.confidence >= confidenceThreshold);
-        
-        // Track detection times for sustained detection
-        if (hasHighConfidenceGesture && !gestureCooldown) {
-            // Only add if enough time has passed since last detection
-            if (currentTime - lastDetectionTime.current >= CAMERA_CONFIG.GESTURE_MINIMUM_DETECTION_INTERVAL) {
-                gestureDetectionTimes.current.push(currentTime);
-                lastDetectionTime.current = currentTime;
-                
-                // Keep only detections from the last 1.5 seconds
-                const cutoffTime = currentTime - 1500;
-                gestureDetectionTimes.current = gestureDetectionTimes.current.filter(time => time > cutoffTime);
-            }
-        } else if (!hasHighConfidenceGesture) {
-            // Reset detection times if no gesture detected
-            gestureDetectionTimes.current = [];
-        }
-        
-        // Check if we have sustained detection for 1 second
-        const hasSustainedDetection = gestureDetectionTimes.current.length >= requiredDetectionsPerSecond &&
-            (gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0]) >= requiredSustainedTime;
-        
-        // Calculate progress percentage for visual feedback
-        if (gestureDetectionTimes.current.length > 0) {
-            const timeSpan = gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0];
-            const progress = Math.min((timeSpan / requiredSustainedTime) * 100, 100);
-            setGestureProgress(progress);
-        } else {
-            setGestureProgress(0);
-        }
-        
-        // Only log when fireworks are triggered
-        if (hasSustainedDetection && 
-            !gestureCooldown && 
-            !isFireworksActive && 
-            !isGestureCaptureActive &&
-            (currentTime - lastGestureTime.current) > cooldownPeriod) {
-            console.log(`🎆 Fireworks triggered! Sustained detection: ${gestureDetectionTimes.current.length} detections over ${Math.round((gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0]) / 100) / 10}s`);
-        }
-        
-        // Start fireworks only when sustained detection is achieved
-        if (hasSustainedDetection && 
-            !gestureCooldown && 
-            !isFireworksActive && 
-            !isGestureCaptureActive &&
-            (currentTime - lastGestureTime.current) > cooldownPeriod) {
-            
-            console.log(`🎆 Fireworks triggered! Sustained detection achieved`);
-            setIsFireworksActive(true);
-            setGestureCooldown(true);
-            lastGestureTime.current = currentTime;
-            
-            // Reset cooldown after 3 seconds
-            setTimeout(() => {
-                setGestureCooldown(false);
-                gestureDetectionTimes.current = [];
-            }, cooldownPeriod);
-        }
-    }, [getAllDetectedGestures, isGestureCaptureActive, isFireworksActive, gestureCooldown]);
-
-    // Function to capture composite image with all overlays
-    const captureCompositeImage = useCallback(() => {
-        if (!canvasRef.current || !captureAreaRef.current) {
-            console.error('Required refs not available for composite capture');
-            return null;
-        }
-
-        try {
-            // Create a temporary canvas for the composite image
-            const compositeCanvas = document.createElement('canvas');
-            const compositeCtx = compositeCanvas.getContext('2d');
-            const width = CAMERA_CONFIG.VIDEO_WIDTH;
-            const height = CAMERA_CONFIG.VIDEO_HEIGHT;
-            
-            compositeCanvas.width = width;
-            compositeCanvas.height = height;
-
-            // 1. Draw the filtered video canvas (base layer)
-            compositeCtx.drawImage(canvasRef.current, 0, 0, width, height);
-
-            // 2. Draw the hand pose overlay if it exists
-            if (overlayRef.current) {
-                const overlayCanvas = overlayRef.current.querySelector('canvas');
-                if (overlayCanvas) {
-                    compositeCtx.drawImage(overlayCanvas, 0, 0, width, height);
-                }
-            }
-
-            // 3. Draw the fireworks overlay if it exists and is active
-            if (fireworksRef.current && isFireworksActive) {
-                const fireworksCanvas = fireworksRef.current.querySelector('canvas');
-                if (fireworksCanvas) {
-                    compositeCtx.drawImage(fireworksCanvas, 0, 0, width, height);
-                }
-            }
-
-            // 4. Draw the gesture progress indicator if it exists
-            const progressIndicator = captureAreaRef.current.querySelector('.absolute.bottom-4');
-            if (progressIndicator && gestureProgress > 0 && !isFireworksActive) {
-                // Convert DOM element to canvas (simplified approach)
-                // For now, we'll just add a text overlay
-                compositeCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                compositeCtx.fillRect(width/2 - 80, height - 60, 160, 40);
-                compositeCtx.fillStyle = '#FFFFFF';
-                compositeCtx.font = '12px Arial';
-                compositeCtx.textAlign = 'center';
-                compositeCtx.fillText(`Gesture Progress: ${Math.round(gestureProgress)}%`, width/2, height - 35);
-            }
-
-            // Convert to data URL using centralized settings
-            const compositeImageSrc = compositeCanvas.toDataURL(CAMERA_CONFIG.IMAGE_FORMAT, CAMERA_CONFIG.IMAGE_QUALITY);
-            console.log('Composite image captured, length:', compositeImageSrc.length);
-            
-            return compositeImageSrc;
-        } catch (error) {
-            console.error('Error creating composite image:', error);
-            return null;
-        }
-    }, [gestureProgress, isFireworksActive]);
-
-    // Handle fireworks completion and photo capture
-    const handleFireworksComplete = useCallback(() => {
-        console.log('🎆 Fireworks complete! Capturing composite photo...');
-        
-        // Use requestAnimationFrame to ensure all overlays are rendered
-        requestAnimationFrame(() => {
-            const compositeImageSrc = captureCompositeImage();
-            
-            if (compositeImageSrc) {
-                console.log('Composite image captured successfully');
-                console.log('Calling onCapture with:', { filter, message });
-                
-                if (onCapture) {
-                    onCapture(compositeImageSrc, filter, message);
-                    console.log('onCapture called successfully');
-                } else {
-                    console.warn('onCapture function is not provided');
-                }
-            } else {
-                console.error('Failed to capture composite image');
-            }
-            
-            setTimeout(() => {
-                setCameraOpen(false);
-                setMessage('');
-                setIsFireworksActive(false);
-                setIsGestureCaptureActive(false);
-                setGestureCooldown(false);
-                setConsecutiveDetections(0);
-                console.log('Camera closed and states reset');
-            }, CAMERA_CONFIG.FIREWORKS_CAPTURE_DELAY);
-        });
-    }, [captureCompositeImage, filter, message, onCapture]);
-
-    return (
-        <div className="tstart relative h-full w-full items-center justify-center mb-60">
-        <div className="absolute top-0 left-0 w-full h-full p-12 pt-60">
+  return (
+    <div className="tstart relative h-full w-full items-center justify-center mb-60">
+      <div className="absolute top-0 left-0 w-full h-full p-12 pt-60">
         <AllPicturesTwinkling 
           pictures={pictures} 
           progress={progress} 
           currentFingerprint={currentFingerprint}
           onDelete={onDelete}
         />
-        </div>
-            {cameraOpen && !ownImage && (
-                <div className="p-12 pt-60 h-full flex items-center justify-center gap-8 relative z-10">
-                    {/* CAPTURE AREA - Everything that will be in the final image */}
-                    <div className="flex-1 flex flex-col items-center justify-center" ref={captureAreaRef}>
-                        <div className="relative" ref={cameraContainerRef}>
-                            {/* Hidden webcam for video source */}
-                            <Webcam
-                                audio={false}
-                                ref={webcamRef}
-                                screenshotFormat="image/jpeg"
-                                className="absolute opacity-0 pointer-events-none"
-                                style={{ zIndex: 0 }}
-                                videoConstraints={{ 
-                                    width: CAMERA_CONFIG.VIDEO_WIDTH, 
-                                    height: CAMERA_CONFIG.VIDEO_HEIGHT 
-                                }}
-                            />
-                            
-                            {/* Main capture canvas with filtered video */}
-                            <canvas
-                                ref={canvasRef}
-                                width={CAMERA_CONFIG.VIDEO_WIDTH}
-                                height={CAMERA_CONFIG.VIDEO_HEIGHT}
-                                className="rounded-lg w-full h-full object-cover"
-                                style={{ zIndex: 1 }}
-                            />
-                            
-                            {/* Hand pose skeleton overlay - WILL BE CAPTURED */}
-                            <div ref={overlayRef}>
-                                <MultiModelHandPoseOverlay
-                                    modelStatus={getModelStatus()}
-                                    videoWidth={CAMERA_CONFIG.VIDEO_WIDTH}
-                                    videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
-                                    showConfidenceScores={false}
-                                    showModelNames={false}
-                                />
-                            </div>
-                            
-                            {/* Gesture Progress Indicator - WILL BE CAPTURED */}
-                            {gestureProgress > 0 && !isFireworksActive && (
-                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-                                    <div className="bg-black bg-opacity-50 rounded-full p-2">
-                                        <div className="w-32 h-3 bg-gray-700 rounded-full overflow-hidden">
-                                            <div 
-                                                className={`h-full rounded-full transition-all duration-200 ease-out ${
-                                                    gestureProgress >= 100 
-                                                        ? 'bg-gradient-to-r from-green-400 to-green-500 animate-pulse' 
-                                                        : 'bg-gradient-to-r from-yellow-400 to-orange-500'
-                                                }`}
-                                                style={{ width: `${gestureProgress}%` }}
-                                            />
-                                        </div>
-                                        <div className={`text-xs text-center mt-1 ${
-                                            gestureProgress >= 100 ? 'text-green-300 font-semibold' : 'text-white'
-                                        }`}>
-                                            {gestureProgress >= 100 ? '🎆 Ready!' : `${Math.round(gestureProgress)}% - Hold thumbs up`}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            
-                            {/* Fireworks Effect - WILL BE CAPTURED */}
-                            <div ref={fireworksRef}>
-                                <Fireworks
-                                    isActive={isFireworksActive}
-                                    onComplete={handleFireworksComplete}
-                                    duration={CAMERA_CONFIG.FIREWORKS_DURATION}
-                                />
-                            </div>
-                        </div>
+      </div>
+      
+      {cameraOpen && !ownImage && (
+        <div className="p-12 pt-60 h-full flex items-center justify-center gap-8 relative z-10">
+          {/* Capture Area */}
+          <div className="flex-1 flex flex-col items-center justify-center" ref={captureAreaRef}>
+            <div className="relative">
+              {/* Hidden webcam */}
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                className="absolute opacity-0 pointer-events-none"
+                style={{ zIndex: 0 }}
+                videoConstraints={{ 
+                  width: CAMERA_CONFIG.VIDEO_WIDTH, 
+                  height: CAMERA_CONFIG.VIDEO_HEIGHT 
+                }}
+              />
+              
+              {/* Main video canvas */}
+              <canvas
+                ref={canvasRef}
+                width={CAMERA_CONFIG.VIDEO_WIDTH}
+                height={CAMERA_CONFIG.VIDEO_HEIGHT}
+                className="rounded-lg w-full h-full object-cover"
+                style={{ zIndex: 1 }}
+              />
+              
+              {/* Step 2: Show detected thing (hand skeleton) */}
+              <div ref={overlayRef}>
+                <MultiModelHandPoseOverlay
+                  modelStatus={getModelStatus()}
+                  videoWidth={CAMERA_CONFIG.VIDEO_WIDTH}
+                  videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
+                />
+              </div>
+              
+              {/* Gesture Progress Indicator */}
+              {gestureProgress > 0 && effectSequence === 'idle' && (
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+                  <div className="bg-black bg-opacity-50 rounded-full p-2">
+                    <div className="w-32 h-3 bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-200 ease-out ${
+                          gestureProgress >= 100 
+                            ? 'bg-gradient-to-r from-green-400 to-green-500 animate-pulse' 
+                            : 'bg-gradient-to-r from-yellow-400 to-orange-500'
+                        }`}
+                        style={{ width: `${gestureProgress}%` }}
+                      />
                     </div>
-
-                    {/* UI CONTROLS - Everything that will NOT be captured in the image */}
-                    <div className="w-80 flex flex-col gap-6">
-                        {/* Gesture Guide - UI only, not captured */}
-                        <GestureGuide
-                            isVisible={showGestureGuide}
-                            onClose={() => setShowGestureGuide(false)}
-                        />
-                        {/* Filter and Status */}
-                        <div className="bg-gray-800 rounded-lg p-4">
-                            <div className="flex flex-col gap-3">
-                                <div className="flex items-center gap-2">
-                                    <label className="text-white text-sm font-medium">Filter:</label>
-                                    <select
-                                        value={filter}
-                                        onChange={e => setFilter(e.target.value)}
-                                        className="rounded px-3 py-2 bg-gray-700 text-white text-sm flex-1"
-                                    >
-                                        {Object.entries(FILTERS).map(([key, val]) => (
-                                            <option key={key} value={key}>{val.label}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                
-                                <div className="text-sm text-white space-y-2">
-                                    {isInitialized ? (
-                                        <div className="text-green-400">✓ Hand tracking active</div>
-                                    ) : (
-                                        <div className="text-yellow-400">Loading: {loadingStatus}</div>
-                                    )}
-                                    {getAllHands().length > 0 && (
-                                        <div className="text-green-300">
-                                            ✋ {getAllHands().length === 1 ? 'Hand' : 'Hands'} detected ({getAllHands().length})
-                                        </div>
-                                    )}
-                                    {(() => {
-                                        const detectedGestures = getAllDetectedGestures();
-                                        const thumbsUpGestures = detectedGestures.filter(g => g.name === 'thumbs_up');
-                                        
-                                        if (isFireworksActive) {
-                                            return <div className="text-purple-300">✨ Fireworks active!</div>;
-                                        } else if (gestureCooldown) {
-                                            return <div className="text-orange-300">⏳ Cooldown</div>;
-                                        } else if (thumbsUpGestures.length > 0) {
-                                            const detectionCount = gestureDetectionTimes.current.length;
-                                            const timeSpan = detectionCount > 1 ? 
-                                                Math.round((gestureDetectionTimes.current[gestureDetectionTimes.current.length - 1] - gestureDetectionTimes.current[0]) / 100) / 10 : 0;
-                                            return (
-                                                <div className="text-yellow-300">
-                                                    👍 Thumbs up: {Math.round(gestureProgress)}% complete
-                                                </div>
-                                            );
-                                        }
-                                        return null;
-                                    })()}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Message Input */}
-                        <div className="bg-gray-800 rounded-lg p-4">
-                            <label className="text-white text-sm font-medium mb-2 block">Message (optional):</label>
-                            <input
-                                type="text"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value.slice(0, 100))}
-                                placeholder="Add a message..."
-                                maxLength={100}
-                                className="w-full rounded px-3 py-2 bg-gray-700 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <div className="text-xs text-gray-400 text-right mt-1">
-                                {message.length}/100
-                            </div>
-                        </div>
-                        
-                        {/* Gesture Instructions */}
-                        <div className="bg-gray-800 rounded-lg p-4">
-                            <div className="flex justify-between items-center mb-3">
-                                <h4 className="text-white text-sm font-semibold">Gesture:</h4>
-                                <button
-                                    onClick={() => setShowGestureGuide(true)}
-                                    className="text-blue-400 hover:text-blue-300 text-xs underline"
-                                >
-                                    Guide
-                                </button>
-                            </div>
-                            <div className="text-xs text-gray-300 space-y-2">
-                                <div>👍 <strong>Hold thumbs up for 1 second</strong> to trigger fireworks</div>
-                                <div className="text-blue-300">🎯 Hand skeleton shows detection</div>
-                                <div className="text-blue-300">🤲 Both hands supported</div>
-                            </div>
-                        </div>
-
-                        {/* Debug and Close Buttons */}
-                        <div className="flex flex-col gap-2">
-                            <div className="flex gap-2">
-                                <button
-                                    className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer text-xs font-medium"
-                                    onClick={() => {
-                                        const gestures = getAllDetectedGestures();
-                                        console.log('Current gestures:', gestures.length > 0 ? gestures : 'None');
-                                        console.log('Hands detected:', getAllHands().length);
-                                    }}
-                                >
-                                    Debug
-                                </button>
-                                <button
-                                    className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition cursor-pointer text-xs font-medium"
-                                    onClick={() => {
-                                        console.log('🎆 Manual fireworks trigger!');
-                                        setIsFireworksActive(true);
-                                    }}
-                                >
-                                    Test Fireworks
-                                </button>
-                                <button
-                                    className="px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition cursor-pointer text-xs font-medium"
-                                    onClick={() => {
-                                        console.log('📸 Manual capture test!');
-                                        const compositeImageSrc = captureCompositeImage();
-                                        if (compositeImageSrc && onCapture) {
-                                            onCapture(compositeImageSrc, filter, message);
-                                        }
-                                    }}
-                                >
-                                    Test Capture
-                                </button>
-                            </div>
-                            <button
-                                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer text-sm font-medium"
-                                onClick={() => {
-                                    setCameraOpen(false);
-                                    setMessage(''); // Reset message when closing
-                                }}
-                            >
-                                Close Camera
-                            </button>
-                        </div>
+                    <div className={`text-xs text-center mt-1 ${
+                      gestureProgress >= 100 ? 'text-green-300 font-semibold' : 'text-white'
+                    }`}>
+                      {gestureProgress >= 100 ? '🎆 Ready!' : `${Math.round(gestureProgress)}% - Hold gesture`}
                     </div>
+                  </div>
                 </div>
-            )}
-            {!cameraOpen && !ownImage && (
-                <div className="p-12 pt-60 h-full flex items-center justify-center gap-4  z-2" onClick={() => {
-                    // Reset all states when opening camera
-                    setIsFireworksActive(false);
-                    setIsGestureCaptureActive(false);
-                    setGestureCooldown(false);
-                    setConsecutiveDetections(0);
-                    setMessage('');
-                    setCameraOpen(true);
-                }}>
-                  <div className=' items-center justify-center bg-gradient-to-b from-black to-gray-900 rounded-lg p-20 gap-4 z-10'>
-                    <Camera className="w-10 h-10" />
+              )}
+              
+              {/* Dynamic Effects */}
+              <div ref={fireworksRef}>
+                {currentEffect?.type === 'FIREWORKS' && (
+                  <Fireworks
+                    isActive={isFireworksActive}
+                    onComplete={handleFireworksComplete}
+                    duration={getCurrentEffectDuration()}
+                  />
+                )}
+                {/* Add other effect components here as needed */}
+              </div>
+              
+              {/* Countdown Timer */}
+              {countdown && countdown > 0 && (
+                <div className="absolute inset-0 flex items-center justify-center z-20">
+                  <div className="bg-black bg-opacity-75 rounded-full w-32 h-32 flex items-center justify-center">
+                    <div className="text-6xl font-bold text-white animate-pulse">
+                      {countdown}
+                    </div>
+                  </div>
                 </div>
+              )}
+              
+              {/* Capture Flash */}
+              {countdown === 0 && (
+                <div className="absolute inset-0 bg-white opacity-80 z-30 animate-pulse">
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-4xl font-bold text-gray-800">
+                      📸
+                    </div>
+                  </div>
                 </div>
-            )}
-            
+              )}
+            </div>
+          </div>
 
+          {/* Simple UI Controls */}
+          <div className="w-80 flex flex-col gap-6">
+            {/* Status */}
+            <div className="bg-gray-800 rounded-lg p-4">
+              <div className="text-sm text-white space-y-2">
+                {isInitialized ? (
+                  <div className="text-green-400">✓ Hand tracking active</div>
+                ) : (
+                  <div className="text-yellow-400">Loading hand detection...</div>
+                )}
+                
+                {getAllHands().length > 0 && (
+                  <div className="text-green-300">✋ Hand detected</div>
+                )}
+                
+                {(() => {
+                  const detectedGestures = getAllDetectedGestures();
+                  
+                  // Handle countdown display
+                  if (effectSequence === 'capture') {
+                    if (countdown && countdown > 0) {
+                      return <div className="text-blue-300">📸 Capturing in {countdown}...</div>;
+                    } else if (countdown === 0) {
+                      return <div className="text-green-300">📸 Capturing photo!</div>;
+                    }
+                    return <div className="text-blue-300">📸 Preparing to capture...</div>;
+                  }
+                  
+                  // Use utility function for other status messages
+                  return (
+                    <div className="text-gray-300">
+                      {getDetectionStatusMessage({
+                        effectSequence,
+                        currentEffect,
+                        gestureCooldown,
+                        detectedGestures,
+                        gestureProgress,
+                        detectionConfig: DETECTION_CONFIG.HANDS
+                      })}
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Message Input */}
+            <div className="bg-gray-800 rounded-lg p-4">
+              <label className="text-white text-sm font-medium mb-2 block">Message (optional):</label>
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value.slice(0, 100))}
+                placeholder="Add a message..."
+                maxLength={100}
+                className="w-full rounded px-3 py-2 bg-gray-700 text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <div className="text-xs text-gray-400 text-right mt-1">
+                {message.length}/100
+              </div>
+            </div>
+
+            {/* Close Button (only show when not in effect sequence) */}
+            {effectSequence === 'idle' && (
+              <button
+                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition cursor-pointer text-sm font-medium"
+                onClick={() => closeCameraAndReset({
+                  setCameraOpen,
+                  setMessage,
+                  setIsFireworksActive,
+                  setGestureCooldown,
+                  setConsecutiveDetections,
+                  setGestureProgress,
+                  setEffectSequence,
+                  setCurrentEffect,
+                  setDetectedGesture,
+                  setCountdown,
+                  gestureDetectionTimes,
+                  effectTimers
+                })}
+              >
+                Close Camera
+              </button>
+            )}
+          </div>
         </div>
-    );
+      )}
+      
+      {!cameraOpen && !ownImage && (
+        <div className="p-12 pt-60 h-full flex items-center justify-center gap-4 z-2" onClick={() => {
+          // Reset all states when opening camera
+          setIsFireworksActive(false);
+          setGestureCooldown(false);
+          setConsecutiveDetections(0);
+          setMessage('');
+          setGestureProgress(0);
+          setEffectSequence('idle');
+          setCurrentEffect(null);
+          setDetectedGesture(null);
+          setCountdown(null);
+          gestureDetectionTimes.current = [];
+          lastGestureTime.current = Date.now();
+          setCameraOpen(true);
+        }}>
+          <div className='items-center justify-center bg-gradient-to-b from-black to-gray-900 rounded-lg p-20 gap-4 z-10'>
+            <Camera className="w-10 h-10" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default TandLPictureSection; 
