@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Hands } from '@mediapipe/hands';
+import { Camera } from '@mediapipe/camera_utils';
+import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
 // Simple lightweight gesture detection model
 class LightweightGestureModel {
@@ -10,109 +13,96 @@ class LightweightGestureModel {
     this.detectedGestures = [];
     this.hands = [];
     this.loadingStatus = 'Initializing...';
-    this.detectorRef = null;
-    this.animationFrameRef = null;
+    this.handsRef = null;
+    this.cameraRef = null;
     this.onDataUpdate = onDataUpdate; // Callback to trigger re-renders
   }
 
   async initialize() {
     try {
-      this.loadingStatus = 'Loading MediaPipe...';
+      this.loadingStatus = 'Loading MediaPipe Hands...';
       
-      // Wait for MediaPipe to load with timeout
-      let attempts = 0;
-      const maxAttempts = 30; // 3 seconds max
-      
-      while (attempts < maxAttempts) {
-        if (typeof window !== 'undefined' && window.Hands) {
-          break;
+      // Initialize MediaPipe Hands
+      this.handsRef = new Hands({
+        locateFile: (file) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         }
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-      }
+      });
       
-      if (typeof window !== 'undefined' && window.Hands) {
-        this.loadingStatus = 'Initializing detector...';
-        
-        this.detectorRef = new window.Hands({
-          locateFile: (file) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-          }
-        });
-        
-        this.detectorRef.setOptions({
-          maxNumHands: 2,
-          modelComplexity: 0,
-          minDetectionConfidence: 0.6,
-          minTrackingConfidence: 0.6
-        });
+      this.loadingStatus = 'Configuring detector...';
+      
+      // Configure the hands detector
+      this.handsRef.setOptions({
+        maxNumHands: 2,
+        modelComplexity: 0,
+        minDetectionConfidence: 0.6,
+        minTrackingConfidence: 0.6
+      });
 
-        this.detectorRef.onResults((results) => {
-          try {
-            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-              console.log('Hand detected!', results.multiHandLandmarks.length, 'hand(s)');
-              
-              // Store hands for skeleton display
-              const hands = results.multiHandLandmarks.map(landmarks => ({
-                keypoints: landmarks.map((landmark, index) => ({
-                  x: landmark.x,
-                  y: landmark.y,
-                  z: landmark.z,
-                  name: `landmark_${index}`
-                }))
+      // Set up the results callback
+      this.handsRef.onResults((results) => {
+        try {
+          if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            console.log('Hand detected!', results.multiHandLandmarks.length, 'hand(s)');
+            
+            // Store hands for skeleton display
+            const hands = results.multiHandLandmarks.map(landmarks => ({
+              keypoints: landmarks.map((landmark, index) => ({
+                x: landmark.x,
+                y: landmark.y,
+                z: landmark.z,
+                name: `landmark_${index}`
+              }))
+            }));
+            
+            this.hands = hands;
+            console.log('Model hands updated:', this.hands.length, 'hands');
+            
+            // Detect gestures for all hands
+            this.detectedGestures = [];
+            results.multiHandLandmarks.forEach((landmarks, handIndex) => {
+              const keypoints3D = landmarks.map((landmark, index) => ({
+                x: landmark.x,
+                y: landmark.y,
+                z: landmark.z,
+                name: `landmark_${index}`
               }));
               
-              this.hands = hands;
-              console.log('Model hands updated:', this.hands.length, 'hands');
-              
-              // Detect gestures for all hands
-              this.detectedGestures = [];
-              results.multiHandLandmarks.forEach((landmarks, handIndex) => {
-                const keypoints3D = landmarks.map((landmark, index) => ({
-                  x: landmark.x,
-                  y: landmark.y,
-                  z: landmark.z,
-                  name: `landmark_${index}`
-                }));
-                
-                const handGestures = this.detectGestures(keypoints3D);
-                // Add hand index to gestures for identification
-                handGestures.forEach(gesture => {
-                  gesture.handIndex = handIndex;
-                });
-                this.detectedGestures.push(...handGestures);
+              const handGestures = this.detectGestures(keypoints3D);
+              // Add hand index to gestures for identification
+              handGestures.forEach(gesture => {
+                gesture.handIndex = handIndex;
               });
-              
-              if (this.detectedGestures.length > 0) {
-                console.log('Gestures detected:', this.detectedGestures);
-              }
-              
-              // Trigger re-render
-              if (this.onDataUpdate) {
-                this.onDataUpdate();
-              }
-            } else {
-              this.detectedGestures = [];
-              this.hands = [];
-              
-              // Trigger re-render
-              if (this.onDataUpdate) {
-                this.onDataUpdate();
-              }
+              this.detectedGestures.push(...handGestures);
+            });
+            
+            if (this.detectedGestures.length > 0) {
+              console.log('Gestures detected:', this.detectedGestures);
             }
-          } catch (error) {
-            console.error('Error processing results:', error);
+            
+            // Trigger re-render
+            if (this.onDataUpdate) {
+              this.onDataUpdate();
+            }
+          } else {
             this.detectedGestures = [];
             this.hands = [];
+            
+            // Trigger re-render
+            if (this.onDataUpdate) {
+              this.onDataUpdate();
+            }
           }
-        });
+        } catch (error) {
+          console.error('Error processing results:', error);
+          this.detectedGestures = [];
+          this.hands = [];
+        }
+      });
 
-        this.isLoaded = true;
-        this.loadingStatus = 'Ready';
-        console.log(`${this.name} model initialized successfully`);
-      } else {
-        throw new Error('MediaPipe not available after timeout');
-      }
+      this.isLoaded = true;
+      this.loadingStatus = 'Ready';
+      console.log(`${this.name} model initialized successfully`);
     } catch (error) {
       console.error(`Error initializing ${this.name} model:`, error);
       this.loadingStatus = `Error: ${error.message}`;
@@ -255,65 +245,76 @@ class LightweightGestureModel {
     if (!this.isLoaded || !videoElement || this.isDetecting) return;
 
     this.isDetecting = true;
-    let retryCount = 0;
-    const maxRetries = 50; // 5 seconds max
-    
-    const waitForVideo = () => {
-      // Check if video is ready
-      if (videoElement.readyState >= 2 && videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
-        console.log('Video ready, starting detection frames');
-        const detectFrame = async () => {
-          // Check if we should stop
-          if (!this.isDetecting || !this.detectorRef) {
+    console.log('Starting MediaPipe Hands detection...');
+
+    try {
+      // Initialize MediaPipe Camera utility
+      this.cameraRef = new Camera(videoElement, {
+        onFrame: async () => {
+          if (!this.isDetecting || !this.handsRef) {
             return;
           }
 
           try {
-            await this.detectorRef.send({ image: videoElement });
+            await this.handsRef.send({ image: videoElement });
           } catch (error) {
             console.error('Detection frame error:', error);
             // Stop detection on error to prevent infinite loop
             this.stopDetection();
             return;
           }
-          
-          // Only continue if still detecting
-          if (this.isDetecting) {
-            this.animationFrameRef = requestAnimationFrame(detectFrame);
-          }
-        };
-        detectFrame();
-      } else {
-        retryCount++;
-        if (retryCount < maxRetries) {
-          setTimeout(waitForVideo, 100);
-        } else {
-          console.error('Video not ready after maximum retries');
-          this.stopDetection();
-        }
-      }
-    };
-    
-    waitForVideo();
+        },
+        width: 384,
+        height: 384
+      });
+
+      // Start the camera
+      await this.cameraRef.start();
+      console.log('MediaPipe Camera started successfully');
+      
+    } catch (error) {
+      console.error('Error starting MediaPipe Camera:', error);
+      this.stopDetection();
+    }
   }
 
   stopDetection() {
     this.isDetecting = false;
-    if (this.animationFrameRef) {
-      cancelAnimationFrame(this.animationFrameRef);
-      this.animationFrameRef = null;
+    
+    // Stop the camera if it's running
+    if (this.cameraRef) {
+      try {
+        this.cameraRef.stop();
+        console.log('MediaPipe Camera stopped');
+      } catch (error) {
+        console.error('Error stopping MediaPipe Camera:', error);
+      }
     }
+    
     this.detectedGestures = [];
     this.hands = [];
   }
 
   cleanup() {
     this.stopDetection();
-    if (this.detectorRef) {
+    
+    // Clean up hands detector
+    if (this.handsRef) {
       try {
-        this.detectorRef.close();
+        this.handsRef.close();
+        console.log('MediaPipe Hands detector closed');
       } catch (error) {
-        console.error('Error closing detector:', error);
+        console.error('Error closing hands detector:', error);
+      }
+    }
+    
+    // Clean up camera
+    if (this.cameraRef) {
+      try {
+        this.cameraRef.stop();
+        console.log('MediaPipe Camera cleaned up');
+      } catch (error) {
+        console.error('Error cleaning up camera:', error);
       }
     }
   }

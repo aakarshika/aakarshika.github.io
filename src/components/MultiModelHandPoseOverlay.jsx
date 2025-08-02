@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
+import { HAND_CONNECTIONS } from '@mediapipe/hands';
 
 const MultiModelHandPoseOverlay = ({ 
   modelStatus, 
@@ -68,61 +70,25 @@ const MultiModelHandPoseOverlay = ({
 
     const keypoints = hand.keypoints;
     
-    // Hand connections (MediaPipe hand skeleton)
-    const connections = [
-      // Thumb
-      [0, 1], [1, 2], [2, 3], [3, 4],
-      // Index finger
-      [0, 5], [5, 6], [6, 7], [7, 8],
-      // Middle finger
-      [0, 9], [9, 10], [10, 11], [11, 12],
-      // Ring finger
-      [0, 13], [13, 14], [14, 15], [15, 16],
-      // Pinky finger
-      [0, 17], [17, 18], [18, 19], [19, 20],
-      // Palm connections
-      [5, 9], [9, 13], [13, 17]
-    ];
+    // Convert keypoints to MediaPipe format
+    const landmarks = keypoints.map(point => ({
+      x: point.x,
+      y: point.y,
+      z: point.z || 0
+    }));
 
-    // Draw connections
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
-
-    connections.forEach(([start, end]) => {
-      const startPoint = keypoints[start];
-      const endPoint = keypoints[end];
-      
-      if (startPoint && endPoint) {
-        const startX = startPoint.x * videoWidth;
-        const startY = startPoint.y * videoHeight;
-        const endX = endPoint.x * videoWidth;
-        const endY = endPoint.y * videoHeight;
-        
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-      }
+    // Draw connections using MediaPipe drawing utilities
+    drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
+      color: color,
+      lineWidth: 3
     });
 
-    // Draw keypoints
-    keypoints.forEach((point, index) => {
-      if (point) {
-        const x = point.x * videoWidth;
-        const y = point.y * videoHeight;
-        
-        // Draw keypoint with color
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // Add white border for better visibility
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
+    // Draw landmarks using MediaPipe drawing utilities
+    drawLandmarks(ctx, landmarks, {
+      color: color,
+      lineWidth: 1,
+      radius: 4,
+      fillColor: color
     });
   };
 
