@@ -12,6 +12,9 @@ export const CAMERA_CONFIG = {
   DETECTION_REQUIRED_SUSTAINED_TIME: 1000, // 1 second
   DETECTION_MINIMUM_INTERVAL: 200, // 0.2s between detections
   DETECTION_INITIAL_DELAY: 2000, // 2 second delay after camera opens
+  
+  // Effect durations
+  FIREWORKS_DURATION: 6000, // 6 seconds
 };
 
 // Detection Models Configuration
@@ -91,15 +94,16 @@ export const DETECTION_CONFIG = {
   
   // Face Detection
   FACE: {
-    enabled: false, // Disabled for now
+    enabled: true,
     maxNumFaces: 1,
     minDetectionConfidence: 0.5,
+    refineLandmarks: true,
     
-    // Face Actions and Effects
-    actions: {
+    // Face Expressions and Effects
+    expressions: {
       SMILE: {
         name: 'smile',
-        confidence: 0.8,
+        confidence: 0.85,
         effects: [
           {
             type: 'HEART_BURST',
@@ -116,7 +120,7 @@ export const DETECTION_CONFIG = {
       
       WINK: {
         name: 'wink',
-        confidence: 0.8,
+        confidence: 0.80,
         effects: [
           {
             type: 'STAR_BURST',
@@ -127,6 +131,23 @@ export const DETECTION_CONFIG = {
             type: 'READY_FOR_NEXT_GESTURE',
             duration: 0, // Instant
             delay: 4000 // After star burst completes
+          }
+        ]
+      },
+      
+      SURPRISED: {
+        name: 'surprised',
+        confidence: 0.75,
+        effects: [
+          {
+            type: 'SPARKLE_BURST',
+            duration: 3500,
+            delay: 0
+          },
+          {
+            type: 'READY_FOR_NEXT_GESTURE',
+            duration: 0, // Instant
+            delay: 3500 // After sparkle burst completes
           }
         ]
       }
@@ -220,6 +241,14 @@ export const EFFECT_TYPES = {
     }
   },
   
+  SPARKLE_BURST: {
+    component: 'SparkleBurst',
+    props: {
+      duration: 3500,
+      colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4']
+    }
+  },
+  
   BOUNCE_EFFECT: {
     component: 'BounceEffect',
     props: {
@@ -274,7 +303,8 @@ export const getGestureConfig = (modelType, gestureName) => {
   const modelConfig = getDetectionConfig(modelType);
   if (!modelConfig) return null;
   
-  const gesturesKey = modelType === 'HANDS' ? 'gestures' : 'actions';
+  const gesturesKey = modelType === 'HANDS' ? 'gestures' : 
+                     modelType === 'FACE' ? 'expressions' : 'actions';
   return modelConfig[gesturesKey]?.[gestureName.toUpperCase()] || null;
 };
 

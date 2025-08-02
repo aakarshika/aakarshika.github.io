@@ -3,7 +3,14 @@ import Webcam from 'react-webcam';
 import { Camera } from 'lucide-react';
 import AllPicturesTwinkling from './AllPicturesTwinkling';
 import MultiModelHandPoseOverlay from './MultiModelHandPoseOverlay';
+import FaceMeshOverlay from './FaceMeshOverlay';
 import Fireworks from './Fireworks';
+import HeartBurst from './HeartBurst';
+import StarBurst from './StarBurst';
+import SparkleBurst from './SparkleBurst';
+import CountdownTimer from './CountdownTimer';
+import Confetti from './Confetti';
+import Sparkles from './Sparkles';
 import { useMultiModelGestureDetection } from '../hooks/useMultiModelGestureDetection';
 import { 
   CAMERA_CONFIG, 
@@ -41,7 +48,7 @@ const TandLPictureSection = ({
   const targetNode = useRef(null);
   const ownImage = currentFingerprint && pictures.some(pic => pic?.fingerprint === currentFingerprint);
   
-  // Hand detection hook
+  // Multi-model detection hook (hands + face)
   const {
     isInitialized,
     isDetecting,
@@ -49,6 +56,8 @@ const TandLPictureSection = ({
     stopDetection,
     getAllDetectedGestures,
     getAllHands,
+    getFaceMeshResults,
+    getDetectedFaces,
     getModelStatus,
   } = useMultiModelGestureDetection();
 
@@ -67,6 +76,15 @@ const TandLPictureSection = ({
   const [detectedGesture, setDetectedGesture] = useState(null);
   const [countdown, setCountdown] = useState(null);
   const effectTimers = useRef({});
+
+  // Debug: Track effect sequence changes
+  useEffect(() => {
+    console.log('Effect sequence changed:', { 
+      effectSequence, 
+      currentEffect, 
+      isFireworksActive 
+    });
+  }, [effectSequence, currentEffect, isFireworksActive]);
 
   // Setup Seriously.js for video filters
   useEffect(() => {
@@ -99,6 +117,7 @@ const TandLPictureSection = ({
 
   // Effect sequence management
   const startEffectSequence = useCallback((gestureConfig) => {
+    console.log('🎬 Starting effect sequence for:', gestureConfig.name, gestureConfig.effects);
     const effectConfig = getEffectConfig('COUNTDOWN_TIMER');
     
     scheduleEffectSequence({
@@ -159,7 +178,7 @@ const TandLPictureSection = ({
   // Step 1: Open camera → All detections start
   useEffect(() => {
     if (cameraOpen && isInitialized && webcamRef.current?.video) {
-      console.log('🎥 Camera opened - starting all detections');
+      console.log('🎥 Camera opened - starting multi-model detections');
       startDetection(webcamRef.current.video);
     } else if (!cameraOpen) {
       console.log('🎥 Camera closed - stopping all detections');
@@ -167,12 +186,30 @@ const TandLPictureSection = ({
     }
   }, [cameraOpen, isInitialized, startDetection, stopDetection]);
 
-  // Step 3: Gesture detected for specified time → Effects triggered
+  // Step 3: Gesture/Expression detected for specified time → Effects triggered
   useEffect(() => {
     if (!cameraOpen) return;
     
     const detectedGestures = getAllDetectedGestures();
     const handsConfig = DETECTION_CONFIG.HANDS;
+    const faceConfig = DETECTION_CONFIG.FACE;
+    
+    // Safety check: ensure configs are properly defined
+    if (!handsConfig || !faceConfig) {
+      console.warn('Detection configs not properly initialized');
+      return;
+    }
+    
+    // Safety check: ensure configs have required properties
+    if (!handsConfig.gestures || !faceConfig.expressions) {
+      console.warn('Detection configs missing required gestures/expressions properties');
+      return;
+    }
+    
+    // Debug: Log detected gestures
+    if (detectedGestures.length > 0) {
+      console.log('Detected gestures:', detectedGestures);
+    }
     
     // Process gesture detection using utility function
     const result = processGestureDetection({
@@ -188,8 +225,35 @@ const TandLPictureSection = ({
       lastGestureTime
     });
     
-    // Trigger effect sequence if gesture detected
-    if (result.shouldTrigger && result.detectedGesture) {
+    // If no hand gesture detected, check for face expressions
+    if (!result.shouldTrigger && faceConfig.enabled) {
+      const faceExpressions = detectedGestures.filter(g => 
+        ['smile', 'wink', 'surprised'].includes(g.name)
+      );
+      
+      if (faceExpressions.length > 0) {
+        console.log('Face expressions detected:', faceExpressions);
+        const faceResult = processGestureDetection({
+          detectedGestures: faceExpressions,
+          detectionConfig: faceConfig,
+          effectSequence,
+          gestureCooldown,
+          setGestureProgress,
+          setDetectedGesture,
+          startEffectSequence,
+          gestureDetectionTimes,
+          lastDetectionTime,
+          lastGestureTime
+        });
+        
+        if (faceResult.shouldTrigger && faceResult.detectedGesture) {
+          console.log('Face effect triggered:', faceResult.detectedGesture);
+          setDetectedGesture(faceResult.detectedGesture);
+          startEffectSequence(faceResult.detectedGesture);
+        }
+      }
+    } else if (result.shouldTrigger && result.detectedGesture) {
+      console.log('Hand effect triggered:', result.detectedGesture);
       setDetectedGesture(result.detectedGesture);
       startEffectSequence(result.detectedGesture);
     }
@@ -197,11 +261,14 @@ const TandLPictureSection = ({
 
   // Handle fireworks completion
   const handleFireworksComplete = useCallback(() => {
-    console.log('🎆 Fireworks complete!');
+    console.log('🎆 Effect complete!', { 
+      effectType: currentEffect?.type, 
+      isFireworksActive 
+    });
     setIsFireworksActive(false);
     setCurrentEffect(null);
     // Don't reset effect sequence here - let the timers handle the flow
-  }, []);
+  }, [currentEffect]);
 
   // Close camera function
   const closeCamera = useCallback(() => {
@@ -238,12 +305,25 @@ const TandLPictureSection = ({
     return currentEffect.duration || 6000;
   };
 
-  // Cleanup on unmount
+  // Get detected face expressions for overlay
+  const getDetectedFaceExpressions = () => {
+    const detectedGestures = getAllDetectedGestures();
+    return detectedGestures.filter(g => 
+      ['smile', 'wink', 'surprised'].includes(g.name)
+    );
+  };
+
+  // Debug: Log face mesh results
   useEffect(() => {
-    return () => {
-      Object.values(effectTimers.current).forEach(timer => clearTimeout(timer));
-    };
-  }, []);
+    const faceMeshResults = getFaceMeshResults();
+    if (faceMeshResults) {
+      console.log('Face mesh results received:', {
+        hasResults: !!faceMeshResults,
+        hasLandmarks: !!(faceMeshResults.faceLandmarks && faceMeshResults.faceLandmarks.length > 0),
+        landmarkCount: faceMeshResults.faceLandmarks?.length || 0
+      });
+    }
+  }, [getFaceMeshResults]);
 
   return (
     <div className="tstart relative h-full w-full items-center justify-center mb-60">
@@ -283,12 +363,25 @@ const TandLPictureSection = ({
                 style={{ zIndex: 1 }}
               />
               
-              {/* Step 2: Show detected thing (hand skeleton) */}
+              {/* Step 2: Show detected things (hand skeleton + face mesh) */}
               <div ref={overlayRef}>
+                {/* Hand pose overlay */}
                 <MultiModelHandPoseOverlay
                   modelStatus={getModelStatus()}
                   videoWidth={CAMERA_CONFIG.VIDEO_WIDTH}
                   videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
+                />
+                
+                {/* Face mesh overlay */}
+                <FaceMeshOverlay
+                  faceMeshResults={getFaceMeshResults()}
+                  videoWidth={CAMERA_CONFIG.VIDEO_WIDTH}
+                  videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
+                  showMesh={true}
+                  showEyes={true}
+                  showLips={true}
+                  showExpressions={true}
+                  detectedExpressions={getDetectedFaceExpressions()}
                 />
               </div>
               
@@ -309,23 +402,77 @@ const TandLPictureSection = ({
                     <div className={`text-xs text-center mt-1 ${
                       gestureProgress >= 100 ? 'text-green-300 font-semibold' : 'text-white'
                     }`}>
-                      {gestureProgress >= 100 ? '🎆 Ready!' : `${Math.round(gestureProgress)}% - Hold gesture`}
+                      {gestureProgress >= 100 ? '🎆 Ready!' : `${Math.round(gestureProgress)}% - Hold gesture/expression`}
                     </div>
                   </div>
                 </div>
               )}
               
               {/* Dynamic Effects */}
-              <div ref={fireworksRef}>
-                {currentEffect?.type === 'FIREWORKS' && (
-                  <Fireworks
-                    isActive={isFireworksActive}
-                    onComplete={handleFireworksComplete}
-                    duration={getCurrentEffectDuration()}
-                  />
-                )}
-                {/* Add other effect components here as needed */}
-              </div>
+              {currentEffect?.type === 'FIREWORKS' && (
+                <Fireworks
+                  isActive={isFireworksActive}
+                  onComplete={handleFireworksComplete}
+                  duration={getCurrentEffectDuration()}
+                />
+              )}
+              {currentEffect?.type === 'SPARKLE_BURST' && (
+                <SparkleBurst
+                  isActive={isFireworksActive}
+                  onComplete={handleFireworksComplete}
+                  duration={getCurrentEffectDuration()}
+                  colors={['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4']}
+                />
+              )}
+              {currentEffect?.type === 'HEART_BURST' && (
+                <HeartBurst
+                  isActive={isFireworksActive}
+                  onComplete={handleFireworksComplete}
+                  duration={getCurrentEffectDuration()}
+                  color="#ff69b4"
+                />
+              )}
+              {currentEffect?.type === 'STAR_BURST' && (
+                <StarBurst
+                  isActive={isFireworksActive}
+                  onComplete={handleFireworksComplete}
+                  duration={getCurrentEffectDuration()}
+                  color="#ffd700"
+                />
+              )}
+              {currentEffect?.type === 'CONFETTI' && (
+                <Confetti
+                  isActive={isFireworksActive}
+                  onComplete={handleFireworksComplete}
+                  duration={getCurrentEffectDuration()}
+                  colors={['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57']}
+                />
+              )}
+              {currentEffect?.type === 'SPARKLES' && (
+                <Sparkles
+                  isActive={isFireworksActive}
+                  onComplete={handleFireworksComplete}
+                  duration={getCurrentEffectDuration()}
+                  color="#ffd700"
+                />
+              )}
+              {currentEffect?.type === 'COUNTDOWN_TIMER' && (
+                <CountdownTimer
+                  isActive={isFireworksActive}
+                  onComplete={handleFireworksComplete}
+                  duration={getCurrentEffectDuration()}
+                  countdownNumbers={[4, 3, 2, 1]}
+                  intervalMs={500}
+                  flashDuration={500}
+                />
+              )}
+              
+              {/* Debug: Show current effect info */}
+              {currentEffect && (
+                <div className="absolute top-2 left-2 bg-black bg-opacity-75 text-white text-xs p-2 rounded z-30">
+                  Effect: {currentEffect.type} | Active: {isFireworksActive ? 'Yes' : 'No'}
+                </div>
+              )}
               
               {/* Countdown Timer */}
               {countdown && countdown > 0 && (
@@ -357,13 +504,17 @@ const TandLPictureSection = ({
             <div className="bg-gray-800 rounded-lg p-4">
               <div className="text-sm text-white space-y-2">
                 {isInitialized ? (
-                  <div className="text-green-400">✓ Hand tracking active</div>
+                  <div className="text-green-400">✓ Multi-model tracking active</div>
                 ) : (
-                  <div className="text-yellow-400">Loading hand detection...</div>
+                  <div className="text-yellow-400">Loading detection models...</div>
                 )}
                 
                 {getAllHands().length > 0 && (
                   <div className="text-green-300">✋ Hand detected</div>
+                )}
+                
+                {getDetectedFaces().length > 0 && (
+                  <div className="text-blue-300">😊 Face detected</div>
                 )}
                 
                 {(() => {

@@ -196,14 +196,15 @@ export const scheduleEffectSequence = ({
   
   // Schedule all effects based on configuration
   gestureConfig.effects.forEach((effect, index) => {
-    if (effect.type === 'FIREWORKS') {
-      // Start fireworks immediately
+    // Handle visual effects (FIREWORKS, HEART_BURST, STAR_BURST, SPARKLE_BURST, CONFETTI, SPARKLES)
+    if (['FIREWORKS', 'HEART_BURST', 'STAR_BURST', 'SPARKLE_BURST', 'CONFETTI', 'SPARKLES'].includes(effect.type)) {
+      // Start visual effect immediately
       console.log(`🎆 Starting ${effect.type} for ${effect.duration}ms`);
       setIsFireworksActive(true);
       setCurrentEffect(effect);
       
-      // Schedule fireworks completion
-      effectTimers.current[`fireworks_${index}`] = setTimeout(() => {
+      // Schedule effect completion
+      effectTimers.current[`effect_${index}`] = setTimeout(() => {
         console.log(`🎆 ${effect.type} complete`);
         setIsFireworksActive(false);
         setCurrentEffect(null);
@@ -355,8 +356,8 @@ export const processGestureDetection = ({
   lastDetectionTime,
   lastGestureTime
 }) => {
-  // Don't process if camera is closed or effect sequence is active
-  if (effectSequence !== 'idle') {
+  // Don't process if already in effect sequence or cooldown
+  if (effectSequence !== 'idle' || gestureCooldown) {
     return { shouldTrigger: false, detectedGesture: null };
   }
 
@@ -367,8 +368,18 @@ export const processGestureDetection = ({
     return { shouldTrigger: false, detectedGesture: null };
   }
 
-  // Check each configured gesture
-  for (const [gestureKey, gestureConfig] of Object.entries(detectionConfig.gestures)) {
+  // Determine the correct key for gestures/expressions based on config
+  const gesturesKey = detectionConfig.gestures ? 'gestures' : 
+                     detectionConfig.expressions ? 'expressions' : 
+                     detectionConfig.actions ? 'actions' : null;
+  
+  if (!gesturesKey || !detectionConfig[gesturesKey]) {
+    console.warn('No valid gestures/expressions/actions found in detection config:', detectionConfig);
+    return { shouldTrigger: false, detectedGesture: null };
+  }
+
+  // Check each configured gesture/expression
+  for (const [gestureKey, gestureConfig] of Object.entries(detectionConfig[gesturesKey])) {
     const matchingGestures = detectedGestures.filter(g => g.name === gestureConfig.name);
     
     if (matchingGestures.length === 0) continue;
@@ -452,7 +463,11 @@ export const processMultiModelDetection = ({
     if (!modelConfig.enabled) continue;
     
     const modelResults = detectionResults[modelType] || [];
-    const gesturesKey = modelType === 'HANDS' ? 'gestures' : 'actions';
+    
+    // Determine the correct key for gestures/expressions based on model type
+    const gesturesKey = modelType === 'HANDS' ? 'gestures' : 
+                       modelType === 'FACE' ? 'expressions' : 
+                       'actions';
     
     if (!modelConfig[gesturesKey]) continue;
     
@@ -492,7 +507,11 @@ export const getAvailableGestures = (detectionConfig, modelType = 'HANDS') => {
     return [];
   }
   
-  const gesturesKey = modelType === 'HANDS' ? 'gestures' : 'actions';
+  // Determine the correct key based on model type
+  const gesturesKey = modelType === 'HANDS' ? 'gestures' : 
+                     modelType === 'FACE' ? 'expressions' : 
+                     'actions';
+  
   const gestures = detectionConfig[gesturesKey];
   
   if (!gestures) {
