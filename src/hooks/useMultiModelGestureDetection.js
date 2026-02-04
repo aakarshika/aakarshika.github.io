@@ -228,7 +228,7 @@ class MultiModelDetector {
         const rightEyebrowHeight = Math.abs(rightEyebrowTop.y - rightEyebrowBottom.y);
         
         // Raised eyebrows have more height
-        return leftEyebrowHeight > 0.012 && rightEyebrowHeight > 0.012;
+        return leftEyebrowHeight > 0.015 && rightEyebrowHeight > 0.015;
       };
       
       // Check expressions

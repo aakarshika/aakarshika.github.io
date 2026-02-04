@@ -26,45 +26,229 @@
     <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.edge.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.vignette.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/brianchirls/Seriously.js@master/effects/seriously.filmgrain.js"></script>
-    <!-- TensorFlow.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    
+    <!-- MediaPipe Libraries with simplified loading -->
+    <script>
+      console.log('=== MediaPipe Library Loading Started ===');
+      
+      // FIXES APPLIED:
+      // 1. Suppressed TensorFlow Lite informational messages (I0805, W0805)
+      // 2. Fixed Module.arguments error by initializing Module.arguments array
+      // 3. Suppressed feedback manager warnings
+      // 4. Added error handling for asset loading failures
+      
+      // Suppress MediaPipe TensorFlow Lite informational messages
+      const originalConsoleLog = console.log;
+      const originalConsoleWarn = console.warn;
+      
+      console.log = function(...args) {
+        const message = args.join(' ');
+        if (message.includes('TensorFlow Lite XNNPACK delegate') || 
+            message.includes('I0805') || 
+            message.includes('INFO: Created TensorFlow Lite')) {
+          return; // Suppress TensorFlow Lite info messages
+        }
+        originalConsoleLog.apply(console, args);
+      };
+      
+      console.warn = function(...args) {
+        const message = args.join(' ');
+        if (message.includes('inference_feedback_manager') || 
+            message.includes('Feedback manager requires') ||
+            message.includes('W0805') || 
+            message.includes('I0805') || 
+            message.includes('Disabling support for feedback tensors') ||
+            message.includes('Module.arguments has been replaced')) {
+          return; // Suppress feedback manager warnings and Module.arguments errors
+        }
+        originalConsoleWarn.apply(console, args);
+      };
+      
+      // Fix for Module.arguments error - more comprehensive
+      if (typeof Module !== 'undefined') {
+        Module.arguments = Module.arguments || [];
+      }
+      
+      // Global fix for Module.arguments across all MediaPipe modules
+      window.addEventListener('load', () => {
+        if (typeof Module !== 'undefined') {
+          Module.arguments = Module.arguments || [];
+        }
+        // Also fix for any existing modules
+        if (window.Module) {
+          window.Module.arguments = window.Module.arguments || [];
+        }
+      });
+      
+      // Override Module creation to prevent arguments error
+      const originalModule = window.Module;
+      if (originalModule) {
+        window.Module = function(...args) {
+          const module = originalModule.apply(this, args);
+          if (module && !module.arguments) {
+            module.arguments = [];
+          }
+          return module;
+        };
+        Object.setPrototypeOf(window.Module, originalModule);
+      }
+      
+      // Global asset path override for MediaPipe
+      window.MediaPipeAssetPaths = {
+        'hands': 'https://cdn.jsdelivr.net/npm/@mediapipe/hands',
+        'face_mesh': 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
+        'pose': 'https://cdn.jsdelivr.net/npm/@mediapipe/pose',
+        'face_detection': 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection',
+        'selfie_segmentation': 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation'
+      };
+      
+      // Override fetch to intercept MediaPipe asset requests
+      const originalFetch = window.fetch;
+      window.fetch = function(url, options) {
+        // Check if this is a MediaPipe asset request
+        if (typeof url === 'string' && url.includes('@mediapipe')) {
+          console.log(`🔍 Intercepted MediaPipe asset request: ${url}`);
+          
+          // Fix incorrect asset paths
+          if (url.includes('@mediapipe/hands/pose_')) {
+            const fixedUrl = url.replace('@mediapipe/hands/pose_', '@mediapipe/pose/pose_');
+            console.log(`🔧 Fixed pose asset path: ${url} → ${fixedUrl}`);
+            return originalFetch(fixedUrl, options);
+          }
+          
+          if (url.includes('@mediapipe/hands/face_mesh_')) {
+            const fixedUrl = url.replace('@mediapipe/hands/face_mesh_', '@mediapipe/face_mesh/face_mesh_');
+            console.log(`🔧 Fixed face_mesh asset path: ${url} → ${fixedUrl}`);
+            return originalFetch(fixedUrl, options);
+          }
+        }
+        
+        return originalFetch(url, options);
+      };
+      
+      // Override XMLHttpRequest to intercept MediaPipe asset requests
+      const originalXHROpen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+        // Check if this is a MediaPipe asset request
+        if (typeof url === 'string' && url.includes('@mediapipe')) {
+          console.log(`🔍 Intercepted MediaPipe XHR request: ${url}`);
+          
+          // Fix incorrect asset paths
+          if (url.includes('@mediapipe/hands/pose_')) {
+            const fixedUrl = url.replace('@mediapipe/hands/pose_', '@mediapipe/pose/pose_');
+            console.log(`🔧 Fixed pose asset path: ${url} → ${fixedUrl}`);
+            return originalXHROpen.call(this, method, fixedUrl, async, user, password);
+          }
+          
+          if (url.includes('@mediapipe/hands/face_mesh_')) {
+            const fixedUrl = url.replace('@mediapipe/hands/face_mesh_', '@mediapipe/face_mesh/face_mesh_');
+            console.log(`🔧 Fixed face_mesh asset path: ${url} → ${fixedUrl}`);
+            return originalXHROpen.call(this, method, fixedUrl, async, user, password);
+          }
+        }
+        
+        return originalXHROpen.call(this, method, url, async, user, password);
+      };
+      
+      // Create a promise that resolves when all MediaPipe libraries are ready
+      window.mediaPipeReady = new Promise((resolve, reject) => {
+        const libraries = [
+          'camera_utils',
+          'control_utils', 
+          'drawing_utils',
+          'hands',
+          'face_mesh',
+          'pose',
+          'face_detection',
+          'selfie_segmentation'
+        ];
+        
+        const loadedLibraries = new Set();
+        
+        const checkAllLoaded = () => {
+          // Check if all global objects are available
+          const globalObjects = {
+            'Camera': window.Camera,
+            'Hands': window.Hands,
+            'FaceMesh': window.FaceMesh,
+            'Pose': window.Pose,
+            'FaceDetection': window.FaceDetection,
+            'SelfieSegmentation': window.SelfieSegmentation
+          };
+          
+          const allAvailable = Object.values(globalObjects).every(obj => obj !== undefined);
+          
+          if (allAvailable) {
+            console.log('🎉 All MediaPipe libraries loaded and ready!');
+            console.log('Available objects:', Object.keys(globalObjects).filter(key => globalObjects[key]));
+            resolve();
+            return true;
+          }
+          return false;
+        };
+        
+        // Check immediately and then every 100ms
+        if (!checkAllLoaded()) {
+          const interval = setInterval(() => {
+            if (checkAllLoaded()) {
+              clearInterval(interval);
+            }
+          }, 100);
+          
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            clearInterval(interval);
+            reject(new Error('MediaPipe libraries failed to load within 10 seconds'));
+          }, 10000);
+        }
+      });
+      
+      // Log when MediaPipe is ready
+      window.mediaPipeReady
+        .then(() => {
+          console.log('✅ MediaPipe ready for use');
+          
+          // Test asset path fixes
+          console.log('🧪 Testing asset path fixes...');
+          const testUrls = [
+            'https://cdn.jsdelivr.net/npm/@mediapipe/hands/pose_solution_packed_assets.data',
+            'https://cdn.jsdelivr.net/npm/@mediapipe/hands/face_mesh_solution_packed_assets.data'
+          ];
+          
+          testUrls.forEach(url => {
+            fetch(url)
+              .then(response => {
+                if (response.ok) {
+                  console.log(`✅ Asset accessible: ${url}`);
+                } else {
+                  console.log(`❌ Asset not accessible: ${url}`);
+                }
+              })
+              .catch(error => {
+                console.log(`❌ Asset fetch failed: ${url}`, error);
+              });
+          });
+        })
+        .catch(error => console.error('❌ MediaPipe loading failed:', error));
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js?v=2" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.3.1675466124/control_utils.js?v=2" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1675466124/drawing_utils.js?v=2" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js?v=2" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js?v=2" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js?v=2" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4.1646425229/face_detection.js?v=2" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1675465747/selfie_segmentation.js?v=2" crossorigin="anonymous"></script>
     
     <!-- Fingerpose -->
     <script src="https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.js"></script>
-    <script>
-      // Enhanced fallback: Try multiple sources for Fingerpose
-      setTimeout(() => {
-        if (typeof window.Fingerpose === 'undefined') {
-          console.log('Primary Fingerpose failed, trying alternative sources...');
-          
-          const sources = [
-            'https://unpkg.com/fingerpose@0.1.0/dist/fingerpose.js',
-            'https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/fingerpose/0.1.0/fingerpose.js'
-          ];
-          
-          let currentSource = 0;
-          
-          const tryNextSource = () => {
-            if (currentSource >= sources.length) {
-              console.error('All Fingerpose sources failed to load');
-              return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = sources[currentSource];
-            script.onload = () => console.log(`Fingerpose loaded from source ${currentSource + 1}: ${sources[currentSource]}`);
-            script.onerror = () => {
-              console.log(`Fingerpose failed from source ${currentSource + 1}: ${sources[currentSource]}`);
-              currentSource++;
-              tryNextSource();
-            };
-            document.head.appendChild(script);
-          };
-          
-          tryNextSource();
-        }
-      }, 3000);
-    </script>
   </body>
 </html>

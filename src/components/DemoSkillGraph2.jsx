@@ -232,16 +232,16 @@ const DemoSkillGraph2 = ({ isActive,  flatNodes ,handleScrollHandoff, handleHove
       </h2>
 
 
-      <div className={`relative rounded-lg p-20 ${activeBackground ? 'bg-white/10' : ''}`}
+      <div className={`relative rounded-lg h-full  ${activeBackground ? 'bg-white/10' : ''} `}
       onMouseEnter={() => setActiveBackground(true)}
       onMouseLeave={() => setActiveBackground(false)}
       >
         {/* SVG Container */}
         <svg 
           ref={svgRef}
-          width={width + 100 } 
-          height={height} 
-          className="block"
+          width={width + 150 } 
+          height={height + 50} 
+          className=""
         >
         {/* Sibling box - render first so it's behind the bars */}
         {siblingBox && (
@@ -289,7 +289,7 @@ const DemoSkillGraph2 = ({ isActive,  flatNodes ,handleScrollHandoff, handleHove
           {timeLabels.map((label, i) => (
             <text
               key={`time-${i}`}
-              x={0}
+              x={width}
               y={label.y}
               fill="rgba(255, 255, 255, 0.6)"
               fontSize="11"

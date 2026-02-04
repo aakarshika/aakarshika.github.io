@@ -6,8 +6,8 @@ import TestScreen from './TestScreen';
 const MainRoutingPage = () => {
   return (
     <Routes>
-      <Route path="/" element={<TestScreen />} />
-      <Route path="/portfolio" element={<Portfolio />} />
+      {/* <Route path="/" element={<TestScreen />} /> */}
+      <Route path="/" element={<Portfolio />} />
       {/* Add more routes as needed */}
     </Routes>
   );

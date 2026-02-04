@@ -54,7 +54,7 @@ const ProjectsSection = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-transparent "></div>
         
         {/* Content */}
-        <div className="relative z-10grid md:grid-cols-2 gap-12 items-center max-w-6xl">
+        <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
           <div className="bg-gray-800 rounded-lg h-80 flex items-center justify-center">
             <img src={daywiseImg} alt="Daywise App Screenshot" className="rounded-lg w-full h-full object-cover" />
           </div>

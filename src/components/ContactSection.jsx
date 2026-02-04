@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
+import emailjs from 'emailjs-com';
+import { config } from '../config';
 
 const ContactSection = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -43,8 +45,8 @@ const ContactSection = () => {
     setSubmitStatus(null);
 
     try {
-      // Insert the contact message into Supabase
-      const { data, error } = await supabase
+      // Save to Supabase first (backup storage)
+      const { error: supabaseError } = await supabase
         .from('contact_messages')
         .insert([
           {
@@ -53,13 +55,34 @@ const ContactSection = () => {
           }
         ]);
 
-      if (error) {
-        console.error('Error submitting form:', error);
-        setSubmitStatus('error');
-        throw error;
+      if (supabaseError) {
+        console.error('Error saving to Supabase:', supabaseError);
+        // Continue anyway - try to send email
       }
 
-      // console.log('Contact message saved successfully:', data);
+      // Send email via EmailJS
+      if (config.emailjs.publicKey && config.emailjs.serviceId && config.emailjs.templateId) {
+        try {
+          await emailjs.send(
+            config.emailjs.serviceId,
+            config.emailjs.templateId,
+            {
+              from_name: formData.name.trim(),
+              message: formData.message.trim(),
+              to_email: 'aakarshika93@gmail.com', // Your email address
+            },
+            config.emailjs.publicKey
+          );
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+          // If Supabase worked but email failed, still show success
+          // since message was saved
+          if (supabaseError) {
+            throw emailError; // Only throw if both failed
+          }
+        }
+      }
+
       setSubmitStatus('success');
       
       // Clear form and close after a short delay

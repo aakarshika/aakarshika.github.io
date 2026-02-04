@@ -7,9 +7,9 @@ import PicSection from '../components/PicSection';
 import ContactSection from '../components/ContactSection';
 import HeroSection from '../components/HeroSection';
 import SkillGraph from '../components/SkillGraph';
+import SideHoverOverlay from '../components/SideHoverOverlay';
 import { useVisitorPortfolio } from '../hooks/useVisitorPortfolio';
 import { useScrollManagement } from '../hooks/useScrollManagement';
-import { useState, useEffect } from 'react';
 // import { useAdditionalModels } from '../hooks/useAdditionalModels';
 
 const Portfolio = () => {
@@ -54,28 +54,28 @@ const Portfolio = () => {
       getFun: 'SkillGraph',
       ref: useRef(null)
     },
-    {
-      id: 'interactive',
-      componentType: 'none',
-      componentFun: () => (
-        <PicSection 
-          progress={activePageName == 'interactive' ? pageProgress : 0} 
-          pictures={picturesList} 
-          onCapture={handleCapture} 
-          currentFingerprint={fingerprint} 
-          onDelete={handleDelete}
-          // Pass additional models data
-          additionalModelsInitialized={additionalModelsInitialized}
-          additionalModelsLoadingStatus={additionalModelsLoadingStatus}
-          processAdditionalModelsFrame={processAdditionalModelsFrame}
-          getFaceMeshResults={getFaceMeshResults}
-          getPoseResults={getPoseResults}
-          getFaceDetectionResults={getFaceDetectionResults}
-          toggleAdditionalModel={toggleAdditionalModel}
-        />
-      ),
-      ref: useRef(null)
-    },
+    // {
+    //   id: 'interactive',
+    //   componentType: 'none',
+    //   componentFun: () => (
+    //     <PicSection 
+    //       progress={activePageName == 'interactive' ? pageProgress : 0} 
+    //       pictures={picturesList} 
+    //       onCapture={handleCapture} 
+    //       currentFingerprint={fingerprint} 
+    //       onDelete={handleDelete}
+    //       // Pass additional models data
+    //       additionalModelsInitialized={additionalModelsInitialized}
+    //       additionalModelsLoadingStatus={additionalModelsLoadingStatus}
+    //       processAdditionalModelsFrame={processAdditionalModelsFrame}
+    //       getFaceMeshResults={getFaceMeshResults}
+    //       getPoseResults={getPoseResults}
+    //       getFaceDetectionResults={getFaceDetectionResults}
+    //       toggleAdditionalModel={toggleAdditionalModel}
+    //     />
+    //   ),
+    //   ref: useRef(null)
+    // },
     {
       id: 'contact',
       componentType: 'none',
@@ -87,11 +87,19 @@ const Portfolio = () => {
   // Use scroll management hook
   const { scrollY, activeStopperId, activePageName, pageProgress,  handleScrollHandoff, handleHover } = useScrollManagement({stoppersConfig});
   
+  const mouseOutsideCenterZone = (isOutside) => {
+    console.log("mouseOutsideCenterZone", isOutside);
+    
+  };
+  
   return (
     <div 
       // ref={containerRef}
       className="fixed inset-0 bg-black text-white overflow-hidden"
     >
+      {/* Side Hover Overlay - Shows gray overlays on sides when hovering */}
+      <SideHoverOverlay mouseOutsideCenterZone={mouseOutsideCenterZone} />
+      
       {/* Portfolio Overlays */}
       {/* <PortfolioOverlays 
         pageProgress={pageProgress}

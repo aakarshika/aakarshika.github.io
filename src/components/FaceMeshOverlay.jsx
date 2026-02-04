@@ -18,7 +18,7 @@ const FaceMeshOverlay = ({
     const canvas = canvasRef.current;
     if (!canvas || !faceMeshResults) {
       if (!faceMeshResults) {
-        console.log('FaceMeshOverlay: No face mesh results');
+        
       }
       return;
     }
@@ -26,27 +26,22 @@ const FaceMeshOverlay = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    console.log('FaceMeshOverlay: Drawing face mesh', {
-      hasResults: !!faceMeshResults,
-      hasLandmarks: !!(faceMeshResults.faceLandmarks && faceMeshResults.faceLandmarks.length > 0),
-      landmarkCount: faceMeshResults.faceLandmarks?.length || 0,
-      canvasSize: { width: canvas.width, height: canvas.height }
-    });
+    
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw face mesh if results exist (Tasks Vision format)
     if (faceMeshResults.faceLandmarks && faceMeshResults.faceLandmarks.length > 0) {
       faceMeshResults.faceLandmarks.forEach((landmarks, faceIndex) => {
-        console.log(`Drawing face ${faceIndex} with ${landmarks.length} landmarks`);
+        
         
         // Debug: Check first few landmark coordinates
-        console.log('First 5 landmarks:', landmarks.slice(0, 5).map(l => ({ x: l.x, y: l.y, z: l.z })));
+        
         
         // Draw a semi-transparent background around the face for visibility
         const faceCenter = {
-          x: landmarks[4]?.x * videoWidth || videoWidth / 2,
-          y: landmarks[4]?.y * videoHeight || videoHeight / 2
+          x: landmarks[10]?.x * videoWidth || videoWidth / 2,
+          y: landmarks[10]?.y * videoHeight || videoHeight / 2
         };
         
         // Draw background circle around face
@@ -86,7 +81,7 @@ const FaceMeshOverlay = ({
             }
           }
           
-          console.log('Simplified face drawing completed');
+          
         } catch (error) {
           console.error('Error in manual drawing:', error);
         }

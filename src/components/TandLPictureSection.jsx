@@ -5,6 +5,7 @@ import AllPicturesTwinkling from './AllPicturesTwinkling';
 import MultiModelHandPoseOverlay from './MultiModelHandPoseOverlay';
 import FaceMeshOverlay from './FaceMeshOverlay';
 import PoseOverlay from './PoseOverlay';
+import BackgroundRemovalOverlay from './BackgroundRemovalOverlay';
 import Fireworks from './Fireworks';
 import HeartBurst from './HeartBurst';
 import StarBurst from './StarBurst';
@@ -13,6 +14,7 @@ import CountdownTimer from './CountdownTimer';
 import Confetti from './Confetti';
 import Sparkles from './Sparkles';
 import { useMultiModelGestureDetection } from '../hooks/useMultiModelGestureDetection';
+import { useMultiModelDetection } from '../hooks/useMultiModelDetection';
 import { useAdditionalModels } from '../hooks/useAdditionalModels';
 import { 
   CAMERA_CONFIG, 
@@ -51,7 +53,7 @@ const TandLPictureSection = ({
   const targetNode = useRef(null);
   const ownImage = currentFingerprint && pictures.some(pic => pic?.fingerprint === currentFingerprint);
   
-  // Multi-model detection hook (hands + face)
+  // Multi-model detection hook (hands + face + selfie segmentation)
   const {
     isInitialized,
     isDetecting,
@@ -63,6 +65,17 @@ const TandLPictureSection = ({
     getDetectedFaces,
     getModelStatus,
   } = useMultiModelGestureDetection();
+
+  // Multi-model detection hook with selfie segmentation
+  const {
+    isInitialized: isMultiModelInitialized,
+    isDetecting: isMultiModelDetecting,
+    startDetection: startMultiModelDetection,
+    stopDetection: stopMultiModelDetection,
+    getSelfieSegmentationResults,
+    isSelfieSegmentationAvailable,
+    isPoseAvailable,
+  } = useMultiModelDetection();
 
   // Additional models hook (pose + face mesh)
   const {
@@ -178,8 +191,16 @@ const TandLPictureSection = ({
 
   // Step 1: Open camera → All detections start
   useEffect(() => {
-    if (cameraOpen && isInitialized && webcamRef.current?.video) {
-      startDetection(webcamRef.current.video);
+    if (cameraOpen && webcamRef.current?.video) {
+      // Start gesture detection
+      if (isInitialized) {
+        startDetection(webcamRef.current.video);
+      }
+      
+      // Start multi-model detection with selfie segmentation
+      if (isMultiModelInitialized) {
+        startMultiModelDetection(webcamRef.current.video);
+      }
       
       // Start additional models processing (pose detection)
       if (isAdditionalModelsInitialized) {
@@ -192,9 +213,15 @@ const TandLPictureSection = ({
         processFrame();
       }
     } else if (!cameraOpen) {
-      stopDetection();
+      // Stop all detections
+      if (isInitialized) {
+        stopDetection();
+      }
+      if (isMultiModelInitialized) {
+        stopMultiModelDetection();
+      }
     }
-  }, [cameraOpen, isInitialized, isAdditionalModelsInitialized, startDetection, stopDetection, processAdditionalModelsFrame]);
+  }, [cameraOpen, isInitialized, isMultiModelInitialized, isAdditionalModelsInitialized, startDetection, stopDetection, startMultiModelDetection, stopMultiModelDetection, processAdditionalModelsFrame]);
 
   // Step 3: Gesture/Expression detected for specified time → Effects triggered
   useEffect(() => {
@@ -361,6 +388,7 @@ const TandLPictureSection = ({
                 style={{ zIndex: 1 }}
               />
               
+              
               {/* Step 2: Show detected things (hand skeleton + face mesh) */}
               <div ref={overlayRef}>
                 {/* Hand pose overlay */}
@@ -370,6 +398,12 @@ const TandLPictureSection = ({
                   videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
                 />
                 
+                <BackgroundRemovalOverlay
+                    selfieSegmentationResults={getSelfieSegmentationResults()}
+                    videoWidth={CAMERA_CONFIG.VIDEO_WIDTH}
+                    videoHeight={CAMERA_CONFIG.VIDEO_HEIGHT}
+                    backgroundColor="rgba(0, 0, 0, 0.5)"
+                  />
                 {/* Face mesh overlay */}
                 <FaceMeshOverlay
                   faceMeshResults={getFaceMeshResults()}
@@ -545,12 +579,22 @@ const TandLPictureSection = ({
                   <div className="text-yellow-400">Loading pose detection...</div>
                 )}
                 
+                {isMultiModelInitialized ? (
+                  <div className="text-green-400">✓ Person outline active</div>
+                ) : (
+                  <div className="text-yellow-400">Loading person outline...</div>
+                )}
+                
                 {getAllHands().length > 0 && (
                   <div className="text-green-300">✋ Hand detected</div>
                 )}
                 
                 {getDetectedFaces().length > 0 && (
                   <div className="text-blue-300">😊 Face detected</div>
+                )}
+                
+                {getSelfieSegmentationResults() && (
+                  <div className="text-purple-300">🎭 Person outline detected</div>
                 )}
                 
                 {(() => {

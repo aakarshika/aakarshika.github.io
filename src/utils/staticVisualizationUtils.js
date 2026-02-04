@@ -38,24 +38,42 @@ export const getStaticDimensions = () => {
 /**
  * Calculate time range for y-axis from flat nodes
  * @param {Array} flatNodes - Array of all nodes
- * @returns {Object} Time range object
+ * @returns {Object} Time range object with min and max timestamps
  */
 export const calculateTimeRange = (flatNodes) => {
-  if (!flatNodes || flatNodes.length === 0) return { min: 0, max: 600 };
+  if (!flatNodes || flatNodes.length === 0) {
+    // Default fallback: use current date range from skills_timeline.json
+    const defaultStart = parseDate('2015-06');
+    const defaultEnd = parseDate('2025-06');
+    return { min: defaultStart, max: defaultEnd };
+  }
 
-  let minY = Infinity;
-  let maxY = -Infinity;
+  let minTimestamp = Infinity;
+  let maxTimestamp = -Infinity;
 
   flatNodes.forEach(node => {
     if (node.timelineBoxes && node.timelineBoxes.length > 0) {
       node.timelineBoxes.forEach(box => {
-        minY = Math.min(minY, box.y);
-        maxY = Math.max(maxY, box.y + box.height);
+        if (box.startDate) {
+          const startTimestamp = parseDate(box.startDate);
+          minTimestamp = Math.min(minTimestamp, startTimestamp);
+        }
+        if (box.endDate) {
+          const endTimestamp = parseDate(box.endDate);
+          maxTimestamp = Math.max(maxTimestamp, endTimestamp);
+        }
       });
     }
   });
 
-  return { min: minY, max: maxY };
+  // Fallback if no valid dates found
+  if (minTimestamp === Infinity || maxTimestamp === -Infinity) {
+    const defaultStart = parseDate('2015-06');
+    const defaultEnd = parseDate('2025-06');
+    return { min: defaultStart, max: defaultEnd };
+  }
+
+  return { min: minTimestamp, max: maxTimestamp };
 };
 
 /**
@@ -72,16 +90,29 @@ export const calculateGridLines = (height) => {
 /**
  * Calculate time labels for y-axis
  * @param {number} height - Height of the visualization
- * @param {Object} timeRange - Time range object
+ * @param {Object} timeRange - Time range object with min and max timestamps
  * @returns {Array} Array of time label objects
  */
 export const calculateTimeLabels = (height, timeRange) => {
-  return Array.from({ length: 8 }, (_, i) => {
-    const y = (height / 8) * i;
-    const timeValue = timeRange.max - ((timeRange.max - timeRange.min) / 8) * i;
+  const startTime = timeRange.min;
+  const endTime = timeRange.max;
+  const timeRangeValue = endTime - startTime;
+  
+  // Use the same formula as timestampToY: ((timestamp - startTime) / timeRange) * (yZoom - 40) + 20
+  // where yZoom is the height
+  const timestampToY = (timestamp) => {
+    return ((timestamp - startTime) / timeRangeValue) * (height - 40) + 20;
+  };
+  
+  return Array.from({ length: 11 }, (_, i) => {
+    // Calculate timestamp for this label (from max to min, evenly distributed)
+    const timeValue = endTime - ((endTime - startTime) / 10) * i;
     const date = new Date(timeValue);
+    // Map timestamp to y-coordinate using the same formula as timeline boxes
+    const y = timestampToY(timeValue);
+    
     return {
-      y: y + 15,
+      y: y + 15, // Offset for better positioning
       label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
     };
   });

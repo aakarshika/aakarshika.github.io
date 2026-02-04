@@ -3,7 +3,14 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import { POSE_CONNECTIONS } from '@mediapipe/pose';
 
 const keyPoints = [0, 11, 12, 23, 24, 25, 26]; // nose, shoulders, hips, knees
-
+// 
+// Point 0: Nose (head)
+// Point 11: Left shoulder
+// Point 12: Right shoulder
+// Point 23: Left hip
+// Point 24: Right hip
+// Point 25: Left knee
+// Point 26: Right knee
 const PoseOverlay = ({ 
   poseResults, 
   videoWidth, 
@@ -42,9 +49,6 @@ const PoseOverlay = ({
             const pointIndex = keyPoints[i];
             const point = landmarks[pointIndex];
 
-        // for (let i = 0; i < landmarks.length; i++) {
-        //   const point = landmarks[i];
-            
             if (point && point.x !== undefined && point.y !== undefined) {
               ctx.beginPath();
               ctx.arc(point.x * videoWidth, point.y * videoHeight, 8, 0, 2 * Math.PI);
