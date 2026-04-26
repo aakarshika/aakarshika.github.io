@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useTransform } from 'framer-motion';
 import girlMain from '../assets/girl_main.png';
 import winkingGirl from '../assets/winking_girl.png';
 import hand from '../assets/hand.png';
@@ -7,11 +7,23 @@ import laptop from '../assets/laptop.png';
 import laptopBase from '../assets/lapbase.png';
 import table from '../assets/table.png';
 import { calculateAnimations } from '../utils/progressAnimationUtils';
+import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
 
-const AboutMeSection = ({ progress }) => {
+const AboutMeSection = React.memo(() => {
+  console.log("AboutMeSection");
+  const { sectionRef, progress: progressMotionValue } = useSectionScrollProgress();
+  
+  // Only track visibility for conditional rendering (minimal state)
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    const unsubscribe = progressMotionValue.on('change', (progress) => {
+      setIsVisible(progress > 0);
+    });
+    return unsubscribe;
+  }, [progressMotionValue]);
 
-  // Animation configuration using fade and slide animations
-  const animationConfig = [
+  // Animation configuration using fade and slide animations - memoized to prevent recreation
+  const animationConfig = useMemo(() => [
     {
       object: 'title',
       anim: [
@@ -78,7 +90,7 @@ const AboutMeSection = ({ progress }) => {
     {
       object: 'aboutImage',
       anim: [
-        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 0, duration: 25 },
+        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 20, duration: 25 },
         { type: 'slideY', initialValue: -1000, finalValue: 0, startTiming: 0, duration: 45 },
         // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 65, duration: 15 },
       ]
@@ -97,45 +109,139 @@ const AboutMeSection = ({ progress }) => {
         { type: 'slideX', initialValue: 200, finalValue: 0, startTiming: 45, duration: 10 },
       ]
     }
-  ];
+  ], []);
 
-  // Calculate all animations using the utility
-  const animations = calculateAnimations(animationConfig, progress);
-  // // console.log("AboutMeSection progress:", progress);
-  // // console.log("AboutMeSection animations:", animations);
-  // // console.log("Title fade value:", animations.title?.fade);
-  // // console.log("Title slideY value:", animations.title?.slideY);
-
+  // Create motion values for all animations - no component rerenders!
+  // Each useTransform creates a motion value that updates independently
+  const titleFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.title?.fade ?? 0;
+  });
+  const titleSlideY = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.title?.slideY ?? 0;
+  });
+  const firstTextFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.firstText?.fade ?? 0;
+  });
+  const firstTextSlideY = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.firstText?.slideY ?? 0;
+  });
+  const secondTextFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.secondText?.fade ?? 0;
+  });
+  const skillsFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skills?.fade ?? 0;
+  });
+  const skill1Fade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill1?.fade ?? 0;
+  });
+  const skill1SlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill1?.slideX ?? 0;
+  });
+  const skill2Fade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill2?.fade ?? 0;
+  });
+  const skill2SlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill2?.slideX ?? 0;
+  });
+  const skill3Fade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill3?.fade ?? 0;
+  });
+  const skill3SlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill3?.slideX ?? 0;
+  });
+  const skill4Fade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill4?.fade ?? 0;
+  });
+  const skill4SlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill4?.slideX ?? 0;
+  });
+  const aboutImageFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.aboutImage?.fade ?? 0;
+  });
+  const aboutImageSlideY = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.aboutImage?.slideY ?? 0;
+  });
+  const laptopImageFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.laptopImage?.fade ?? 0;
+  });
+  const laptopImageSlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.laptopImage?.slideX ?? 0;
+  });
+  const tableImageFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.tableImage?.fade ?? 0;
+  });
+  const tableImageSlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.tableImage?.slideX ?? 0;
+  });
+  
+  // Background opacity motion values
+  const backgroundOpacity = useTransform(progressMotionValue, (progress) => 
+    progress === 0 ? 0 : progress / 100
+  );
+  
+  // Conditional image opacity (winking girl vs regular)
+  const winkingGirlOpacity = useTransform(progressMotionValue, (progress) => {
+    if (progress > 55 && progress < 70) {
+      const anims = calculateAnimations(animationConfig, progress);
+      return anims.aboutImage?.fade ?? 0;
+    }
+    return 0;
+  });
+  
+  const regularImageOpacity = useTransform(progressMotionValue, (progress) => {
+    if (progress < 55 || progress > 70) {
+      const anims = calculateAnimations(animationConfig, progress);
+      return anims.aboutImage?.fade ?? 0;
+    }
+    return 0;
+  });
+  
+  const regularImageY = useTransform(progressMotionValue, (progress) => {
+    if (progress < 55 || progress > 70) {
+      const anims = calculateAnimations(animationConfig, progress);
+      return anims.aboutImage?.slideY ?? 0;
+    }
+    return 0;
+  });
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center py-20">
+    <div ref={sectionRef} className="relative sm:mt-96 min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center py-20">
 
       {/* Floating Background Elements */}
-      <motion.div style={{ opacity:progress  == 0 ? 0 : (progress/100) }} className="absolute bottom-20 left-20 w-40 h-40 bg-purple-500 rounded-full opacity-40 blur-2xl"></motion.div>
-      <motion.div style={{ opacity:progress  == 0 ? 0 : (progress/100) }} className="absolute top-0 right-10 w-32 h-32 bg-blue-500 rounded-full opacity-40 blur-2xl"></motion.div>
-
+      <motion.div style={{ opacity: backgroundOpacity }} className="absolute bottom-20 left-20 w-40 h-40 bg-purple-500 rounded-full opacity-40 blur-2xl"></motion.div>
+      <motion.div style={{ opacity: backgroundOpacity }} className="absolute top-0 right-10 w-32 h-32 bg-blue-500 rounded-full opacity-40 blur-2xl"></motion.div>
 
       <div className="absolute right-0 top-0 bg-gray-800 rounded-lg h-full flex items-center justify-center">
-        {/* <motion.img 
-          src={twirlyImg} 
-          alt="Twirly App Screenshot" 
-          className="rounded-lg w-full h-full object-cover"
-          style={{
-            opacity: animations.title?.fade || 0,
-            y: animations.title?.slideY || 0,
-            x: animations.title?.slideX || 0
-          }}
-        /> */}
+        {/* Placeholder for future content */}
       </div>
 
-      {progress > 0 && (<div className="absolute about-section container mx-auto px-6 max-w-6xl">
-
+      {isVisible && (<div className="absolute about-section container mx-auto px-6 max-w-6xl">
         <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
           <div>
             <motion.h2
               style={{
-                opacity: animations.title?.fade || 0,
-                y: animations.title?.slideY || 0
+                opacity: titleFade,
+                y: titleSlideY
               }}
               className="text-6xl font-bold text-start mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
             >
@@ -143,8 +249,8 @@ const AboutMeSection = ({ progress }) => {
             </motion.h2>
             <motion.div
               style={{
-                opacity: animations.firstText?.fade || 0,
-                y: animations.firstText?.slideY || 0
+                opacity: firstTextFade,
+                y: firstTextSlideY
               }}
               className="text-xl text-white leading-relaxed mb-6"
             >
@@ -153,7 +259,7 @@ const AboutMeSection = ({ progress }) => {
             </motion.div>
             <motion.div
               style={{
-                opacity: animations.secondText?.fade || 0
+                opacity: secondTextFade
               }}
               className="text-lg text-white"
             >
@@ -162,7 +268,7 @@ const AboutMeSection = ({ progress }) => {
           </div>
           <div>
               <div className="relative w-full h-96">
-              <motion.div style={{ opacity: progress  == 0 ? 0 : (progress/100) }} 
+              <motion.div style={{ opacity: backgroundOpacity }} 
               className="absolute w-96 h-96 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
 
               <motion.img
@@ -170,8 +276,8 @@ const AboutMeSection = ({ progress }) => {
                   alt="Laptop base Image"
                   className="rounded-lg w-full h-full object-cover absolute inset-0"
                   style={{
-                    opacity: animations.laptopImage?.fade || 0,
-                    x: animations.laptopImage?.slideX || 0
+                    opacity: laptopImageFade,
+                    x: laptopImageSlideX
                   }}
                 />
                 <motion.img
@@ -179,14 +285,14 @@ const AboutMeSection = ({ progress }) => {
                   alt="Winking Girl Image"
                   className="rounded-lg w-full h-full object-cover absolute inset-0"
                   style={{
-                    opacity: progress > 55 && progress < 70 ? animations.aboutImage?.fade || 0 : 0,
-                    y: animations.aboutImage?.slideY || 0
+                    opacity: winkingGirlOpacity,
+                    y: aboutImageSlideY
                   }}
                 />
                 <motion.div 
                   style={{
-                    opacity: progress < 55 || progress > 70 ? animations.aboutImage?.fade || 0 : 0,
-                    y: progress < 55 || progress > 70 ? animations.aboutImage?.slideY || 0 : 0
+                    opacity: regularImageOpacity,
+                    y: regularImageY
                   }}
                   className="rounded-lg w-full h-full object-cover absolute inset-0">
                 <img
@@ -205,8 +311,8 @@ const AboutMeSection = ({ progress }) => {
                   alt="Laptop Image"
                   className="rounded-lg w-full h-full object-cover absolute inset-0"
                   style={{
-                    opacity: animations.laptopImage?.fade || 0,
-                    x: animations.laptopImage?.slideX || 0
+                    opacity: laptopImageFade,
+                    x: laptopImageSlideX
                   }}
                 />
                 <motion.img
@@ -214,8 +320,10 @@ const AboutMeSection = ({ progress }) => {
                   alt="Table Image"
                   className="rounded-lg w-full h-full object-cover absolute inset-0"
                   style={{
-                    opacity: animations.tableImage?.fade || 0,
-                    x: animations.tableImage?.slideX || 0
+                    opacity: tableImageFade,
+                    x: tableImageSlideX,
+                    scaleY: 5,
+                    y: -740
                   }}
                 />
               </div>
@@ -223,14 +331,14 @@ const AboutMeSection = ({ progress }) => {
         </div>
         <motion.div
           style={{
-            opacity: animations.skills?.fade || 0
+            opacity: skillsFade
           }}
           className="grid md:grid-cols-4 gap-8"
         >
           <motion.div
             style={{
-              opacity: animations.skill1?.fade || 0,
-              x: animations.skill1?.slideX || 0
+              opacity: skill1Fade,
+              x: skill1SlideX
             }}
             className="text-center"
           >
@@ -240,8 +348,8 @@ const AboutMeSection = ({ progress }) => {
           </motion.div>
           <motion.div
             style={{
-              opacity: animations.skill2?.fade || 0,
-              x: animations.skill2?.slideX || 0
+              opacity: skill2Fade,
+              x: skill2SlideX
             }}
             className="text-center"
           >
@@ -251,8 +359,8 @@ const AboutMeSection = ({ progress }) => {
           </motion.div>
           <motion.div
             style={{
-              opacity: animations.skill3?.fade || 0,
-              x: animations.skill3?.slideX || 0
+              opacity: skill3Fade,
+              x: skill3SlideX
             }}
             className="text-center"
           >
@@ -262,8 +370,8 @@ const AboutMeSection = ({ progress }) => {
           </motion.div>
           <motion.div
             style={{
-              opacity: animations.skill4?.fade || 0,
-              x: animations.skill4?.slideX || 0
+              opacity: skill4Fade,
+              x: skill4SlideX
             }}
             className="text-center"
           >
@@ -279,6 +387,8 @@ const AboutMeSection = ({ progress }) => {
 
     </div>
   );
-};
+});
+
+AboutMeSection.displayName = 'AboutMeSection';
 
 export default AboutMeSection; 

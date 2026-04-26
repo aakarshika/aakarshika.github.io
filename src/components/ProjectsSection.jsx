@@ -4,10 +4,11 @@ import daywiseImg from '../assets/daywise.png';
 import portfolioImg from '../assets/portfolio_img.png';
 
 const ProjectsSection = () => {
+  console.log("ProjectsSection");
   return (
-    <>
+    <div className='flex w-full overflow-auto'>
       {/* Project 1 - Title Slide */}
-      <div className="w-screen h-screen flex bg-gradient-to-b from-gray-900 to-purple-900 items-center justify-center px-20 flex-shrink-0">
+      <div className="w-screen h-screen flex bg-gradient-to-b from-gray-900 to-purple-900 items-center justify-center flex-shrink-0">
         <div className="max-w-4xl">
           <h2 className="text-7xl font-bold pb-8 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
             Projects
@@ -17,7 +18,7 @@ const ProjectsSection = () => {
         </div>
       </div>
       {/* Twirly App */}
-      <div className="w-screen h-screen flex items-center justify-center px-20 flex-shrink-0 relative">
+      <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
         {/* Background div */}
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-purple-900"></div>
         <div className="absolute inset-0 bg-gradient-to-l from-purple-900 to-transparent "></div>
@@ -48,7 +49,7 @@ const ProjectsSection = () => {
       </div>
 
       {/* Daywise */}
-      <div className="w-screen h-screen flex items-center justify-center px-20 flex-shrink-0 relative">
+      <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
         {/* Background div */}
         <div className="absolute inset-0 bg-gradient-to-l from-blue-900 to-purple-900 "></div>
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-transparent "></div>
@@ -77,7 +78,7 @@ const ProjectsSection = () => {
         </div>
       </div>
       {/* Portfolio */}
-      <div className="w-screen h-screen flex items-center justify-center px-20 flex-shrink-0 relative">
+      <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
         {/* Background div */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-red-900"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900 to-transparent "></div>
@@ -105,29 +106,7 @@ const ProjectsSection = () => {
         </div>
       </div>
 
-      {/* Coder Kids */}
-
-      {/* <div className="w-screen h-screen flex items-center justify-center px-20 flex-shrink-0 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-red-900"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-blue-900 to-transparent "></div>
-        
-        <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
-          <div>
-            <h3 className="text-5xl font-bold mb-6 text-green-400">Coder Kids ML Platform</h3>
-            <p className="text-xl text-white mb-6">
-              Backend API for ML learning platform with drag-and-drop interface. Integrated scikit-learn, 
-              Keras, and Caffe libraries for non-technical users to train and visualize ML models.
-            </p>
-            <div className="flex space-x-4 mb-6">
-              <span className="px-3 py-1 bg-blue-600 rounded-full text-sm">Django</span>
-              <span className="px-3 py-1 bg-orange-600 rounded-full text-sm">PostgreSQL</span>
-              <span className="px-3 py-1 bg-teal-600 rounded-full text-sm">Scikit-learn</span>
-              <span className="px-3 py-1 bg-purple-600 rounded-full text-sm">D3.js</span>
-            </div>
-          </div>
-        </div>
-      </div> */}
-    </>
+    </div>
   );
 };
 

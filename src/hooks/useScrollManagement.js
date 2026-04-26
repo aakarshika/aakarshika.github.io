@@ -20,6 +20,11 @@ export const useScrollManagement = ({stoppersConfig}) => {
   const [handoffsReceived, setHandoffsReceived] = useState([]);
   const [centerStuck, setCenterStuck] = useState(null);
   const [direction, setDirection] = useState(null);
+  // Refs so wheel handler always sees latest values (avoids stale closure after handoff)
+  const handoffsReceivedRef = useRef(handoffsReceived);
+  const centerStuckRef = useRef(centerStuck);
+  const hoveredRef = useRef(hovered);
+  const hoveredSectionRef = useRef(hoveredSection);
   const centerOfEachPage = [];
     for(let i = 0; i < stoppersConfig.length; i++) {
       const stopper = stoppersConfig[i];
@@ -41,6 +46,13 @@ export const useScrollManagement = ({stoppersConfig}) => {
   }, [activeStopperId]);
 
   useEffect(() => {
+    handoffsReceivedRef.current = handoffsReceived;
+    centerStuckRef.current = centerStuck;
+    hoveredRef.current = hovered;
+    hoveredSectionRef.current = hoveredSection;
+  }, [handoffsReceived, centerStuck, hovered, hoveredSection]);
+
+  useEffect(() => {
     // // console.log("scrollY", scrollY);
 
     const matlabKaY = scrollY + viewHeight/2;
@@ -59,9 +71,11 @@ export const useScrollManagement = ({stoppersConfig}) => {
       setActivePageName(null); 
       interimName = neighbors[0]?.id+'-'+neighbors[1]?.id;
     }
+    // Active horizontal zone: middle 60% of section (not just center ±100px) so scroll works regardless of mouse position
+    const activeZoneMargin = viewHeight * 0.2;
     if (
       activePage &&
-      matlabKaY > activePage.center-100 && matlabKaY < activePage.center+100 &&
+      matlabKaY > activePage.top + activeZoneMargin && matlabKaY < activePage.bottom - activeZoneMargin &&
       ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == activePage.componentType) 
     ) {
       setActiveStopperId(activePage.id);
@@ -82,16 +96,18 @@ export const useScrollManagement = ({stoppersConfig}) => {
 
 
   const handleHover = (isHovered, section) => {
-    console.log("handleHover", isHovered, section);
     setHovered(isHovered);
     setHoveredSection(section);
   };
 
   const handleScrollHandoff = (direction, stopperId) => {
-    // console.log("changing hands", direction, stopperId);
-    setHandoffsReceived([{ direction, stopperId }]);
+    const nextHandoffs = [{ direction, stopperId }];
+    setHandoffsReceived(nextHandoffs);
     setCenterStuck(null);
     setActiveStopperId(null);
+    // Sync refs immediately so next wheel event sees handoff (avoids one-frame stick)
+    handoffsReceivedRef.current = nextHandoffs;
+    centerStuckRef.current = null;
   };
 
   // Custom scroll handler
@@ -109,27 +125,49 @@ export const useScrollManagement = ({stoppersConfig}) => {
       setScrollY(prev => {
 
         const newDirection = deltaY > 0 ? "next" : "previous";
-
         const nextY = prev + cappedDeltaY;
         const matlabKaY = nextY + viewHeight/2;
+        const prevCenter = prev + viewHeight/2;
         const ovrAllPage = centerOfEachPage.find(page => matlabKaY > page.top && matlabKaY < page.bottom);
 
-        if(ovrAllPage){
-          const activePageProgress = 100*((matlabKaY%viewHeight)/viewHeight);
-          
-          let shouldCenterStuck = false;
-          if(((newDirection == 'next' && activePageProgress >= 50) 
-            || newDirection == 'previous' && activePageProgress <= 50) 
-            && !handoffsReceived.find(h => h.direction == newDirection && h.stopperId == ovrAllPage?.id)
-            && ['horizontalStopper', 'customHorizontalStopper'].some(it=> it == ovrAllPage.componentType)
-            && hovered && hoveredSection == ovrAllPage.id
-          ){
-            shouldCenterStuck = true;
-          }
-          if((shouldCenterStuck || centerStuck) ){
-            return ovrAllPage.top;
-          }
+        const currentHandoffs = handoffsReceivedRef.current;
+        const currentCenterStuck = centerStuckRef.current;
+        const currentHovered = hoveredRef.current;
+        const currentHoveredSection = hoveredSectionRef.current;
+
+        const canStick = (page) => {
+          const isHorizontal = ['horizontalStopper', 'customHorizontalStopper'].some(it => it === page.componentType);
+          const noRecentHandoff = !currentHandoffs.find(h => h.direction === newDirection && h.stopperId === page?.id);
+          const hoveredThisSection = currentHovered && currentHoveredSection === page.id;
+          return isHorizontal && noRecentHandoff && hoveredThisSection;
+        };
+
+        // Stick when viewport center is inside a horizontal section (no progress threshold)
+        const alreadyStuckHere = currentCenterStuck && ovrAllPage && ovrAllPage.id === currentCenterStuck.id;
+        if (ovrAllPage && (alreadyStuckHere || canStick(ovrAllPage))) {
+          return ovrAllPage.top;
         }
+
+        // Momentum/fast scroll can overshoot in one frame: we end up past the section.
+        // If we're crossing a horizontal section this frame, land at its top instead of skipping it.
+        if (deltaY > 0) {
+          const crossed = centerOfEachPage.find(
+            page => ['horizontalStopper', 'customHorizontalStopper'].includes(page.componentType)
+              && matlabKaY >= page.bottom
+              && prevCenter < page.bottom
+              && canStick(page)
+          );
+          if (crossed) return crossed.top;
+        } else if (deltaY < 0) {
+          const crossed = centerOfEachPage.find(
+            page => ['horizontalStopper', 'customHorizontalStopper'].includes(page.componentType)
+              && matlabKaY <= page.top
+              && prevCenter > page.top
+              && canStick(page)
+          );
+          if (crossed) return crossed.top;
+        }
+
         return Math.max(0, Math.min(nextY, maxScrollY));
       });
     };

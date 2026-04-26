@@ -1,75 +1,113 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useMemo, useState } from 'react';
+import { motion, useTransform, useMotionValueEvent } from 'framer-motion';
 import { calculateAnimations } from '../utils/progressAnimationUtils';
+import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
 
-const HeroSection = ({ progress }) => {
-  // // console.log("Hero progress", progress);
-  
-  // Animation configuration using the new JSON format
-  const animationConfig = [
+const HeroSection = React.memo(() => {
+  console.log("HeroSection");
+  const { sectionRef, progress: progressMotionValue } = useSectionScrollProgress();
+  const [afterTextFadeValue, setAfterTextFadeValue] = useState(0);
+
+  // Animation config: only transforms (slideX, slideY); no opacity used
+  const animationConfig = useMemo(() => [
     {
       object: 'designerText',
       anim: [
-        { type: 'fade', initialValue: 0, startTiming: 51, duration: 14 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 63, duration: 1 },
-        { type: 'slideX', initialValue: 250, finalValue: 0, startTiming: 51, duration: 14}
+        { type: 'slideX', initialValue: 250, finalValue: 0, startTiming: 50, duration: 25 },
+        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 50, duration: 25 },
+        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 75, duration: 1 },
       ]
     },
     {
-      object: 'mainComponent',
+      object: 'mainText',
       anim: [
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 20 },
-        { type: 'slideY', initialValue: 0, finalValue: 300, startTiming: 65, duration: 40}
+        { type: 'fade', initialValue: 1, finalValue: 1, startTiming: 50, duration: 25 },
+        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 75, duration: 1 },
       ]
     },
-  ];
-  
-  // Calculate animation values using the utility
-  const animations = calculateAnimations(animationConfig, progress);
+    {
+      object: 'afterText',
+      anim: [
+        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 75, duration: 1 },
+      ]
+    }
+  ], []);
+
+  const designerSlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    const slideX = anims.designerText?.slideX ?? 0;
+    return slideX;
+  });
+  const designerFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    const fade = anims.designerText?.fade ?? 0;
+    return fade;
+  });
+  const mainTextFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    const fade = anims.mainText?.fade ?? 1;
+    return fade;
+  });
+  const afterTextFade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    const fade = anims.afterText?.fade ?? 0;
+    console.log("afterTextFade", fade);
+    return fade;
+  });
+
+  // Subscribe to afterTextFade changes to get the actual numeric value
+  useMotionValueEvent(afterTextFade, 'change', (latest) => {
+    setAfterTextFadeValue(latest);
+  });
+
+  const spacerHeight = useTransform(progressMotionValue, (p) => `${p * 0.8}vh`);
+  const barWidth = useTransform(progressMotionValue, (p) => `${p}%`);
 
   return (
+    <div ref={sectionRef}
+      className="h-screen w-full flex flex-col overflow-hidden"
+    >
+      <motion.div style={{ height: spacerHeight }}>
+        <div></div>
+      </motion.div>
 
-    <div className="h-screen relative flex items-center justify-center overflow-hidden">
-
-      <motion.div className="text-center z-10"
-        style={{
-          // y: `${animations.mainComponent?.slideY || 0}px`,
-          opacity: progress > 0 ? animations.mainComponent?.fade || 1 : 0
-        }}
-      >
+      <div className="text-center z-10">
         <motion.h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
           Aakarshika
         </motion.h1>
-        <motion.span className="text-2xl text-white mb-8">
-          {(progress < 65 ? 'Software Developer' : 'Software Developer, sometimes Designer')}
-        </motion.span>
-
-      <motion.span 
-        className="absolute text-2xl text-white mb-8 pointer-events-none"
-        style={{
-          x: `${animations.designerText?.slideX || 200}px`,
-          opacity: animations.designerText?.fade || 0
-        }}>
-        {', sometimes Designer'}
-      </motion.span>
-      
+        <div className="flex items-center justify-center mb-8  text-2xl text-white">
+          {afterTextFadeValue === 0 && (<div className="relative w-full">
+              <motion.span
+                className=" "
+                style={{ opacity: mainTextFade }}>
+                Software Developer
+              </motion.span>
+              <motion.span
+                className="absolute "
+                style={{ x: designerSlideX, opacity: designerFade }}
+              >, sometimes Designer</motion.span>
+            </div>)}
+          {afterTextFadeValue !== 0 && (<div className="relative w-full">
+              <motion.span
+                className=" "
+                style={{ opacity: afterTextFade }}>
+                Software Developer, sometimes Designer
+              </motion.span>
+          </div>)}
+        </div>
         <motion.div
           className="h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mt-5"
-          style={{
-            width: `${progress}%`,
-            opacity: (100-progress)/100
-          }}></motion.div>
-      </motion.div>
+          style={{ width: barWidth }}
+        />
+      </div>
 
-      {/* Floating Background Elements */}
-      <motion.div style={{ opacity:progress  == 0 ? 0 : 1-(progress/100) }} className="absolute top-20 left-20 w-40 h-40 bg-purple-500 rounded-full opacity-40 blur-2xl"></motion.div>
-      <motion.div style={{ opacity: progress  == 0 ? 0 : 1-(progress/100) }} className="absolute bottom-20 right-20 w-60 h-60 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
-      <motion.div style={{ opacity:progress  == 0 ? 0 : 1-(progress/100) }} className="absolute top-1/2 left-10 w-32 h-32 bg-blue-500 rounded-full opacity-40 blur-2xl"></motion.div>
-
-      {/* <motion.div style={{ opacity:progress  == 0 ? 0 : 1 }} className="absolute bottom-20 right-20 w-60 h-60 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div> */}
-
-    </div>
+      <div className="absolute top-20 left-20 w-40 h-40 bg-purple-500 rounded-full opacity-40 blur-2xl" />
+      <div className="absolute bottom-20 right-20 w-60 h-60 bg-pink-500 rounded-full opacity-35 blur-2xl" />
+      <div className="absolute top-1/2 left-10 w-32 h-32 bg-blue-500 rounded-full opacity-40 blur-2xl" />
+    </div >
   );
-};
+});
+
+HeroSection.displayName = 'HeroSection';
 
 export default HeroSection; 

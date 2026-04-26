@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
+import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
 
-const ContactSection = () => {
+const ContactSection = React.memo(() => {
+
+  const { sectionRef } = useSectionScrollProgress();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     message: ''
   });
+  console.log("ContactSection");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
 
@@ -78,9 +82,9 @@ const ContactSection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-t from-purple-900 to-gray-900 py-20 flex items-center">
+    <div ref={sectionRef} className="min-h-screen bg-gradient-to-t from-purple-900 to-gray-900 py-20 flex items-center">
       <div className="contact-section container mx-auto px-6 text-center">
-        <h2 className="text-6xl font-bold mb-12 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <h2 className="text-6xl font-bold mb-12 py-10 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
           Let's Work Together
         </h2>
         <p className="text-2xl text-white mb-12 max-w-2xl mx-auto">
@@ -175,6 +179,8 @@ const ContactSection = () => {
       </div>
     </div>
   );
-};
+});
+
+ContactSection.displayName = 'ContactSection';
 
 export default ContactSection; 
