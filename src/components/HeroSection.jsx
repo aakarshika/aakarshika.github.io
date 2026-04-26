@@ -1,12 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { motion, useTransform, useMotionValueEvent } from 'framer-motion';
+import React, { useMemo } from 'react';
+import { motion, useTransform } from 'framer-motion';
 import { calculateAnimations } from '../utils/progressAnimationUtils';
 import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
 
 const HeroSection = React.memo(() => {
-  console.log("HeroSection");
   const { sectionRef, progress: progressMotionValue } = useSectionScrollProgress();
-  const [afterTextFadeValue, setAfterTextFadeValue] = useState(0);
 
   // Animation config: only transforms (slideX, slideY); no opacity used
   const animationConfig = useMemo(() => [
@@ -51,13 +49,7 @@ const HeroSection = React.memo(() => {
   const afterTextFade = useTransform(progressMotionValue, (progress) => {
     const anims = calculateAnimations(animationConfig, progress);
     const fade = anims.afterText?.fade ?? 0;
-    console.log("afterTextFade", fade);
     return fade;
-  });
-
-  // Subscribe to afterTextFade changes to get the actual numeric value
-  useMotionValueEvent(afterTextFade, 'change', (latest) => {
-    setAfterTextFadeValue(latest);
   });
 
   const spacerHeight = useTransform(progressMotionValue, (p) => `${p * 0.8}vh`);
@@ -75,25 +67,26 @@ const HeroSection = React.memo(() => {
         <motion.h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
           Aakarshika
         </motion.h1>
-        <div className="flex items-center justify-center mb-8  text-2xl text-white">
-          {afterTextFadeValue === 0 && (<div className="relative w-full">
-              <motion.span
-                className=" "
-                style={{ opacity: mainTextFade }}>
+        <div className="flex items-center justify-center mb-8 text-2xl text-white">
+          <div className="relative w-full">
+            <div>
+              <motion.span style={{ opacity: mainTextFade }}>
                 Software Developer
               </motion.span>
               <motion.span
-                className="absolute "
+                className="absolute"
                 style={{ x: designerSlideX, opacity: designerFade }}
-              >, sometimes Designer</motion.span>
-            </div>)}
-          {afterTextFadeValue !== 0 && (<div className="relative w-full">
-              <motion.span
-                className=" "
-                style={{ opacity: afterTextFade }}>
-                Software Developer, sometimes Designer
+              >
+                , sometimes Designer
               </motion.span>
-          </div>)}
+            </div>
+            <motion.span
+              className="absolute inset-0"
+              style={{ opacity: afterTextFade }}
+            >
+              Software Developer, sometimes Designer
+            </motion.span>
+          </div>
         </div>
         <motion.div
           className="h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mt-5"
