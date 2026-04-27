@@ -355,21 +355,34 @@ export const AnimationPresets = {
 /**
  * Build a reusable wiggle + pop animation sequence.
  * @param {number} startTiming - Progress time to start the wiggle.
- * @returns {Array} Animation entries for rotate and scale.
+ * @param {'rotate'|'scale'} [animationType] - Optional type filter.
+ * @param {boolean} [includeType=true] - Include "type" in returned entries.
+ * @returns {Array} Animation entries for rotate and/or scale.
  */
-export const createWigglePreset = (startTiming = 0) => ([
-  { type: 'rotate', initialValue: 0, finalValue: -14, startTiming, duration: 0.5 },
-  { type: 'rotate', initialValue: -14, finalValue: 12, startTiming: startTiming + 0.5, duration: 0.5 },
-  { type: 'rotate', initialValue: 12, finalValue: -10, startTiming: startTiming + 1, duration: 0.5 },
-  { type: 'rotate', initialValue: -10, finalValue: 8, startTiming: startTiming + 1.5, duration: 0.5 },
-  { type: 'rotate', initialValue: 8, finalValue: -5, startTiming: startTiming + 2, duration: 0.5 },
-  { type: 'rotate', initialValue: -5, finalValue: 3, startTiming: startTiming + 2.5, duration: 0.5 },
-  { type: 'rotate', initialValue: 3, finalValue: 0, startTiming: startTiming + 3, duration: 0.5 },
-  { type: 'scale', initialValue: 0.9, finalValue: 1.15, startTiming, duration: 1 },
-  { type: 'scale', initialValue: 1.15, finalValue: 0.98, startTiming: startTiming + 1, duration: 1 },
-  { type: 'scale', initialValue: 0.98, finalValue: 1.06, startTiming: startTiming + 2, duration: 1 },
-  { type: 'scale', initialValue: 1.06, finalValue: 1, startTiming: startTiming + 3, duration: 1 },
-]);
+export const createWigglePreset = (startTiming = 0, animationType, includeType = true) => {
+  const rotate = [
+    { type: 'rotate', initialValue: 0, finalValue: -14, startTiming, duration: 0.5 },
+    { type: 'rotate', initialValue: -14, finalValue: 12, startTiming: startTiming + 0.5, duration: 0.5 },
+    { type: 'rotate', initialValue: 12, finalValue: -10, startTiming: startTiming + 1, duration: 0.5 },
+    { type: 'rotate', initialValue: -10, finalValue: 8, startTiming: startTiming + 1.5, duration: 0.5 },
+    { type: 'rotate', initialValue: 8, finalValue: -5, startTiming: startTiming + 2, duration: 0.5 },
+    { type: 'rotate', initialValue: -5, finalValue: 3, startTiming: startTiming + 2.5, duration: 0.5 },
+    { type: 'rotate', initialValue: 3, finalValue: 0, startTiming: startTiming + 3, duration: 0.5 },
+  ];
+  const scale = [
+    { type: 'scale', initialValue: 0.9, finalValue: 1.15, startTiming, duration: 1 },
+    { type: 'scale', initialValue: 1.15, finalValue: 0.98, startTiming: startTiming + 1, duration: 1 },
+    { type: 'scale', initialValue: 0.98, finalValue: 1.06, startTiming: startTiming + 2, duration: 1 },
+    { type: 'scale', initialValue: 1.06, finalValue: 1, startTiming: startTiming + 3, duration: 1 },
+  ];
+
+  const sequence = animationType === 'rotate' ? rotate : animationType === 'scale' ? scale : [...rotate, ...scale];
+  if (includeType) {
+    return sequence;
+  }
+
+  return sequence.map(({ type, ...entry }) => entry);
+};
 
 /**
  * Example usage:

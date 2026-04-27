@@ -1,56 +1,26 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion, useTransform } from 'framer-motion';
-import { calculateAnimations } from '../utils/progressAnimationUtils';
 import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
+import { useAnimationValue } from '../hooks/useAnimationValue';
+
+const DESIGNER_SLIDE_ANIM = [{ initialValue: 250, startTiming: 50, duration: 25 }];
+const DESIGNER_FADE_ANIM = [
+  { initialValue: 0, finalValue: 1, startTiming: 50, duration: 25 },
+  { initialValue: 1, startTiming: 75, duration: 1 },
+];
+const MAIN_TEXT_FADE_ANIM = [
+  { initialValue: 1, finalValue: 1, startTiming: 50, duration: 25 },
+  { initialValue: 1, startTiming: 75, duration: 1 },
+];
+const AFTER_TEXT_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 75, duration: 1 }];
 
 const HeroSection = React.memo(() => {
   const { sectionRef, progress: progressMotionValue } = useSectionScrollProgress();
 
-  // Animation config: only transforms (slideX, slideY); no opacity used
-  const animationConfig = useMemo(() => [
-    {
-      object: 'designerText',
-      anim: [
-        { type: 'slideX', initialValue: 250, finalValue: 0, startTiming: 50, duration: 25 },
-        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 50, duration: 25 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 75, duration: 1 },
-      ]
-    },
-    {
-      object: 'mainText',
-      anim: [
-        { type: 'fade', initialValue: 1, finalValue: 1, startTiming: 50, duration: 25 },
-        { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 75, duration: 1 },
-      ]
-    },
-    {
-      object: 'afterText',
-      anim: [
-        { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 75, duration: 1 },
-      ]
-    }
-  ], []);
-
-  const designerSlideX = useTransform(progressMotionValue, (progress) => {
-    const anims = calculateAnimations(animationConfig, progress);
-    const slideX = anims.designerText?.slideX ?? 0;
-    return slideX;
-  });
-  const designerFade = useTransform(progressMotionValue, (progress) => {
-    const anims = calculateAnimations(animationConfig, progress);
-    const fade = anims.designerText?.fade ?? 0;
-    return fade;
-  });
-  const mainTextFade = useTransform(progressMotionValue, (progress) => {
-    const anims = calculateAnimations(animationConfig, progress);
-    const fade = anims.mainText?.fade ?? 1;
-    return fade;
-  });
-  const afterTextFade = useTransform(progressMotionValue, (progress) => {
-    const anims = calculateAnimations(animationConfig, progress);
-    const fade = anims.afterText?.fade ?? 0;
-    return fade;
-  });
+  const designerSlideX = useAnimationValue(progressMotionValue, DESIGNER_SLIDE_ANIM, 'slideX', 0);
+  const designerFade = useAnimationValue(progressMotionValue, DESIGNER_FADE_ANIM, 'fade', 0);
+  const mainTextFade = useAnimationValue(progressMotionValue, MAIN_TEXT_FADE_ANIM, 'fade', 1);
+  const afterTextFade = useAnimationValue(progressMotionValue, AFTER_TEXT_FADE_ANIM, 'fade', 0);
 
   const spacerHeight = useTransform(progressMotionValue, (p) => `${p * 0.8}vh`);
   const barWidth = useTransform(progressMotionValue, (p) => `${p/2}%`);
