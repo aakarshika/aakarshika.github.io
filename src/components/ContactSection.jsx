@@ -82,7 +82,7 @@ const ContactSection = React.memo(() => {
   };
 
   return (
-    <div ref={sectionRef} className="min-h-screen bg-gradient-to-t from-purple-900 to-gray-900 py-20 flex items-center">
+    <div ref={sectionRef} className="min-h-screen bg-gradient-to-b from-blue-900 to-black py-20 flex items-center">
       <div className="contact-section container mx-auto px-6 text-center">
         <h2 className="text-6xl font-bold mb-12 py-10 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
           Let's Work Together

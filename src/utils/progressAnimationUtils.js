@@ -123,9 +123,9 @@ const precalculateTimeline = (animations) => {
   const sortedAnimations = [...animations].sort((a, b) => a.startTiming - b.startTiming);
   
   const timeline = [];
-  // Set default fallback based on animation type
-  const animationType = sortedAnimations[0]?.type || 'fade';
-  let currentFallback = animationType === 'fade' ? 0 : 0; // 0 for fade (invisible), 0 for slides (original position)
+  // Use the first animation's initial value before its startTiming.
+  // This ensures progress=0 reflects authored initial states.
+  let currentFallback = sortedAnimations[0]?.initialValue ?? 0;
   
   // // console.log(`Precalculating timeline for animations:`, sortedAnimations);
   
@@ -279,8 +279,8 @@ export const calculateObjectAnimations = (objectConfig, progress) => {
   Object.keys(groupedAnimations).forEach(type => {
     const typeAnimations = groupedAnimations[type];
     
-    if (type === 'fade' || type === 'slideX' || type === 'slideY') {
-      // Use memoized timeline for fade and slide animations
+    if (type === 'fade' || type === 'slideX' || type === 'slideY' || type === 'scale') {
+      // Use memoized timeline for animation types that need stable fallback values
       const timeline = getMemoizedTimeline(typeAnimations);
       const value = getValueFromTimeline(timeline, progress);
       animations[type] = value;
@@ -351,6 +351,25 @@ export const AnimationPresets = {
   // Rotate in
   rotateIn: { type: 'rotate', initialValue: 0, finalValue: 360, startTiming: 25, duration: 6 }
 };
+
+/**
+ * Build a reusable wiggle + pop animation sequence.
+ * @param {number} startTiming - Progress time to start the wiggle.
+ * @returns {Array} Animation entries for rotate and scale.
+ */
+export const createWigglePreset = (startTiming = 0) => ([
+  { type: 'rotate', initialValue: 0, finalValue: -14, startTiming, duration: 0.5 },
+  { type: 'rotate', initialValue: -14, finalValue: 12, startTiming: startTiming + 0.5, duration: 0.5 },
+  { type: 'rotate', initialValue: 12, finalValue: -10, startTiming: startTiming + 1, duration: 0.5 },
+  { type: 'rotate', initialValue: -10, finalValue: 8, startTiming: startTiming + 1.5, duration: 0.5 },
+  { type: 'rotate', initialValue: 8, finalValue: -5, startTiming: startTiming + 2, duration: 0.5 },
+  { type: 'rotate', initialValue: -5, finalValue: 3, startTiming: startTiming + 2.5, duration: 0.5 },
+  { type: 'rotate', initialValue: 3, finalValue: 0, startTiming: startTiming + 3, duration: 0.5 },
+  { type: 'scale', initialValue: 0.9, finalValue: 1.15, startTiming, duration: 1 },
+  { type: 'scale', initialValue: 1.15, finalValue: 0.98, startTiming: startTiming + 1, duration: 1 },
+  { type: 'scale', initialValue: 0.98, finalValue: 1.06, startTiming: startTiming + 2, duration: 1 },
+  { type: 'scale', initialValue: 1.06, finalValue: 1, startTiming: startTiming + 3, duration: 1 },
+]);
 
 /**
  * Example usage:

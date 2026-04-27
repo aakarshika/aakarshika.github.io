@@ -58,33 +58,33 @@ const AboutMeSection = React.memo(() => {
     {
       object: 'skill1',
       anim: [
-        { type: 'fade', initialValue: 0, startTiming: 28, duration: 10 },
-        { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 28, duration: 10 },
-        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 60, duration: 10 },
+        { type: 'fade', initialValue: 0, startTiming: 28, duration: 25 },
+        { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 28, duration: 25 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 60, duration: 25 },
       ]
     },
     {
       object: 'skill2',
       anim: [
-        { type: 'fade', initialValue: 0, startTiming: 30, duration: 10 },
-        { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 30, duration: 10 },
-        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 70, duration: 10 },
+        { type: 'fade', initialValue: 0, startTiming: 34, duration: 25 },
+        { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 30, duration: 25 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 70, duration: 25 },
       ]
     },
     {
       object: 'skill3',
       anim: [
-        { type: 'fade', initialValue: 0, startTiming: 32, duration: 10 },
-        { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 32, duration: 10 },
-        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 10 },
+        { type: 'fade', initialValue: 0, startTiming: 40, duration: 25 },
+        { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 32, duration: 25 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 80, duration: 25 },
       ]
     },
     {
       object: 'skill4',
       anim: [
-        { type: 'fade', initialValue: 0, startTiming: 34, duration: 10 },
-        { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 34, duration: 10 },
-        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 90, duration: 10 },
+        { type: 'fade', initialValue: 0, startTiming: 46, duration: 25 },
+        { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 34, duration: 25 },
+        // { type: 'fade', initialValue: 1, finalValue: 0, startTiming: 90, duration: 25 },
       ]
     },
     {

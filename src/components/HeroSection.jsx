@@ -53,7 +53,7 @@ const HeroSection = React.memo(() => {
   });
 
   const spacerHeight = useTransform(progressMotionValue, (p) => `${p * 0.8}vh`);
-  const barWidth = useTransform(progressMotionValue, (p) => `${p}%`);
+  const barWidth = useTransform(progressMotionValue, (p) => `${p/2}%`);
 
   return (
     <div ref={sectionRef}
@@ -89,7 +89,7 @@ const HeroSection = React.memo(() => {
           </div>
         </div>
         <motion.div
-          className="h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mt-5"
+          className="h-1 bg-gradient-to-r from-[#ff66cc] to-[#ff66cc] mx-auto mt-5"
           style={{ width: barWidth }}
         />
       </div>
