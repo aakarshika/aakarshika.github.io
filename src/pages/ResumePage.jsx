@@ -49,12 +49,12 @@ const ResumePage = () => {
           </button>
         </div>
         <div className="flex justify-center">
-          <div className="w-full w-[210mm] bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+          <div className="w-[210mm] bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
             <iframe
               ref={resumeFrameRef}
               src={resumeHtmlUrl}
               title="Aakarshika Priydarshi Resume"
-              className="w-full h-screen bg-white"
+              className="w-[210mm] h-screen bg-white"
             />
           </div>
         </div>
