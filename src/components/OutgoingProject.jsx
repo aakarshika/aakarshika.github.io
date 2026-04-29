@@ -280,13 +280,13 @@ export const OutgoingProject = ({ progressMotionValue }) => {
   );
 
   return (
-    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
+    <div className="md:w-screen sm:w-full min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       <div className="absolute inset-0 bg-gradient-to-r from-[#3c0086] to-blue-900"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-blue-900 to-transparent"></div>
 
-      <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl">
+      <div className="relative z-10  grid grid-cols-2 gap-8 gap-12 items-center max-w-6xl">
         {/* Left: copy */}
-        <div className="relative">
+        <div className="relative w-screen sm:w-full md:w-full">
           <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-cyan-400">Outgoing</h3>
           <p className="text-base sm:text-lg md:text-xl text-white mb-6">
           Event discovery with a twist — attendees can chip in a skill to get in. Built end-to-end for the Indian urban market, from social graph to ticketing.
@@ -299,7 +299,7 @@ export const OutgoingProject = ({ progressMotionValue }) => {
         </div>
 
         {/* Right: animated scene */}
-        <div className="relative h-[28rem] sm:h-[34rem] w-full">
+        <div className="relative h-[28rem] sm:h-[34rem] w-screen sm:w-full md:w-full">
           {/* Event card centered */}
           <div className="absolute top-1/2 left-1/2" style={{ transform: 'translate(-50%, -50%)' }}>
             <motion.div

@@ -65,12 +65,12 @@ export const TwirlyProject = ({ progressMotionValue, isMobile = false }) => {
   const twirlyImage5BackgroundColor = useTransform(appearThumbsUp5, [0, 1], ['#e5e7eb', 'rgb(166, 194, 255)']);
 
   return (
-    <div className="w-screen h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
+    <div className=" md:w-screen sm:w-full h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-purple-900"></div>
       <div className="absolute inset-0 bg-gradient-to-l from-purple-900 to-transparent "></div>
 
-      <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl">
-        <div className="relative">
+      <div className="relative z-10 grid grid-cols-2 gap-8 gap-12 items-center max-w-6xl">
+        <div className="w-screen sm:w-full md:w-full">
           <motion.h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-cyan-400" style={{ x: titleSlideX }}>
             Twirly App
           </motion.h3>
@@ -88,8 +88,8 @@ export const TwirlyProject = ({ progressMotionValue, isMobile = false }) => {
             View Live Site →
           </a>
         </div>
-        <div className="flex justify-center">
-          <div className="relative w-[280px] sm:w-[340px] md:w-[400px] h-[390px] sm:h-[680px] md:h-[800px] rounded-[2rem] sm:rounded-[2.6rem] md:rounded-[3rem] border-4 sm:border-6 md:border-8 border-slate-800 bg-slate-950 shadow-2xl shadow-black/50 p-2 sm:p-3 rotate-1">
+        <div className="flex justify-center w-screen sm:w-full md:w-full">
+          <div className="relative w-[280px] sm:w-[340px] md:w-[400px] h-[560px] sm:h-[680px] md:h-[800px] rounded-[2rem] sm:rounded-[2.6rem] md:rounded-[3rem] border-4 sm:border-6 md:border-8 border-slate-800 bg-slate-950 shadow-2xl shadow-black/50 p-2 sm:p-3 rotate-1">
             <div className="pointer-events-none absolute top-3 left-1/2 z-30 h-7 w-28 -translate-x-1/2 rounded-full bg-slate-900"></div>
             <div className="absolute inset-3 rounded-[2.4rem] overflow-hidden bg-slate-100">
               <motion.div className="absolute inset-0 p-4 " style={{ y: -180 }} >

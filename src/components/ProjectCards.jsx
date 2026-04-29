@@ -137,14 +137,14 @@ export const DaywiseProject = ({ progressMotionValue, isMobile = false }) => {
 
 
   return (
-    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
+    <div className="md:w-screen sm:w-full h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       {/* Background div */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-[#3c0086] "></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col lg:flex-row gap-6 items-center max-w-6xl w-full">
+      <div className="relative z-10 grid grid-cols-2 gap-8 gap-12 items-center max-w-6xl">
 
-        <motion.div className="w-full max-w-md col-span-1" style={{ x: daywise1SlideX }}>
+        <motion.div className="w-screen sm:w-full md:w-full " style={{ x: daywise1SlideX }}>
           <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-pink-400">Daywise</h3>
           <p className="text-base sm:text-lg md:text-xl text-white mb-6">
             An ADHD-friendly To-Do mobile app using LLMs for predictive, personalized tasking.
@@ -165,7 +165,7 @@ export const DaywiseProject = ({ progressMotionValue, isMobile = false }) => {
           </a>
         </motion.div>
 
-        <div className="rounded-lg flex flex-row gap-2 col-span-2  w-full lg:w-auto">
+        <div className="rounded-lg flex flex-row gap-2 w-screen sm:w-full md:w-full">
           <motion.div className="overflow-hidden rounded-lg w-full h-full" style={{ x: daywise1SlideX, opacity: daywise1Fade, scale: daywise1Scale }}>
             <img src={daywiseImg1} alt="Daywise App Screenshot" className="bg-pink-100 w-full h-full object-cover object-top rounded-lg" />
           </motion.div>
@@ -216,16 +216,16 @@ export const WriterverseProject = ({ progressMotionValue }) => {
   const fairyWinkScaleY = useAnimationValue(activeProgress, WRITERVERSE_FAIRY_WINK_ANIM, 'scale', 1);
 
   return (
-    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
+    <div className="md:w-screen sm:w-full min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       {/* Background div */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#3c0086] to-blue-900"></div>
       <div className="absolute inset-0 bg-gradient-to-t from-[#3c0086] to-transparent "></div>
 
       {/* Content */}
-      <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl">
+      <div className="relative z-10  grid grid-cols-2 gap-8 gap-12 items-center max-w-6xl">
 
         {/* Right column: copy */}
-        <div className="relative ">
+        <div className="relative w-screen sm:w-full md:w-full">
           <motion.h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-fuchsia-400" style={{ x: writerverseTitleSlideX }}>
             Writerverse
           </motion.h3>
@@ -249,7 +249,7 @@ export const WriterverseProject = ({ progressMotionValue }) => {
           </motion.a>
         </div>
         {/* Notebook scene */}
-        <div className="relative h-80 sm:h-[28rem] flex items-center justify-center">
+        <div className="relative h-80 sm:h-[28rem] flex items-center justify-center w-screen sm:w-full md:w-full">
           {/* Branches (SVG paths drawn from notebook center to each box) */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none"
