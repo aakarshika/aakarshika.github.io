@@ -26,7 +26,7 @@ const ContactSection = React.memo(() => {
   };
 
   const handleOpenResume = () => {
-    window.open('/Resume_AakarshikaPriydarshi_SDE.pdf', '_blank');
+    window.open(`${window.location.origin}${window.location.pathname}#/resume`, '_blank', 'noopener,noreferrer');
   };
 
   const handleInputChange = (e) => {
