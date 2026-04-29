@@ -6,7 +6,7 @@ import { useAnimationValue } from '../hooks/useAnimationValue';
 
 const OptionTwirly = ({ val, className = '' }) => (
   <div className={`w-full h-full object-cover aspect-square rounded-lg p-4 flex items-center justify-center ${className}`}>
-    <p className="text-lg text-gray-800 font-bold text-center font-mono">{val}</p>
+    <p className="text-md text-gray-800 font-bold text-center font-mono">{val}</p>
   </div>
 );
 
@@ -35,7 +35,7 @@ const TWIRLY_5_THUMBSUP_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 2
 const TITLE_ANIM = [{ initialValue: 100, startTiming: 7, duration: 2 }];
 const DESCRIPTION_ANIM = [{ initialValue: 70, startTiming: 8, duration: 3 }];
 const COMMON_FADE_ANIM = [{ initialValue: 1, finalValue: 0.95, startTiming: 18, duration: 5 }];
-const THUMBSUP_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 16, duration: 1 }];
+const THUMBSUP_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 19, duration: 1 }];
 const THUMBSUP_WIGGLE_ROTATE_ANIM = createWigglePreset(16, 'rotate', false);
 const THUMBSUP_WIGGLE_SCALE_ANIM = createWigglePreset(16, 'scale', false);
 
@@ -84,110 +84,109 @@ export const TwirlyProject = ({ progressMotionValue }) => {
             View Live Site →
           </a>
         </div>
-        <div>
-          <motion.div
-            className="rounded-lg p-12 "
-            style={{
-              width: 400,
-              height: 400,
-              y: twirlyPrevSlideY,
-            }}
-          >
-            <div className="w-full mt-4 mb-4">
-              <p className="inline-flex text-white-500 text-sm">
-                <Circle className="w-3 h-3 mt-1 mr-1" fill="white" /> Dream House Location:
-              </p>
-            </div>
-
-            <div className="w-full h-full grid grid-cols-2 gap-3">
-              <div className="overflow-hidden rounded-lg">
-                <OptionTwirly val="In the city" className="bg-gray-100" />
-              </div>
-              <div className="overflow-hidden rounded-lg">
-                <OptionTwirly val="At the beach" className="bg-gray-100" />
-              </div>
-              <motion.div className="relative overflow-hidden rounded-lg" style={{ scale: 1.1 }}>
-                <OptionTwirly val="In the mountains" className="bg-green-100" />
-                <motion.div className="absolute top-0 left-0" style={{ x: 10, y: 8, scale: 1.1 }}>
-                  <ThumbsUp className="w-4 h-4 text-green-400" />
-                </motion.div>
-              </motion.div>
-              <div className="relative overflow-hidden rounded-lg">
-                <OptionTwirly val="In the library" className="bg-gray-100" />
-              </div>
-            </div>
-            <div className="w-full mt-4 h-1 bg-gray-200"></div>
-          </motion.div>
-
-          <motion.div className="rounded-lg p-12" style={{ width: 400, height: 400 }}>
-            <motion.div className="w-full mt-4 mb-4" style={{ y: twirlyImage1SlideY }}>
-              <p className="inline-flex text-white-500 text-sm">
-                <Circle className="w-3 h-3 mt-1 mr-1" fill="white" /> I am usually found:
-              </p>
-            </motion.div>
-
-            <div className=" grid grid-cols-2 gap-3 h-full w-full">
-              <motion.div className="overflow-hidden rounded-lg" style={{ y: twirlyImage1SlideY, opacity: commonFade }}>
-                <OptionTwirly val="Scheduling meetings" className="bg-gray-100" />
-              </motion.div>
-              <motion.div className="overflow-hidden rounded-lg" style={{ y: twirlyImage2SlideY, opacity: commonFade }}>
-                <OptionTwirly val="Balancing work-life" className="bg-gray-100" />
-              </motion.div>
-              <motion.div className="overflow-hidden rounded-lg" style={{ y: twirlyImage3SlideY, opacity: commonFade }}>
-                <OptionTwirly val="Pivoting strategies" className="bg-gray-100" />
-              </motion.div>
-              <motion.div
-                className="relative overflow-hidden rounded-lg"
-                style={{ y: twirlyImage4SlideY, scale: twirlyImage4Scale, backgroundColor: twirlyImage4BackgroundColor }}
-              >
-                <OptionTwirly val="Shipping features no one asked for" />
-                <motion.div
-                  className="absolute top-0 left-0"
-                  style={{ scale: wiggleScale, rotate: wiggleRotation, x: 10, y: 8, opacity: appearThumbsUp }}
+        <div className="flex justify-center">
+          <div className="relative w-[400px] h-[800px] rounded-[3rem] border-8 border-slate-800 bg-slate-950 shadow-2xl shadow-black/50 p-3 rotate-1">
+            <div className="pointer-events-none absolute top-3 left-1/2 z-30 h-7 w-28 -translate-x-1/2 rounded-full bg-slate-900"></div>
+            <div className="absolute inset-3 rounded-[2.4rem] overflow-hidden bg-slate-100">
+              <motion.div className="absolute inset-0 p-4 " style={{ y: -180 }} >
+                <motion.div className="rounded-lg bg-white p-4 mt-4" style={{
+                    y: twirlyPrevSlideY,
+                  }}
                 >
-                  <ThumbsUp className="w-4 h-4 text-yellow-400" />
+                  <div className="w-full mt-4 mb-4">
+                    <p className="inline-flex text-sm text-gray-700">
+                      <Circle className="w-3 h-3 mt-1 mr-1" fill="currentColor" /> Dream House Location:
+                    </p>
+                  </div>
+
+                  <div className="w-full h-full grid grid-cols-2 gap-3">
+                    <div className="overflow-hidden rounded-lg">
+                      <OptionTwirly val="In the city" className="bg-[#e5e7eb]" />
+                    </div>
+                    <div className="overflow-hidden rounded-lg">
+                      <OptionTwirly val="At the beach" className="bg-[#e5e7eb]" />
+                    </div>
+                    <motion.div className="relative overflow-hidden rounded-lg" style={{ scale: 1.1 }}>
+                      <OptionTwirly val="In the mountains" className="bg-green-100" />
+                      <motion.div className="absolute top-0 left-0" style={{ x: 10, y: 8, scale: 1.1 }}>
+                        <ThumbsUp className="w-4 h-4 text-green-400" />
+                      </motion.div>
+                    </motion.div>
+                    <div className="relative overflow-hidden rounded-lg">
+                      <OptionTwirly val="In the library" className="bg-[#e5e7eb]" />
+                    </div>
+                  </div>
+                  <div className="w-full mt-4 h-1 bg-gray-200"></div>
                 </motion.div>
-              </motion.div>
-            </div>
-            <motion.div className="w-full mt-4 h-1 bg-gray-200" style={{ y: twirlyImage1SlideY, opacity: commonFade }}></motion.div>
-          </motion.div>
 
-          <motion.div
-            className="rounded-lg p-12 "
-            style={{
-              width: 400,
-              height: 400,
-              y: twirlyPrevSlideY,
-            }}
-          >
-            <div className="w-full mt-4 mb-4">
-              <p className="inline-flex text-white-500 text-sm">
-                <Circle className="w-3 h-3 mt-1 mr-1" fill="white" /> You should buy me a:
-              </p>
-            </div>
+                <motion.div className="rounded-lg bg-white p-4 mt-4" style={{ y: twirlyPrevSlideY }} >
+                  <motion.div className="w-full mt-4 mb-4" >
+                    <p className="inline-flex text-sm text-gray-700">
+                      <Circle className="w-3 h-3 mt-1 mr-1" fill="currentColor" /> I am usually found:
+                    </p>
+                  </motion.div>
 
-            <div className="w-full h-full grid grid-cols-2 gap-3">
-              <motion.div className="relative overflow-hidden rounded-lg" style={{ backgroundColor: twirlyImage5BackgroundColor }}>
-                <OptionTwirly val="Vanilla Ice Cream" />
-                <motion.div
-                  className="absolute top-0 left-0"
-                  style={{ scale: wiggleScale, rotate: wiggleRotation, x: 10, y: 8, opacity: appearThumbsUp5 }}
+                  <div className=" grid grid-cols-2 gap-3 h-full w-full">
+                    <motion.div className="overflow-hidden rounded-lg" style={{ opacity: commonFade }}>
+                      <OptionTwirly val="Scheduling meetings" className="bg-[#e5e7eb]" />
+                    </motion.div>
+                    <motion.div className="overflow-hidden rounded-lg" style={{ opacity: commonFade }}>
+                      <OptionTwirly val="Balancing work-life" className="bg-[#e5e7eb]" />
+                    </motion.div>
+                    <motion.div className="overflow-hidden rounded-lg" style={{ opacity: commonFade }}>
+                      <OptionTwirly val="Pivoting strategies" className="bg-[#e5e7eb]" />
+                    </motion.div>
+                    <motion.div
+                      className="relative overflow-hidden rounded-lg"
+                      style={{ scale: twirlyImage4Scale, backgroundColor: twirlyImage4BackgroundColor }}
+                    >
+                      <OptionTwirly val="Shipping features no one asked for" />
+                      <motion.div
+                        className="absolute top-0 left-0"
+                        style={{ scale: wiggleScale, rotate: wiggleRotation, x: 10, y: 8, opacity: appearThumbsUp }}
+                      >
+                        <ThumbsUp className="w-4 h-4 text-yellow-400" />
+                      </motion.div>
+                    </motion.div>
+                  </div>
+                  <motion.div className="w-full mt-4 h-1 bg-gray-200" style={{ opacity: commonFade }}></motion.div>
+                </motion.div>
+
+                <motion.div className="rounded-lg bg-white p-4 mt-4"  style={{
+                    y: twirlyPrevSlideY,
+                  }}
                 >
-                  <ThumbsUp className="w-4 h-4 text-blue-400" />
+                  <div className="w-full mt-4 mb-4">
+                    <p className="inline-flex text-sm text-gray-700">
+                      <Circle className="w-3 h-3 mt-1 mr-1" fill="currentColor" /> You should buy me a:
+                    </p>
+                  </div>
+
+                  <div className="w-full h-full grid grid-cols-2 gap-3">
+                    <motion.div className="relative overflow-hidden rounded-lg" style={{ backgroundColor: twirlyImage5BackgroundColor }}>
+                      <OptionTwirly val="Vanilla Ice Cream" />
+                      <motion.div
+                        className="absolute top-0 left-0"
+                        style={{ scale: wiggleScale, rotate: wiggleRotation, x: 10, y: 8, opacity: appearThumbsUp5 }}
+                      >
+                        <ThumbsUp className="w-4 h-4 text-blue-400" />
+                      </motion.div>
+                    </motion.div>
+                    <div className="overflow-hidden rounded-lg">
+                      <OptionTwirly val="Chocolate Bar" className="bg-[#e5e7eb]" />
+                    </div>
+                    <motion.div className="relative overflow-hidden rounded-lg">
+                      <OptionTwirly val="Strawberry Smoothie" className="bg-[#e5e7eb]" />
+                    </motion.div>
+                    <div className="relative overflow-hidden rounded-lg">
+                      <OptionTwirly val="Mint Chocolate Chip" className="bg-[#e5e7eb]" />
+                    </div>
+                  </div>
+                  <div className="w-full mt-4 h-1 bg-gray-200"></div>
                 </motion.div>
               </motion.div>
-              <div className="overflow-hidden rounded-lg">
-                <OptionTwirly val="Chocolate Bar" className="bg-gray-100" />
-              </div>
-              <motion.div className="relative overflow-hidden rounded-lg">
-                <OptionTwirly val="Strawberry Smoothie" className="bg-gray-100" />
-              </motion.div>
-              <div className="relative overflow-hidden rounded-lg">
-                <OptionTwirly val="Mint Chocolate Chip" className="bg-gray-100" />
-              </div>
             </div>
-            <div className="w-full mt-4 h-1 bg-gray-200"></div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
