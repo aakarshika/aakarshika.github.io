@@ -70,8 +70,7 @@ export const TwirlyProject = ({ progressMotionValue }) => {
             Twirly App
           </motion.h3>
           <motion.p className="text-xl text-white mb-6" style={{ x: descriptionSlideX }}>
-            A real-time <motion.span className=" text-cyan-400">social comparison platform</motion.span> for mobile and web. Built with
-            live voting system, TikTok-style infinite scroll, and mobile-first UI with smooth animations.
+            Pick a side on anything. A live head-to-head real-time <motion.span className=" text-cyan-400">social comparison platform</motion.span> with real votes, real arguments, and a native mobile app.
           </motion.p>
           <div className="relative flex space-x-4 mb-6">
             <span className="px-3 py-1 bg-blue-600 rounded-full text-sm">React</span>

@@ -289,8 +289,7 @@ export const OutgoingProject = ({ progressMotionValue }) => {
         <div className="relative">
           <h3 className="text-5xl font-bold mb-6 text-cyan-400">Outgoing</h3>
           <p className="text-xl text-white mb-6">
-            A social event platform where guests help make events happen alongside hosts.
-            It smartly matches people to opportunities based on intent, availability, and event needs.
+          Event discovery with a twist — attendees can chip in a skill to get in. Built end-to-end for the Indian urban market, from social graph to ticketing.
           </p>
           <div className="flex space-x-4 mb-6">
             <span className="px-3 py-1 bg-cyan-600 rounded-full text-sm">Social Platform</span>

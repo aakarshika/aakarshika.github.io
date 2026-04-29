@@ -223,8 +223,8 @@ export const WriterverseProject = ({ progressMotionValue }) => {
             Writerverse
           </motion.h3>
           <motion.p className="text-xl text-white mb-6" style={{ opacity: writerverseDescriptionFade, x: writerverseDescriptionSlideX }}>
-            A writing helper agent for long-form storytelling and novel workflows.
-            Built with LangGraph to support iterative drafting, brainstorming, and editing support. <span className="text-fuchsia-400">RAG</span> for your own novel.
+          An AI co-writer that actually reads your story first. Retrieves your characters, world rules, and plot beats before writing a single word.
+           <span className="text-fuchsia-400">RAG</span> for your own novel.
           </motion.p>
           <motion.div className="flex space-x-4 mb-6" style={{ opacity: writerverseRestFade, x: writerverseRestSlideX }}>
             <span className="px-3 py-1 bg-fuchsia-600 rounded-full text-sm">LangGraph</span>
