@@ -8,6 +8,7 @@ const ContactSection = React.memo(() => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     message: ''
   });
   console.log("ContactSection");
@@ -21,7 +22,7 @@ const ContactSection = React.memo(() => {
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
-    setFormData({ name: '', message: '' });
+    setFormData({ name: '', email: '', message: '' });
     setSubmitStatus(null);
   };
 
@@ -68,7 +69,7 @@ const ContactSection = React.memo(() => {
       
       // Clear form and close after a short delay
       setTimeout(() => {
-        setFormData({ name: '', message: '' });
+        setFormData({ name: '', email: '', message: '' });
         setIsFormOpen(false);
         setSubmitStatus(null);
       }, 2000);
@@ -82,14 +83,14 @@ const ContactSection = React.memo(() => {
   };
 
   return (
-    <div ref={sectionRef} className="min-h-screen bg-gradient-to-b from-blue-900 to-black py-20 flex items-center">
-      <div className="contact-section container mx-auto px-6 text-center">
-        <h2 className="text-6xl font-bold mb-12 py-10 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+    <div ref={sectionRef} className="min-h-screen bg-gradient-to-b from-blue-900 to-black py-14 sm:py-20 flex items-center">
+      <div className="contact-section container mx-auto px-4 sm:px-6 text-center">
+        <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-10 sm:mb-12 py-6 sm:py-10 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
            Ready to give me a call,<br></br> a challenge or money?
         </h2>
         
         {!isFormOpen ? (
-          <div className="flex justify-center space-x-8">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
             <button 
               onClick={handleOpenForm}
               className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
@@ -104,7 +105,7 @@ const ContactSection = React.memo(() => {
             </button>
           </div>
         ) : (
-          <div className="max-w-md mx-auto">
+          <div className="max-w-md mx-auto text-left sm:text-center">
             {/* Success/Error Messages */}
             {submitStatus === 'success' && (
               <div className="mb-6 p-4 bg-green-900 border border-green-500 rounded-lg text-green-300">
@@ -161,7 +162,7 @@ const ContactSection = React.memo(() => {
                 />
               </div>
               
-              <div className="flex space-x-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
                 <button
                   type="button"
                   onClick={handleCloseForm}

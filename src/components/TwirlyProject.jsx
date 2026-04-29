@@ -39,9 +39,14 @@ const THUMBSUP_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 19, d
 const THUMBSUP_WIGGLE_ROTATE_ANIM = createWigglePreset(16, 'rotate', false);
 const THUMBSUP_WIGGLE_SCALE_ANIM = createWigglePreset(16, 'scale', false);
 
-export const TwirlyProject = ({ progressMotionValue }) => {
+export const TwirlyProject = ({ progressMotionValue, isMobile = false }) => {
   const fallbackProgress = useMotionValue(0);
-  const activeProgress = progressMotionValue ?? fallbackProgress;
+  // On mobile, freeze at a moment where the phone screen has all cards
+  // settled in view (slide-ins done at ~15, slide-outs start at 20).
+  const mobileStaticProgress = useMotionValue(17);
+  const activeProgress = isMobile
+    ? mobileStaticProgress
+    : (progressMotionValue ?? fallbackProgress);
   const titleSlideX = useAnimationValue(activeProgress, TITLE_ANIM, 'slideX', 0);
   const descriptionSlideX = useAnimationValue(activeProgress, DESCRIPTION_ANIM, 'slideX', 0);
   const twirlyPrevSlideY = useAnimationValue(activeProgress, TWIRLY_PREV_ANIM, 'slideY', 0);
@@ -60,19 +65,19 @@ export const TwirlyProject = ({ progressMotionValue }) => {
   const twirlyImage5BackgroundColor = useTransform(appearThumbsUp5, [0, 1], ['#e5e7eb', 'rgb(166, 194, 255)']);
 
   return (
-    <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
+    <div className="w-screen h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-purple-900"></div>
       <div className="absolute inset-0 bg-gradient-to-l from-purple-900 to-transparent "></div>
 
-      <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
+      <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl">
         <div className="relative">
-          <motion.h3 className="text-5xl font-bold mb-6 text-cyan-400" style={{ x: titleSlideX }}>
+          <motion.h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-cyan-400" style={{ x: titleSlideX }}>
             Twirly App
           </motion.h3>
-          <motion.p className="text-xl text-white mb-6" style={{ x: descriptionSlideX }}>
+          <motion.p className="text-base sm:text-lg md:text-xl text-white mb-6" style={{ x: descriptionSlideX }}>
             Pick a side on anything. A live head-to-head real-time <motion.span className=" text-cyan-400">social comparison platform</motion.span> with real votes, real arguments, and a native mobile app.
           </motion.p>
-          <div className="relative flex space-x-4 mb-6">
+          <div className="relative flex flex-wrap gap-3 mb-6">
             <span className="px-3 py-1 bg-blue-600 rounded-full text-sm">React</span>
             <span className="px-3 py-1 bg-green-600 rounded-full text-sm">Supabase</span>
             <span className="px-3 py-1 bg-purple-600 rounded-full text-sm">PostgreSQL</span>
@@ -84,7 +89,7 @@ export const TwirlyProject = ({ progressMotionValue }) => {
           </a>
         </div>
         <div className="flex justify-center">
-          <div className="relative w-[400px] h-[800px] rounded-[3rem] border-8 border-slate-800 bg-slate-950 shadow-2xl shadow-black/50 p-3 rotate-1">
+          <div className="relative w-[280px] sm:w-[340px] md:w-[400px] h-[390px] sm:h-[680px] md:h-[800px] rounded-[2rem] sm:rounded-[2.6rem] md:rounded-[3rem] border-4 sm:border-6 md:border-8 border-slate-800 bg-slate-950 shadow-2xl shadow-black/50 p-2 sm:p-3 rotate-1">
             <div className="pointer-events-none absolute top-3 left-1/2 z-30 h-7 w-28 -translate-x-1/2 rounded-full bg-slate-900"></div>
             <div className="absolute inset-3 rounded-[2.4rem] overflow-hidden bg-slate-100">
               <motion.div className="absolute inset-0 p-4 " style={{ y: -180 }} >

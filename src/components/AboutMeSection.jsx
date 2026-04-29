@@ -225,25 +225,21 @@ const AboutMeSection = React.memo(() => {
   });
 
   return (
-    <div ref={sectionRef} className="relative sm:mt-96 min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center py-20">
+    <div ref={sectionRef} className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center py-14 sm:py-20 overflow-hidden">
 
       {/* Floating Background Elements */}
-      <motion.div style={{ opacity: backgroundOpacity }} className="absolute bottom-20 left-20 w-40 h-40 bg-purple-500 rounded-full opacity-40 blur-2xl"></motion.div>
-      <motion.div style={{ opacity: backgroundOpacity }} className="absolute top-0 right-10 w-32 h-32 bg-blue-500 rounded-full opacity-40 blur-2xl"></motion.div>
+      <motion.div style={{ opacity: backgroundOpacity }} className="absolute bottom-10 left-4 sm:bottom-20 sm:left-20 w-24 h-24 sm:w-40 sm:h-40 bg-purple-500 rounded-full opacity-40 blur-2xl pointer-events-none"></motion.div>
+      <motion.div style={{ opacity: backgroundOpacity }} className="absolute top-0 right-4 sm:right-10 w-20 h-20 sm:w-32 sm:h-32 bg-blue-500 rounded-full opacity-40 blur-2xl pointer-events-none"></motion.div>
 
-      <div className="absolute right-0 top-0 bg-gray-800 rounded-lg h-full flex items-center justify-center">
-        {/* Placeholder for future content */}
-      </div>
-
-      {isVisible && (<div className="absolute about-section container mx-auto px-6 max-w-6xl">
-        <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
+      {isVisible && (<div className="relative z-10 about-section container mx-auto px-4 sm:px-6 max-w-6xl w-full">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start mb-12 sm:mb-16">
           <div>
             <motion.h2
               style={{
                 opacity: titleFade,
                 y: titleSlideY
               }}
-              className="text-6xl font-bold text-start mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold text-start mb-8 sm:mb-16 bg-gradient-to-r from-blue-400 to-gray-400 bg-clip-text text-transparent"
             >
               About Me
             </motion.h2>
@@ -252,7 +248,7 @@ const AboutMeSection = React.memo(() => {
                 opacity: firstTextFade,
                 y: firstTextSlideY
               }}
-              className="text-xl text-white leading-relaxed mb-6"
+              className="text-base sm:text-lg md:text-xl text-white leading-relaxed mb-6"
             >
               I'm building intelligent, cross-platform apps.
               Trying to combine real-time systems, elegant UX, and AI-driven features, hoping for clean code and bold experiences.
@@ -261,15 +257,15 @@ const AboutMeSection = React.memo(() => {
               style={{
                 opacity: secondTextFade
               }}
-              className="text-lg text-white"
+              className="text-base sm:text-lg text-white"
             >
               Engineer, system thinker, and AI whisperer.
             </motion.div>
           </div>
           <div>
-              <div className="relative w-full h-96">
+              <div className="relative w-full h-64 sm:h-96 mx-auto max-w-sm sm:max-w-none">
               <motion.div style={{ opacity: backgroundOpacity }} 
-              className="absolute w-96 h-96 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
+              className="absolute w-64 h-64 sm:w-96 sm:h-96 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
 
               <motion.img
                   src={laptopBase}
@@ -318,7 +314,7 @@ const AboutMeSection = React.memo(() => {
                 <motion.img
                   src={table}
                   alt="Table Image"
-                  className="rounded-lg w-full h-full object-cover absolute inset-0"
+                  className="rounded-lg w-full h-full object-cover absolute inset-0 hidden sm:block"
                   style={{
                     opacity: tableImageFade,
                     x: tableImageSlideX,
@@ -333,7 +329,7 @@ const AboutMeSection = React.memo(() => {
           style={{
             opacity: skillsFade
           }}
-          className="grid md:grid-cols-4 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8"
         >
           <motion.div
             style={{

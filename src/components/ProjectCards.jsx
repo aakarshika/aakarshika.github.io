@@ -107,21 +107,28 @@ const WRITERVERSE_FAIRY_WINK_ANIM = [
 const NOT_A_RESUME_IMAGE_SLIDE_ANIM = [{ initialValue: -320, startTiming: 85, duration: 10 }];
 export const ProjectTitle = () => {
   return (
-    <div className="w-screen h-screen flex bg-gradient-to-b from-gray-900 to-purple-900 items-center justify-center flex-shrink-0">
-      <div className="max-w-4xl">
-        <h2 className="text-7xl font-bold pb-8 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 flex bg-gradient-to-b from-gray-900 to-purple-900 items-center justify-center flex-shrink-0">
+      <div className="max-w-4xl text-center">
+        <h2 className="text-4xl sm:text-6xl md:text-7xl font-bold pb-4 sm:pb-8 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
           Projects
         </h2>
-        <p className="text-2xl text-white mb-4">that I spend late nights on</p>
+        <p className="text-lg sm:text-xl md:text-2xl text-white mb-4">that I spend late nights on</p>
         <div className="w-32 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto"></div>
       </div>
     </div>
   );
 };
 
-export const DaywiseProject = ({ progressMotionValue }) => {
+export const DaywiseProject = ({ progressMotionValue, isMobile = false }) => {
   const fallbackProgress = useMotionValue(0);
-  const activeProgress = progressMotionValue ?? fallbackProgress;
+  // On mobile we don't have horizontal scroll, so freeze progress at a value
+  // where every Daywise element has slid in but not yet started sliding back out
+  // (slide-ins finish ~38, slide-outs start at 40).
+  const mobileStaticProgress = useMotionValue(39);
+  const activeProgress = isMobile
+    ? mobileStaticProgress
+    : (progressMotionValue ?? fallbackProgress);
+
   const daywise1SlideX = useAnimationValue(activeProgress, DAYWISE_1_SLIDE_ANIM, 'slideX', 0);
   const daywise2SlideX = useAnimationValue(activeProgress, DAYWISE_2_SLIDE_ANIM, 'slideX', 0);
   const daywise3SlideX = useAnimationValue(activeProgress, DAYWISE_3_SLIDE_ANIM, 'slideX', 0);
@@ -130,43 +137,43 @@ export const DaywiseProject = ({ progressMotionValue }) => {
 
 
   return (
-    <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
+    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       {/* Background div */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-[#3c0086] "></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-row  gap-6 items-center">
+      <div className="relative z-10 flex flex-col lg:flex-row gap-6 items-center max-w-6xl w-full">
 
-        <motion.div className="max-w-md col-span-1" style={{ x: daywise1SlideX }}>
-          <h3 className="text-5xl font-bold mb-6 text-pink-400">Daywise</h3>
-          <p className="text-xl text-white mb-6">
+        <motion.div className="w-full max-w-md col-span-1" style={{ x: daywise1SlideX }}>
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-pink-400">Daywise</h3>
+          <p className="text-base sm:text-lg md:text-xl text-white mb-6">
             An ADHD-friendly To-Do mobile app using LLMs for predictive, personalized tasking.
             Built with shared business logic for Android/iOS using Kotlin Multiplatform.
           </p>
-          <div className="flex space-x-4 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
             <span className="px-3 py-1 bg-red-600 rounded-full text-sm">Kotlin Multiplatform</span>
             <span className="px-3 py-1 bg-yellow-600 rounded-full text-sm">Hugging Face</span>
             <span className="px-3 py-1 bg-indigo-600 rounded-full text-sm">GPT</span>
             <span className="px-3 py-1 bg-green-600 rounded-full text-sm">ML</span>
           </div>
-          <a href="https://github.com/aakarshika/daywisehub" target="_blank" className="text-pink-400 hover:text-pink-300 font-semibold">
+          <a href="https://github.com/aakarshika/daywisehub" target="_blank" rel="noreferrer" className="text-pink-400 hover:text-pink-300 font-semibold">
             View App Code →
           </a>
           <br/>
-          <a href="https://github.com/aakarshika/brainboard" target="_blank" className="text-blue-400 hover:text-blue-300 font-semibold">
-            Brainboard <span className="text-blue-400 text-xs"> Another App for smart planning and scheduling</span> → 
+          <a href="https://github.com/aakarshika/brainboard" target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 font-semibold">
+            Brainboard <span className="text-blue-400 text-xs"> Another App for smart planning and scheduling</span> →
           </a>
         </motion.div>
 
-        <div className="rounded-lg flex flex-row gap-2 col-span-2 h-[400px]">
+        <div className="rounded-lg flex flex-row gap-2 col-span-2  w-full lg:w-auto">
           <motion.div className="overflow-hidden rounded-lg w-full h-full" style={{ x: daywise1SlideX, opacity: daywise1Fade, scale: daywise1Scale }}>
-            <img src={daywiseImg1} alt="Daywise App Screenshot" className="bg-pink-100 w-full h-full object-cover rounded-lg" />
+            <img src={daywiseImg1} alt="Daywise App Screenshot" className="bg-pink-100 w-full h-full object-cover object-top rounded-lg" />
           </motion.div>
           <motion.div className="overflow-hidden rounded-lg w-full h-full" style={{ x: daywise2SlideX, opacity: daywise1Fade, scale: daywise1Scale }}>
-            <img src={daywiseImg2} alt="Daywise App Screenshot" className="bg-blue-100 w-full h-full object-cover rounded-lg" />
+            <img src={daywiseImg2} alt="Daywise App Screenshot" className="bg-blue-100 w-full h-full object-cover object-top rounded-lg" />
           </motion.div>
           <motion.div className="overflow-hidden rounded-lg w-full h-full" style={{ x: daywise3SlideX, opacity: daywise1Fade, scale: daywise1Scale }}>
-            <img src={daywiseImg3} alt="Daywise App Screenshot" className="bg-green-100 w-full h-full object-cover rounded-lg" />
+            <img src={daywiseImg3} alt="Daywise App Screenshot" className="bg-green-100 w-full h-full object-cover object-top rounded-lg" />
           </motion.div>
         </div>
       </div>
@@ -209,24 +216,24 @@ export const WriterverseProject = ({ progressMotionValue }) => {
   const fairyWinkScaleY = useAnimationValue(activeProgress, WRITERVERSE_FAIRY_WINK_ANIM, 'scale', 1);
 
   return (
-    <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
+    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       {/* Background div */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#3c0086] to-blue-900"></div>
       <div className="absolute inset-0 bg-gradient-to-t from-[#3c0086] to-transparent "></div>
 
       {/* Content */}
-      <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
+      <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl">
 
         {/* Right column: copy */}
         <div className="relative ">
-          <motion.h3 className="text-5xl font-bold mb-6 text-fuchsia-400" style={{ x: writerverseTitleSlideX }}>
+          <motion.h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-fuchsia-400" style={{ x: writerverseTitleSlideX }}>
             Writerverse
           </motion.h3>
-          <motion.p className="text-xl text-white mb-6" style={{ opacity: writerverseDescriptionFade, x: writerverseDescriptionSlideX }}>
+          <motion.p className="text-base sm:text-lg md:text-xl text-white mb-6" style={{ opacity: writerverseDescriptionFade, x: writerverseDescriptionSlideX }}>
           An AI co-writer that actually reads your story first. Retrieves your characters, world rules, and plot beats before writing a single word.
            <span className="text-fuchsia-400">RAG</span> for your own novel.
           </motion.p>
-          <motion.div className="flex space-x-4 mb-6" style={{ opacity: writerverseRestFade, x: writerverseRestSlideX }}>
+          <motion.div className="flex flex-wrap gap-3 mb-6" style={{ opacity: writerverseRestFade, x: writerverseRestSlideX }}>
             <span className="px-3 py-1 bg-fuchsia-600 rounded-full text-sm">LangGraph</span>
             <span className="px-3 py-1 bg-indigo-600 rounded-full text-sm">LLMs</span>
             <span className="px-3 py-1 bg-violet-600 rounded-full text-sm">Agentic Workflows</span>
@@ -242,7 +249,7 @@ export const WriterverseProject = ({ progressMotionValue }) => {
           </motion.a>
         </div>
         {/* Notebook scene */}
-        <div className="relative h-[28rem] flex items-center justify-center">
+        <div className="relative h-80 sm:h-[28rem] flex items-center justify-center">
           {/* Branches (SVG paths drawn from notebook center to each box) */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none"
@@ -285,7 +292,7 @@ export const WriterverseProject = ({ progressMotionValue }) => {
 
           {/* Notebook page */}
           <motion.div
-            className="relative w-[26rem] h-[28rem] rounded-md bg-amber-50 shadow-2xl shadow-purple-950/60 z-10 overflow-hidden"
+            className="relative w-[18rem] sm:w-[22rem] md:w-[26rem] h-80 sm:h-[22rem] md:h-[28rem] rounded-md bg-amber-50 shadow-2xl shadow-purple-950/60 z-10 overflow-hidden"
             style={{ y: notebookSlideY, scale: notebookScale, opacity: notebookFade }}
           >
             {/* spiral binding */}
@@ -408,28 +415,28 @@ export const NotAResumeProject = ({ progressMotionValue }) => {
   const notAResumeImageSlideY = useAnimationValue(activeProgress, NOT_A_RESUME_IMAGE_SLIDE_ANIM, 'slideY', 0);
 
   return (
-    <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
+    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       {/* Background div */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-red-900"></div>
       <div className="absolute inset-0 bg-gradient-to-t from-blue-900 to-transparent "></div>
 
       {/* Content */}
-      <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
+      <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl">
         <div>
-          <h3 className="text-5xl font-bold mb-6 text-orange-400">Not A Resume</h3>
-          <p className="text-xl text-white mb-6">
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-orange-400">Not A Resume</h3>
+          <p className="text-base sm:text-lg md:text-xl text-white mb-6">
             This website!<br />
             An interactive portfolio experience that tells the story behind projects, process,
             and personality beyond a traditional resume format.
           </p>
-          <div className="flex space-x-4 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
             <span className="px-3 py-1 bg-orange-600 rounded-full text-sm">React</span>
             <span className="px-3 py-1 bg-rose-600 rounded-full text-sm">Framer Motion</span>
             <span className="px-3 py-1 bg-red-600 rounded-full text-sm">Storytelling UI</span>
           </div>
         </div>
         <motion.div
-          className="bg-gray-800 rounded-lg h-80 flex items-center justify-center p-6"
+          className="bg-gray-800 rounded-lg h-56 sm:h-72 md:h-80 flex items-center justify-center p-4 sm:p-6"
           style={{ y: notAResumeImageSlideY }}
         >
           <img src={portfolioImg} alt="portfolio App Screenshot" className="rounded-lg w-full h-full object-cover" />
@@ -441,22 +448,22 @@ export const NotAResumeProject = ({ progressMotionValue }) => {
 
 export const PortfolioProject = () => {
   return (
-    <div className="w-screen h-screen  flex items-center justify-center relative flex-shrink-0">
+    <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 py-10 md:py-0 flex items-center justify-center relative flex-shrink-0">
       {/* Background div */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-red-900"></div>
       <div className="absolute inset-0 bg-gradient-to-t from-blue-900 to-transparent "></div>
 
       {/* Content */}
-      <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-6xl">
-        <div className="bg-gray-800 rounded-lg h-80 flex items-center justify-center">
+      <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl">
+        <div className="bg-gray-800 rounded-lg h-56 sm:h-72 md:h-80 flex items-center justify-center">
           <img src={portfolioImg} alt="Daywise App Screenshot" className="rounded-lg w-full h-full object-cover" />
         </div>
         <div>
-          <h3 className="text-5xl font-bold mb-6 text-pink-400">Portfolio</h3>
-          <p className="text-xl text-white mb-6">
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-pink-400">Portfolio</h3>
+          <p className="text-base sm:text-lg md:text-xl text-white mb-6">
             This website!
           </p>
-          <div className="flex space-x-4 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
             <span className="px-3 py-1 bg-red-600 rounded-full text-sm">React</span>
             <span className="px-3 py-1 bg-yellow-600 rounded-full text-sm">Tailwind</span>
             <span className="px-3 py-1 bg-indigo-600 rounded-full text-sm">Framer Motion</span>
