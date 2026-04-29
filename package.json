@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:frontend": "vite --host 0.0.0.0 --port 5955 --strictPort",
+    "dev:backend": "node scripts/dev-backend.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
@@ -48,6 +50,7 @@
     "react-image-filters": "^0.5.1",
     "react-intersection-observer": "^9.16.0",
     "react-router-dom": "^7.5.0",
+    "react-scan": "^0.5.3",
     "react-webcam": "^7.2.0",
     "sonner": "^2.0.3",
     "tailwind-merge": "^2.6.0",

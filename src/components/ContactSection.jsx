@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
+import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
 
-const ContactSection = () => {
+const ContactSection = React.memo(() => {
+
+  const { sectionRef } = useSectionScrollProgress();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     message: ''
   });
+  console.log("ContactSection");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
 
@@ -78,14 +82,11 @@ const ContactSection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-t from-purple-900 to-gray-900 py-20 flex items-center">
+    <div ref={sectionRef} className="min-h-screen bg-gradient-to-b from-blue-900 to-black py-20 flex items-center">
       <div className="contact-section container mx-auto px-6 text-center">
-        <h2 className="text-6xl font-bold mb-12 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Let's Work Together
+        <h2 className="text-6xl font-bold mb-12 py-10 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+           Ready to give me a call,<br></br> a challenge or money?
         </h2>
-        <p className="text-2xl text-white mb-12 max-w-2xl mx-auto">
-          Ready to give me a call, a challenge or money?
-        </p>
         
         {!isFormOpen ? (
           <div className="flex justify-center space-x-8">
@@ -93,7 +94,7 @@ const ContactSection = () => {
               onClick={handleOpenForm}
               className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
             >
-              Get In Touch
+              Let's Work Together
             </button>
             <button 
               onClick={handleOpenResume}
@@ -119,34 +120,42 @@ const ContactSection = () => {
 
             <form onSubmit={handleSubmitForm} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-white text-sm font-medium mb-2 text-left">
-                  Name
-                </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
                   placeholder="Your name"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              {/* email input */}
+              <div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                  placeholder="Email"
                   required
                   disabled={isSubmitting}
                 />
               </div>
               
               <div>
-                <label htmlFor="message" className="block text-white text-sm font-medium mb-2 text-left">
-                  Message
-                </label>
                 <textarea
                   id="message"
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 resize-none"
-                  placeholder="Your message..."
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-white focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 resize-none"
+                  placeholder="Message..."
                   required
                   disabled={isSubmitting}
                 />
@@ -175,6 +184,8 @@ const ContactSection = () => {
       </div>
     </div>
   );
-};
+});
+
+ContactSection.displayName = 'ContactSection';
 
 export default ContactSection; 
