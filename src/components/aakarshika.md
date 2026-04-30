@@ -1,8 +1,8 @@
 # Aakarshika Priydarshi
 
-**Senior Software Engineer · Full-Stack · AI Systems**
+**Lead Full-Stack Engineer · Cloud & AI Systems**
 
-6 years building full-stack products at scale — from government platforms serving 50K+ users to AI agent pipelines and mobile apps shipped to production.
+6+ years building and owning production systems at scale — 50K+ users, cloud-native architectures, and AI-driven applications.
 
 ## Contact
 
@@ -20,12 +20,16 @@
 *2022 — Present*
 *Stack: Node.js · PostgreSQL · Python · Angular · AWS · React · Java*
 
-- Led **full-stack architecture and development** of Maryland regulatory platforms using **Node.js, Angular (TypeScript), and PostgreSQL**, deployed on **AWS (EKS, EC2, Lambda, API Gateway, S3)** supporting complex government workflows.
-- Designed and implemented **scalable REST API systems and modular Angular UI components** powering multi-tenant enterprise applications handling high-volume transactional and reporting workloads.
-- Architected cloud infrastructure using **AWS EKS, EC2, Lambda, and S3**, enabling containerized microservices and serverless processing pipelines across production environments.
-- Improved **Amazon Aurora PostgreSQL performance by ~20%** through query optimization, schema tuning, and backend service restructuring.
-- Implemented asynchronous background processing using **AWS Lambda** for document generation, notifications, and system audit workflows integrated with secure **S3 document storage**.
-- Established internal engineering standards across Node.js services and database schemas while collaborating with DevOps on **CI/CD pipelines and AWS deployment workflows**.
+- Led **end-to-end development and architecture** of multi-tenant government regulatory platforms serving **~50K users and ~5K daily requests** across Angular, Node.js, and Aurora PostgreSQL.
+- Designed and owned **critical platform modules** including **reporting, notifications, real-time chat (WebSockets), RBAC authorization, large file uploads (S3), and compliance workflows.**
+- Architected and delivered a **reporting system (on-demand + scheduled)** using API-triggered and scheduled pipelines, **improving developer velocity and isolating heavy workloads** from core application flows.
+- Improved **database performance (~20%)** by optimizing complex PostgreSQL queries, restructuring schemas, and eliminating inefficient joins and aggregations.
+- Built **reusable Angular component systems** and implemented **lazy loading + DOM restructuring**, significantly improving **frontend startup performance and maintainability.**
+- Implemented **JWT + session-based authentication** and platform-wide **RBAC**, strengthening security across multi-tenant workflows.
+- Introduced **integration testing into CI/CD pipelines**, improving release stability and reducing production regressions.
+- Led **cross-functional collaboration** with QA, product, and DevOps, including **sprint planning, code reviews, and architectural decisions.**
+- Debugged and resolved **production issues across frontend, backend, and database layers**, including critical **data consistency issues affecting audit workflows.**
+- Owned **design, delivery, and production stability** of multiple critical modules across frontend, backend, and cloud layers.
 
 #### Full Stack Developer — MdThink
 *Apr 2019 — Aug 2022*
@@ -37,7 +41,7 @@
 ### Backend Developer — Neuron Inc
 *Dec 2017 — Jan 2019*
 
-- Developed backend systems for a **cloud-hosted AI chatbot platform** using **Spring Boot and Django** deployed on **AWS EC2, S3, and RDS PostgreSQL**.
+- Developed backend systems for a **cloud-hosted AI chatbot platform using Django**, deployed on **AWS EC2, S3, and RDS PostgreSQL.**
 - Designed **REST APIs for chatbot messaging, session tracking, and analytics ingestion** supporting multi-tenant application environments.
 - Implemented secure authentication systems using **JWT tokens and RBAC** enabling user and admin-level platform operations.
 - Optimized backend performance and request handling through validation layers, rate limiting, and scalable API design.
@@ -45,10 +49,10 @@
 ### Backend Java/Python Developer — Delhivery
 *Dec 2016 — Sep 2017*
 
-- Engineered large-scale **data ingestion and ETL pipelines** using **Python, Java, Spark, and AWS services** for logistics analytics.
-- Processed historical and streaming operational data using **Kafka/Kinesis pipelines** into **AWS Redshift data warehouses**.
-- Developed distributed Spark processing jobs on **AWS EMR** converting large JSON datasets into optimized Parquet formats.
-- Automated ingestion workflows using **AWS Lambda, S3, and EC2** with scheduling via **Airflow and AWS Data Pipeline**.
+- Engineered **large-scale data pipelines processing TB-scale datasets** using Python, Java, and Spark on AWS EMR for their ETL Pipeline.
+- Built and optimized **distributed Spark jobs** for data transformation (**JSON → Parquet**) and analytics ingestion into Amazon Redshift.
+- Developed **streaming and batch ingestion pipelines** using Kinesis and queue-based architectures.
+- Improved **pipeline reliability** by introducing fault-tolerant processing, eliminating **6-hour restart cycles** from S3-based batch failures.
 
 ### Machine Learning Research Assistant — George Mason University, Virginia
 *2016 — 2018*
@@ -62,13 +66,11 @@
 
 ## Skills
 
-- **Frontend:** React 18, TypeScript, Angular, TailwindCSS, shadcn/ui, Vite, Framer Motion, SwiftUI
-- **Backend:** Node.js, Django 5.2, FastAPI, DRF, REST, WebSockets, Pub/Sub, Microservices
-- **AI / ML:** LangChain, LangGraph, pgvector, RAG pipelines, PyTorch, Hugging Face, OpenCV, NLP
-- **Databases:** PostgreSQL, MySQL, Oracle, MongoDB, SQLite, PLpgSQL, Query Optimization, Aurora RDS
-- **Cloud & DevOps:** AWS (Lambda, EC2, S3, Kinesis, RDS), Docker, Kubernetes, Jenkins, CI/CD, NewRelic
-- **Mobile & Other:** Capacitor (iOS/Android), Kotlin Multiplatform, Unity, Blender, Agile, JIRA
-
+- **Languages & Backend:** Node.js, Python (Django, FastAPI), REST APIs, WebSockets, Microservices  
+- **Frontend:** React, TypeScript, Angular, TailwindCSS  
+- **Cloud & DevOps:** AWS (Lambda, EC2, S3, Kinesis, RDS), Docker, Kubernetes, CI/CD, Jenkins  
+- **Databases:** PostgreSQL, Aurora, MySQL, MongoDB, PLpgSQL  
+- **AI / ML:** LangChain, LangGraph, RAG pipelines, PyTorch, Hugging Face  
 ---
 
 ## Education
@@ -105,7 +107,7 @@ AI writing agent for fiction that knows your story.
 Live comparison platform — deployed to web, iOS, and Android.
 
 - Sole engineer on a **live deployed product**; ships from a single React codebase to web + iOS + Android via Capacitor.
-- Moved voting integrity, deduplication, and ranking into **PLpgSQL stored procedures** — result manipulation from a compromised frontend is architecturally impossible.
+- Moved **voting integrity, deduplication, and ranking logic into PLpgSQL stored procedures** to enforce consistency and prevent client-side manipulation.
 - Built **8-theme design system** as a first-class architecture concern — token sets drive every component; adding a theme touches zero component code.
 - Beta infrastructure: Sentry error tracking, offline support, Supabase edge functions for feedback collection.
 
@@ -115,7 +117,7 @@ Live comparison platform — deployed to web, iOS, and Android.
 Modular AI productivity dashboard with independently intelligent widgets.
 
 - Architected **dual backend system**: Django for synchronous CRUD, FastAPI for async LLM streaming — based on each framework's actual concurrency model, not convention.
-- FastAPI async runtime handles **concurrent widget WebSocket connections** with token-by-token UI streaming; Django's synchronous cycle explicitly excluded from this path.
+- Built **FastAPI-based backend with async WebSocket support** for real-time widget updates and streaming responses.
 - Widget system is fully extensible — self-contained widgets, config-driven layout; **new widget types require zero changes to the dashboard layer**.
 
 ### Daywise
