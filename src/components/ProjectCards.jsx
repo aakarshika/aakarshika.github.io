@@ -101,8 +101,10 @@ const WRITERVERSE_FAIRY_FADE_ANIM = [
   { initialValue: 1, finalValue: 0, startTiming: 70, duration: 0.5 }
 ];
 const WRITERVERSE_FAIRY_WINK_ANIM = [
-  { initialValue: 1, finalValue: 0.05, startTiming: 69.1, duration: 0.4 },
-  { initialValue: 0.05, finalValue: 1, startTiming: 70.5, duration: 0.5 },
+  { initialValue: 1, finalValue: 0.05, startTiming: 60.1, duration: 0.4 },
+  { initialValue: 0.2, finalValue: 1, startTiming: 61.5, duration: 0.5 },
+  { initialValue: 1, finalValue: 0.05, startTiming: 63.1, duration: 0.4 },
+  { initialValue: 0.2, finalValue: 1, startTiming: 64.5, duration: 0.5 },
 ];
 const NOT_A_RESUME_IMAGE_SLIDE_ANIM = [{ initialValue: -320, startTiming: 85, duration: 10 }];
 export const ProjectTitle = () => {
@@ -389,8 +391,10 @@ export const WriterverseProject = ({ progressMotionValue }) => {
                 <rect x="11" y="44" width="6" height="14" rx="2" fill="rgb(165 180 252)" />
                 <rect x="83" y="44" width="6" height="14" rx="2" fill="rgb(165 180 252)" />
                 {/* left eye (always open) */}
-                <rect x="36" y="46" width="9" height="12" rx="3" fill="rgb(224 231 255)" />
-                <rect x="37" y="46" width="8" height="12" rx="2" fill="rgb(67 56 202)" />
+                <motion.g style={{ x: 36, y: 46, scaleY: fairyWinkScaleY }}>
+                  <rect x="0" y="0" width="9" height="12" rx="3" fill="rgb(224 231 255)" />
+                  <rect x="1" y="0" width="8" height="12" rx="2" fill="rgb(67 56 202)" />
+                </motion.g>
                 {/* right eye (winks at 62.5) */}
                 <motion.g style={{ x: 57, y: 46, scaleY: fairyWinkScaleY }}>
                   <rect x="0" y="0" width="9" height="12" rx="3" fill="rgb(224 231 255)" />
