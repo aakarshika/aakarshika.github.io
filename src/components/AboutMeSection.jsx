@@ -12,7 +12,7 @@ import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
 const AboutMeSection = React.memo(() => {
   console.log("AboutMeSection");
   const { sectionRef, progress: progressMotionValue } = useSectionScrollProgress();
-  
+
   // Only track visibility for conditional rendering (minimal state)
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
@@ -103,7 +103,7 @@ const AboutMeSection = React.memo(() => {
       ]
     },
     {
-      object: 'tableImage', 
+      object: 'tableImage',
       anim: [
         { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 45, duration: 10 },
         { type: 'slideX', initialValue: 200, finalValue: 0, startTiming: 45, duration: 10 },
@@ -193,12 +193,12 @@ const AboutMeSection = React.memo(() => {
     const anims = calculateAnimations(animationConfig, progress);
     return anims.tableImage?.slideX ?? 0;
   });
-  
+
   // Background opacity motion values
-  const backgroundOpacity = useTransform(progressMotionValue, (progress) => 
+  const backgroundOpacity = useTransform(progressMotionValue, (progress) =>
     progress === 0 ? 0 : progress / 100
   );
-  
+
   // Conditional image opacity (winking girl vs regular)
   const winkingGirlOpacity = useTransform(progressMotionValue, (progress) => {
     if (progress > 55 && progress < 70) {
@@ -207,7 +207,7 @@ const AboutMeSection = React.memo(() => {
     }
     return 0;
   });
-  
+
   const regularImageOpacity = useTransform(progressMotionValue, (progress) => {
     if (progress < 55 || progress > 70) {
       const anims = calculateAnimations(animationConfig, progress);
@@ -215,7 +215,7 @@ const AboutMeSection = React.memo(() => {
     }
     return 0;
   });
-  
+
   const regularImageY = useTransform(progressMotionValue, (progress) => {
     if (progress < 55 || progress > 70) {
       const anims = calculateAnimations(animationConfig, progress);
@@ -263,34 +263,34 @@ const AboutMeSection = React.memo(() => {
             </motion.div>
           </div>
           <div>
-              <div className="relative w-full h-64 sm:h-96 mx-auto max-w-sm sm:max-w-none">
-              <motion.div style={{ opacity: backgroundOpacity }} 
-              className="absolute w-64 h-64 sm:w-96 sm:h-96 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
+            <div className="relative w-full h-64 sm:h-96 mx-auto max-w-sm sm:max-w-none">
+              <motion.div style={{ opacity: backgroundOpacity }}
+                className="absolute w-64 h-64 sm:w-96 sm:h-96 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
 
               <motion.img
-                  src={laptopBase}
-                  alt="Laptop base Image"
-                  className="rounded-lg w-full h-full object-cover absolute inset-0"
-                  style={{
-                    opacity: laptopImageFade,
-                    x: laptopImageSlideX
-                  }}
-                />
-                <motion.img
-                  src={winkingGirl}
-                  alt="Winking Girl Image"
-                  className="rounded-lg w-full h-full object-cover absolute inset-0"
-                  style={{
-                    opacity: winkingGirlOpacity,
-                    y: aboutImageSlideY
-                  }}
-                />
-                <motion.div 
-                  style={{
-                    opacity: regularImageOpacity,
-                    y: regularImageY
-                  }}
-                  className="rounded-lg w-full h-full object-cover absolute inset-0">
+                src={laptopBase}
+                alt="Laptop base Image"
+                className="rounded-lg w-full h-full object-cover absolute inset-0"
+                style={{
+                  opacity: laptopImageFade,
+                  x: laptopImageSlideX
+                }}
+              />
+              <motion.img
+                src={winkingGirl}
+                alt="Winking Girl Image"
+                className="rounded-lg w-full h-full object-cover absolute inset-0"
+                style={{
+                  opacity: winkingGirlOpacity,
+                  y: aboutImageSlideY
+                }}
+              />
+              <motion.div
+                style={{
+                  opacity: regularImageOpacity,
+                  y: regularImageY
+                }}
+                className="rounded-lg w-full h-full object-cover absolute inset-0">
                 <img
                   src={girlMain}
                   alt="Girl Main Image"
@@ -301,28 +301,28 @@ const AboutMeSection = React.memo(() => {
                   alt="Hand Image"
                   className="rounded-lg w-full h-full object-cover absolute inset-0"
                 />
-                </motion.div>
-                <motion.img
-                  src={laptop}
-                  alt="Laptop Image"
-                  className="rounded-lg w-full h-full object-cover absolute inset-0"
-                  style={{
-                    opacity: laptopImageFade,
-                    x: laptopImageSlideX
-                  }}
-                />
-                <motion.img
-                  src={table}
-                  alt="Table Image"
-                  className="rounded-lg w-full h-full object-cover absolute inset-0 hidden sm:block"
-                  style={{
-                    opacity: tableImageFade,
-                    x: tableImageSlideX,
-                    scaleY: 5,
-                    y: -740
-                  }}
-                />
-              </div>
+              </motion.div>
+              <motion.img
+                src={laptop}
+                alt="Laptop Image"
+                className="rounded-lg w-full h-full object-cover absolute inset-0"
+                style={{
+                  opacity: laptopImageFade,
+                  x: laptopImageSlideX
+                }}
+              />
+              <motion.img
+                src={table}
+                alt="Table Image"
+                className="rounded-lg w-full h-full object-cover absolute inset-0 hidden sm:block"
+                style={{
+                  opacity: tableImageFade,
+                  x: tableImageSlideX,
+                  scaleY: 5,
+                  y: -740
+                }}
+              />
+            </div>
           </div>
         </div>
         <motion.div

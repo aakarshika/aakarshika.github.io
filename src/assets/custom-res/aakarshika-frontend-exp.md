@@ -2,7 +2,7 @@
 
 **Lead Frontend Engineer · React · Angular · Scalable UI Systems**
 
-Frontend-focused engineer with 6+ years of experience building **high-performance, scalable user interfaces** for enterprise and consumer applications. Expertise in **React, Angular, TypeScript**, and **UI architecture**, with strong backend awareness enabling seamless full-stack integration.
+Frontend-focused engineer with 9+ years of experience building **high-performance, scalable user interfaces** for enterprise and consumer applications. Expertise in **React, Angular, TypeScript**, and **UI architecture**, with strong backend awareness enabling seamless full-stack integration.
 
 ---
 

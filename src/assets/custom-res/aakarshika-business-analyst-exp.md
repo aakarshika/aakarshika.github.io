@@ -2,7 +2,7 @@
 
 **Senior Technical Analyst · Systems & Integration · Full-Stack Background**
 
-Technical analyst with 6+ years of experience bridging **business workflows and engineering systems** across enterprise platforms. Strong background in **system analysis, data validation, and cross-team coordination**, with hands-on experience in full-stack development and cloud systems.
+Technical analyst with 9+ years of experience bridging **business workflows and engineering systems** across enterprise platforms. Strong background in **system analysis, data validation, and cross-team coordination**, with hands-on experience in full-stack development and cloud systems.
 
 ---
 

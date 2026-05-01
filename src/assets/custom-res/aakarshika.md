@@ -2,7 +2,7 @@
 
 **Lead Full-Stack Engineer · Cloud & AI Systems**
 
-6+ years building and owning production systems at scale — 50K+ users, cloud-native architectures, and AI-driven applications.
+9+ years building and owning production systems at scale — 50K+ users, cloud-native architectures, and AI-driven applications.
 
 ## Contact
 

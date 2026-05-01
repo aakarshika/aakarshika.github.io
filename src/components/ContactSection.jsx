@@ -27,7 +27,7 @@ const ContactSection = React.memo(() => {
   };
 
   const handleOpenResume = () => {
-    window.open(`${window.location.origin}${window.location.pathname}#/resume`, '_blank', 'noopener,noreferrer');
+    window.open(`${window.location.origin}${window.location.pathname}#/custom-resume`, '_blank', 'noopener,noreferrer');
   };
 
   const handleInputChange = (e) => {

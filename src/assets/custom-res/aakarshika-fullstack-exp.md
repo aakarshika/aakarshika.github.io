@@ -2,7 +2,7 @@
 
 **Lead Full-Stack Engineer · Cloud-Native Systems · Distributed Architecture**
 
-Full-stack engineer with 6+ years of experience designing and operating **production systems end-to-end** — from frontend architecture to backend services, databases, and cloud deployments. Proven track record building **scalable, multi-tenant platforms** serving 50K+ users.
+Full-stack engineer with 9+ years of experience designing and operating **production systems end-to-end** — from frontend architecture to backend services, databases, and cloud deployments. Proven track record building **scalable, multi-tenant platforms** serving 50K+ users.
 
 ---
 

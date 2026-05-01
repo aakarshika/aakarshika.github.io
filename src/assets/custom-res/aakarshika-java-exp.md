@@ -2,7 +2,7 @@
 
 **Backend Engineer · Java · Spring Boot · Distributed Systems**
 
-Backend-focused engineer with 6+ years of experience building **scalable services, data pipelines, and enterprise systems**, with hands-on experience in **Java, Spring Boot, and distributed architectures** across cloud environments.
+Backend-focused engineer with 9+ years of experience building **scalable services, data pipelines, and enterprise systems**, with hands-on experience in **Java, Spring Boot, and distributed architectures** across cloud environments.
 
 ---
 

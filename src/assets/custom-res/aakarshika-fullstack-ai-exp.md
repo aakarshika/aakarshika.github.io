@@ -2,7 +2,7 @@
 
 **Full-Stack Engineer · AI Systems · Cloud-Native Architecture (AWS)**
 
-Full-stack engineer with 6+ years of experience building and deploying **AI-integrated applications and scalable cloud systems**, combining **frontend architecture, backend services, and AI pipelines** across production environments serving 50K+ users.
+Full-stack engineer with 9+ years of experience building and deploying **AI-integrated applications and scalable cloud systems**, combining **frontend architecture, backend services, and AI pipelines** across production environments serving 50K+ users.
 
 ---
 
