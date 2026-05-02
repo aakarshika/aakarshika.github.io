@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
+import { GithubIcon, LinkedinIcon, ThumbsUp } from 'lucide-react';
 
 const ContactSection = React.memo(() => {
 
@@ -14,6 +15,8 @@ const ContactSection = React.memo(() => {
   console.log("ContactSection");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+  const [isLikeAnimating, setIsLikeAnimating] = useState(false);
+  const [likeClicks, setLikeClicks] = useState(0);
 
   const handleOpenForm = () => {
     setIsFormOpen(true);
@@ -27,7 +30,15 @@ const ContactSection = React.memo(() => {
   };
 
   const handleOpenResume = () => {
-    window.open(`${window.location.origin}${window.location.pathname}#/custom-resume`, '_blank', 'noopener,noreferrer');
+    window.open(`${window.location.origin}${window.location.pathname}#/resume`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleOpenLinkedin = () => {
+    window.open('https://www.linkedin.com/in/aakarshikap', '_blank', 'noopener,noreferrer');
+  };
+
+  const handleOpenGithub = () => {
+    window.open('https://github.com/aakarshika', '_blank', 'noopener,noreferrer');
   };
 
   const handleInputChange = (e) => {
@@ -36,6 +47,15 @@ const ContactSection = React.memo(() => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSendLike = () => {
+    console.log('Sending like');
+    setLikeClicks(prev => prev + 1);
+    setIsLikeAnimating(true);
+    setTimeout(() => {
+      setIsLikeAnimating(false);
+    }, 700);
   };
 
   const handleSubmitForm = async (e) => {
@@ -66,7 +86,7 @@ const ContactSection = React.memo(() => {
 
       // console.log('Contact message saved successfully:', data);
       setSubmitStatus('success');
-      
+
       // Clear form and close after a short delay
       setTimeout(() => {
         setFormData({ name: '', email: '', message: '' });
@@ -86,23 +106,68 @@ const ContactSection = React.memo(() => {
     <div ref={sectionRef} className="min-h-screen bg-gradient-to-b from-blue-900 to-black py-14 sm:py-20 flex items-center">
       <div className="contact-section container mx-auto px-4 sm:px-6 text-center">
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-10 sm:mb-12 py-6 sm:py-10 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-           Ready to give me a call,<br></br> a challenge or money?
+          If you'd like to give me a call,<br></br> a challenge or money?
         </h2>
-        
+
         {!isFormOpen ? (
-          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
-            <button 
-              onClick={handleOpenForm}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
-            >
-              Let's Work Together
-            </button>
-            <button 
-              onClick={handleOpenResume}
-              className="border border-gray-600 px-8 py-4 rounded-full text-white hover:border-white hover:text-white transition-all duration-300"
-            >
-              View Resume
-            </button>
+          <div className="flex flex-col justify-center gap-4 sm:gap-8">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
+              <button
+                onClick={handleOpenForm}
+                className="border border-gray-600 px-8 py-4 rounded-full text-white font-semibold hover:border-white hover:text-white transition-all duration-300"
+              >
+                Let's Work Together
+              </button>
+              <button
+                onClick={handleOpenResume}
+                className="border border-gray-600 px-8 py-4 rounded-full text-white hover:border-white hover:text-white transition-all duration-300"
+              >
+                View Resume
+              </button>
+              {/* icon buttons - linkedin, github */}
+              <button
+                onClick={handleOpenLinkedin}
+                className="border border-gray-600 px-8 py-4 rounded-full text-white hover:border-white hover:text-white transition-all duration-300"
+              >
+                <LinkedinIcon className="w-5 h-5 inline-block " />
+              </button>
+              <button
+                onClick={handleOpenGithub}
+                className="border border-gray-600 px-8 py-4 rounded-full text-white hover:border-white hover:text-white transition-all duration-300"
+              >
+                <GithubIcon className="w-5 h-5 inline-block " />
+              </button>
+            </div>
+
+            <button
+                onClick={handleSendLike}
+                className={`relative inline-block bg-gradient-to-r from-purple-600 to-pink-600 max-w-[400px] mx-auto px-8 py-4 rounded-full text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 active:scale-95 ${
+                  isLikeAnimating ? 'scale-105 shadow-xl shadow-pink-400/40' : ''
+                }`}
+              >
+                {isLikeAnimating && (
+                  <>
+                    <span className="pointer-events-none absolute -top-2 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-pink-300 animate-ping" />
+                    <span className="pointer-events-none absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full bg-fuchsia-300 animate-ping" />
+                    <span className="pointer-events-none absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full bg-violet-300 animate-ping" />
+                    <span className="pointer-events-none absolute -bottom-2 left-1/3 h-2 w-2 rounded-full bg-purple-300 animate-ping" />
+                    <span className="pointer-events-none absolute -top-2 right-1/3 h-2 w-2 rounded-full bg-rose-300 animate-ping" />
+                  </>
+                )}
+                Send a simple <span className="text-white font-bold">Like</span>
+                <span className="text-sm">
+                  <ThumbsUp
+                    className={`w-5 h-5 inline-block ml-2 transition-transform duration-300 ${
+                      isLikeAnimating ? 'animate-bounce rotate-12' : ''
+                    }`}
+                  />
+                </span>
+                {likeClicks > 0 && (
+                  <span className="ml-2 inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">
+                    +{likeClicks}
+                  </span>
+                )}
+              </button>
           </div>
         ) : (
           <div className="max-w-md mx-auto text-left sm:text-center">
@@ -112,7 +177,7 @@ const ContactSection = React.memo(() => {
                 Thank you {formData.name}! Your message is sent.
               </div>
             )}
-            
+
             {submitStatus === 'error' && (
               <div className="mb-6 p-4 bg-red-900 border border-red-500 rounded-lg text-red-300">
                 Sorry, there was an error sending your message. Please try again.
@@ -147,7 +212,7 @@ const ContactSection = React.memo(() => {
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div>
                 <textarea
                   id="message"
@@ -161,7 +226,7 @@ const ContactSection = React.memo(() => {
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
                 <button
                   type="button"

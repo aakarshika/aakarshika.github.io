@@ -88,6 +88,20 @@ const AboutMeSection = React.memo(() => {
       ]
     },
     {
+      object: 'skill5',
+      anim: [
+        { type: 'fade', initialValue: 0, startTiming: 52, duration: 25 },
+        { type: 'slideX', initialValue: -100, finalValue: 0, startTiming: 40, duration: 25 },
+      ]
+    },
+    {
+      object: 'skill6',
+      anim: [
+        { type: 'fade', initialValue: 0, startTiming: 58, duration: 25 },
+        { type: 'slideX', initialValue: 100, finalValue: 0, startTiming: 46, duration: 25 },
+      ]
+    },
+    {
       object: 'aboutImage',
       anim: [
         { type: 'fade', initialValue: 0, finalValue: 1, startTiming: 20, duration: 25 },
@@ -169,6 +183,22 @@ const AboutMeSection = React.memo(() => {
     const anims = calculateAnimations(animationConfig, progress);
     return anims.skill4?.slideX ?? 0;
   });
+  const skill5Fade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill5?.fade ?? 0;
+  });
+  const skill5SlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill5?.slideX ?? 0;
+  });
+  const skill6Fade = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill6?.fade ?? 0;
+  });
+  const skill6SlideX = useTransform(progressMotionValue, (progress) => {
+    const anims = calculateAnimations(animationConfig, progress);
+    return anims.skill6?.slideX ?? 0;
+  });
   const aboutImageFade = useTransform(progressMotionValue, (progress) => {
     const anims = calculateAnimations(animationConfig, progress);
     return anims.aboutImage?.fade ?? 0;
@@ -248,22 +278,38 @@ const AboutMeSection = React.memo(() => {
                 opacity: firstTextFade,
                 y: firstTextSlideY
               }}
-              className="text-base sm:text-lg md:text-xl text-white leading-relaxed mb-6"
+              className="text-base sm:text-lg md:text-xl text-white/95 leading-relaxed mb-5"
             >
-              I'm building intelligent, cross-platform apps.
-              Trying to combine real-time systems, elegant UX, and AI-driven features, hoping for clean code and bold experiences.
+              I build <span className="font-semibold text-white">full-stack systems</span> that combine
+              <span className="font-semibold text-white"> real-time applications</span>,
+              <span className="font-semibold text-white"> scalable backend architecture</span>, and
+              <span className="font-semibold text-white"> AI-driven workflows</span>.
             </motion.div>
             <motion.div
               style={{
                 opacity: secondTextFade
               }}
-              className="text-base sm:text-lg text-white"
+              className="text-base sm:text-lg text-white/90 leading-relaxed space-y-3"
             >
-              Engineer, system thinker, and AI whisperer.
+              <p>
+                My recent work focuses on <span className="font-semibold text-white">AI-integrated products</span> - designing
+                <span className="font-semibold text-white"> agent-based systems</span>,
+                <span className="font-semibold text-white"> hybrid retrieval pipelines (RAG)</span>, and
+                <span className="font-semibold text-white"> data-driven applications</span> that operate under
+                <span className="font-semibold text-white"> real-world constraints</span>.
+              </p>
+              <p>
+                Across projects and production systems, I&apos;ve worked
+                <span className="font-semibold text-white"> end-to-end</span>: <span className="font-semibold text-white">frontend architecture</span>, backend services, cloud infrastructure, and
+                system design. I care about building software that is not just functional, but
+                <span className="font-semibold text-white"> reliable</span>,
+                <span className="font-semibold text-white"> maintainable</span>, and
+                <span className="font-semibold text-white"> adaptable</span>.
+              </p>
             </motion.div>
           </div>
           <div>
-            <div className="relative w-full h-64 sm:h-96 mx-auto max-w-sm sm:max-w-none">
+            <div className="relative w-full mt-0 sm:mt-40 h-96 sm:h-96 mx-auto max-w-sm sm:max-w-none">
               <motion.div style={{ opacity: backgroundOpacity }}
                 className="absolute w-64 h-64 sm:w-96 sm:h-96 bg-pink-500 rounded-full opacity-35 blur-2xl"></motion.div>
 
@@ -329,7 +375,7 @@ const AboutMeSection = React.memo(() => {
           style={{
             opacity: skillsFade
           }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8"
         >
           <motion.div
             style={{
@@ -340,7 +386,7 @@ const AboutMeSection = React.memo(() => {
           >
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-4"></div>
             <h3 className="text-xl font-semibold mb-2">Frontend</h3>
-            <p className="text-white">React, Kotlin, Angular</p>
+            <p className="text-white">React 18, TypeScript, Angular, Kotlin/iOS/Android</p>
           </motion.div>
           <motion.div
             style={{
@@ -350,8 +396,8 @@ const AboutMeSection = React.memo(() => {
             className="text-center"
           >
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full mx-auto mb-4"></div>
-            <h3 className="text-xl font-semibold mb-2">Backend</h3>
-            <p className="text-white">Node.js, Python, APIs, Java</p>
+            <h3 className="text-xl font-semibold mb-2">Systems</h3>
+            <p className="text-white">Real-time Systems, Node.js, Python (Django, FastAPI), Java, WebSockets, REST APIs, Microservices</p>
           </motion.div>
           <motion.div
             style={{
@@ -361,8 +407,8 @@ const AboutMeSection = React.memo(() => {
             className="text-center"
           >
             <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-red-500 rounded-full mx-auto mb-4"></div>
-            <h3 className="text-xl font-semibold mb-2">Database</h3>
-            <p className="text-white">MongoDB, PostgreSQL, MySQL</p>
+            <h3 className="text-xl font-semibold mb-2">AI / ML</h3>
+            <p className="text-white">LangChain, LangGraph, RAG Pipelines, pgvector, Hugging Face, PyTorch, NLP</p>
           </motion.div>
           <motion.div
             style={{
@@ -371,9 +417,20 @@ const AboutMeSection = React.memo(() => {
             }}
             className="text-center"
           >
+            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-cyan-500 rounded-full mx-auto mb-4"></div>
+            <h3 className="text-xl font-semibold mb-2">Database</h3>
+            <p className="text-white">PostgreSQL, MongoDB, MySQL, PLpgSQL, Query Optimization</p>
+          </motion.div>
+          <motion.div
+            style={{
+              opacity: skill5Fade,
+              x: skill5SlideX
+            }}
+            className="text-center"
+          >
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mx-auto mb-4"></div>
-            <h3 className="text-xl font-semibold mb-2">Cloud</h3>
-            <p className="text-white">AWS, Vercel, Supabase</p>
+            <h3 className="text-xl font-semibold mb-2">Cloud &amp; DevOps</h3>
+            <p className="text-white">AWS (Lambda, EC2, S3, Kinesis), Docker, Kubernetes, CI/CD</p>
           </motion.div>
         </motion.div>
       </div>)}
