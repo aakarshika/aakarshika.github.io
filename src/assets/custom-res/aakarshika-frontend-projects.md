@@ -56,3 +56,20 @@
 - Designed mobile UI flows for an **ADHD-friendly task management app**, focusing on **simplicity, clarity, and user engagement.**
 
 - Integrated LLM-based suggestions into the UI while maintaining a **non-intrusive and intuitive user experience.**
+
+---
+
+### ProcureWin — [procurewin.com](https://www.procurewin.com)  
+*Frontend Architecture · E-commerce Platform*
+
+- Designed and built a **responsive, data-driven frontend** for a fresh produce e-commerce platform, focusing on usability and performance.
+
+- Developed **dynamic product listing and inventory-aware UI**, ensuring real-time reflection of stock availability and business rules.
+
+- Created reusable UI patterns for **catalog browsing, filtering, and transactional flows**, reducing duplication and improving maintainability.
+
+- Optimized frontend performance through **efficient rendering strategies and structured component design.**
+
+- Designed UX flows for **procurement and ordering workflows**, aligning frontend behavior with backend constraints.
+
+- Took ownership of **end-to-end user experience**, balancing speed, clarity, and business requirements.

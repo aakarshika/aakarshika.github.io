@@ -17,6 +17,19 @@
 
 ---
 
+### ProcureWin — [procurewin.com](https://www.procurewin.com)  
+*System Design · Data-Driven Workflows*
+
+- Designed a data-driven system for **inventory management and procurement optimization**, modeling complex real-world variables.
+
+- Built workflows enforcing **data consistency, system integrity, and operational correctness.**
+
+- Structured system behavior around **state-driven logic and dynamic constraints**, enabling scalable decision-making processes.
+
+- Focused on building **flexible, extensible architecture supporting future automation and optimization.**
+
+---
+
 ### Brainboard  
 *FastAPI · WebSockets · React*
 

@@ -17,6 +17,21 @@
 
 ---
 
+### ProcureWin — [procurewin.com](https://www.procurewin.com)  
+*Program Ownership · E-commerce System Design*
+
+- Led design and development of a **fresh produce commerce and inventory platform**, translating business workflows into technical systems.
+
+- Defined **end-to-end operational workflows**, including procurement, stock management, and order processing.
+
+- Modeled real-world constraints such as **perishability, supply variability, and demand planning** into system behavior.
+
+- Made key decisions across **system architecture, user experience, and data modeling**, balancing usability and operational efficiency.
+
+- Acted as **sole owner of product direction and technical execution**, ensuring alignment between business needs and system capabilities.
+
+---
+
 ### Healers at Home  
 *Healthcare Application · Web & Android*
 

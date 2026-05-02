@@ -15,6 +15,22 @@
 
 ---
 
+### ProcureWin — [procurewin.com](https://www.procurewin.com)  
+*Backend System Design · Inventory & Order Processing*
+
+- Designed backend systems for **inventory lifecycle management, procurement workflows, and order processing.**
+
+- Modeled **data consistency and transactional integrity** across inventory updates and concurrent operations.
+
+- Built APIs supporting **product catalog, stock tracking, and order workflows**, ensuring reliable system behavior.
+
+- Designed system to handle **real-world constraints such as perishable inventory and supply variability.**
+
+- Focused on **data-driven architecture and scalable service design.**
+
+---
+
+
 ### WriterVerse  
 *Django · LangGraph · Distributed Systems Concepts*
 

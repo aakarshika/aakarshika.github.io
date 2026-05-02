@@ -2,7 +2,7 @@
 
 **Senior Backend Engineer · Python · Distributed Systems · Data & AI**
 
-Backend-focused engineer with 9+ years of experience building **scalable APIs, data pipelines, and AI-driven systems** using Python. Strong background in **Django, FastAPI, data processing, and cloud-based architectures**, with experience handling **TB-scale data and real-time workflows**.
+Backend-focused engineer with 9+ years of experience building **scalable APIs, data pipelines, and AI-driven systems** using Python. Strong background in **Django, FastAPI, data processing, and cloud-based architectures**, with experience handling **TB-scale data and real-time workflows** in e-commerce platforms, data pipelines, and cloud-based architectures.
 
 ---
 
@@ -10,7 +10,7 @@ Backend-focused engineer with 9+ years of experience building **scalable APIs, d
 
 ### Senior Software Engineer — MdThink, Maryland  
 *2022 — Present*  
-*Stack: Python · Node.js · PostgreSQL · AWS*
+*Stack: Python (Django, FastAPI, Flask) · Node.js · PostgreSQL · AWS*
 
 - Designed and developed backend systems supporting **multi-tenant regulatory platforms (~50K users)** with complex workflows and data models.
 

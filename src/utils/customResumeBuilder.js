@@ -232,7 +232,10 @@ const getSectionByLabel = (root, label) => {
 const cleanText = (value = '') => value.replace(/\s+/g, ' ').trim();
 
 const parseEducation = (doc) => {
-  const educationSection = getSectionByLabel(doc.querySelectorAll('.page')[0], 'Education');
+  const pages = Array.from(doc.querySelectorAll('.page'));
+  const educationSection = pages
+    .map((page) => getSectionByLabel(page, 'Education'))
+    .find(Boolean);
   if (!educationSection) {
     return [];
   }

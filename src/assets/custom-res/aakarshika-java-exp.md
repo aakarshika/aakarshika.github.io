@@ -2,7 +2,7 @@
 
 **Backend Engineer · Java · Spring Boot · Distributed Systems**
 
-Backend-focused engineer with 9+ years of experience building **scalable services, data pipelines, and enterprise systems**, with hands-on experience in **Java, Spring Boot, and distributed architectures** across cloud environments.
+Backend-focused engineer with 9+ years of experience building **scalable services, data pipelines, and enterprise systems**, with hands-on experience in **Java, Spring Boot, and distributed architectures** across cloud environments. 
 
 ---
 
@@ -16,7 +16,7 @@ Backend-focused engineer with 9+ years of experience building **scalable service
 
 - Built backend services handling **large data processing and report generation pipelines**, integrating with Aurora PostgreSQL and external storage systems (S3).
 
-- Developed and optimized **REST APIs** supporting multi-tenant workflows and complex business logic across regulatory platforms.
+- Implemented **secure authentication and session management** using JWT and RBAC patterns, with exposure to **OAuth-based integration** flows across enterprise systems. Developed and optimized **REST APIs** supporting multi-tenant workflows and complex business logic across regulatory platforms.
 
 - Improved **database performance (~20%)** by optimizing PostgreSQL queries, restructuring schemas, and refining aggregation-heavy operations.
 

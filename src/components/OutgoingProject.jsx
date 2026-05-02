@@ -170,92 +170,89 @@ const ConfettiSparkle = ({ progress, startTiming, dx, dy, color }) => {
 // Schedule data
 // ============================================================
 
-const CARD_SLIDE_ANIM = [{ initialValue: 240, startTiming: 70, duration: 2 }];
+// Timings rescaled by T_new = T_old * 5/6 + 16.67 for the 7-card layout
+// (ProcureWin inserted between Twirly and Daywise). Outgoing center 80 → 83.33.
+const CARD_SLIDE_ANIM = [{ initialValue: 240, startTiming: 75, duration: 1.67 }];
 const CARD_SCALE_ANIM = [
-  { initialValue: 0.9, finalValue: 1, startTiming: 70, duration: 2 },
-  { initialValue: 1, finalValue: 1.04, startTiming: 86.5, duration: 0.5 },
-  { initialValue: 1.04, finalValue: 1, startTiming: 87, duration: 0.6 },
+  { initialValue: 0.9, finalValue: 1, startTiming: 75, duration: 1.67 },
+  { initialValue: 1, finalValue: 1.04, startTiming: 88.75, duration: 0.42 },
+  { initialValue: 1.04, finalValue: 1, startTiming: 89.17, duration: 0.5 },
 ];
-const CARD_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 70, duration: 1.5 }];
+const CARD_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 75, duration: 1.25 }];
 
-const LIVE_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 87.5, duration: 0.8 }];
+const LIVE_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 89.58, duration: 0.67 }];
 const LIVE_SCALE_ANIM = [
-  { initialValue: 0.5, finalValue: 1.2, startTiming: 87.5, duration: 0.5 },
-  { initialValue: 1.2, finalValue: 1, startTiming: 88, duration: 0.5 },
+  { initialValue: 0.5, finalValue: 1.2, startTiming: 89.58, duration: 0.42 },
+  { initialValue: 1.2, finalValue: 1, startTiming: 90, duration: 0.42 },
 ];
 
-const READY_FADE_ANIM = [{ initialValue: 0.7, finalValue: 0, startTiming: 87.5, duration: 0.6 }];
+const READY_FADE_ANIM = [{ initialValue: 0.7, finalValue: 0, startTiming: 89.58, duration: 0.5 }];
 
-// Counter completes early (~76 → 81), then chip glows held until sync-check at 86
+// Counter completes early (~80 → 84.17), then chip glows held until sync-check at ~88.75
 const COUNTER_BOX_GLOW_ANIM = [
-  { initialValue: 0, finalValue: 1, startTiming: 76, duration: 0.6 },
-  { initialValue: 1, finalValue: 0, startTiming: 86.5, duration: 1 },
+  { initialValue: 0, finalValue: 1, startTiming: 80, duration: 0.5 },
+  { initialValue: 1, finalValue: 0, startTiming: 88.75, duration: 0.83 },
 ];
 
 const ENVELOPES = [
-  { dx: -760, dy: -180, t: 71 },
-  // { dx: 260, dy: -180, t: 74.2 },
-  // { dx: -500, dy: 0, t: 74.4 },
-  // { dx: 300, dy: 0, t: 74.6 },
-  // { dx: -560, dy: 180, t: 74.8 },
-  // { dx: 260, dy: 180, t: 75 },
+  { dx: -760, dy: -180, t: 76.83 },
 ];
 
-// Tickets stream from 76 → ~82, overlapping with neighbors arriving 78 → 86
+// Tickets stream from 80 → ~88, overlapping with neighbors arriving ~82 → 88.
 const TICKETS = [
-  { fromX: 300, fromY: -150, t: 80.2 },
-  { fromX: 280, fromY: -160, t: 81.7 },
-  { fromX: 260, fromY: 180, t: 83.2 },
-  { fromX: 320, fromY: 60, t: 78.7 },
-  { fromX: 180, fromY: -200, t: 80.2 },
-  { fromX: 200, fromY: 200, t: 82.8 },
-  { fromX: 240, fromY: 0, t: 84.4 },
-  { fromX: 240, fromY: 0, t: 86 },
+  { fromX: 300, fromY: -150, t: 83.5 },
+  { fromX: 280, fromY: -160, t: 84.75 },
+  { fromX: 260, fromY: 180, t: 86 },
+  { fromX: 320, fromY: 60, t: 82.25 },
+  { fromX: 180, fromY: -200, t: 83.5 },
+  { fromX: 200, fromY: 200, t: 85.67 },
+  { fromX: 240, fromY: 0, t: 87 },
+  { fromX: 240, fromY: 0, t: 88.33 },
 ];
 
 // Neighbors land as small chips on their corresponding row inside the card.
 // Indexed by checklist item `id` so the card render can pair them.
 const NEIGHBORS_BY_ID = {
   sound: {
-    name: 'Sam', Icon: Speaker, arriveAt: 78,
+    name: 'Sam', Icon: Speaker, arriveAt: 81.67,
     accent: { chip: 'bg-cyan-100 border-cyan-300', avatar: 'bg-cyan-500', iconText: 'text-cyan-700' },
   },
   snacks: {
-    name: 'Priya', Icon: Pizza, arriveAt: 79.5,
+    name: 'Priya', Icon: Pizza, arriveAt: 82.92,
     accent: { chip: 'bg-amber-100 border-amber-300', avatar: 'bg-amber-500', iconText: 'text-amber-700' },
   },
   volunteers: {
-    name: 'Garcias', Icon: Users, arriveAt: 81,
+    name: 'Garcias', Icon: Users, arriveAt: 84.17,
     accent: { chip: 'bg-emerald-100 border-emerald-300', avatar: 'bg-emerald-500', iconText: 'text-emerald-700' },
   },
   venue: {
-    name: 'Theo', Icon: Hammer, arriveAt: 82.5,
+    name: 'Theo', Icon: Hammer, arriveAt: 85.42,
     accent: { chip: 'bg-rose-100 border-rose-300', avatar: 'bg-rose-500', iconText: 'text-rose-700' },
   },
   playlist: {
-    name: 'Mara', Icon: Music, arriveAt: 84,
+    name: 'Mara', Icon: Music, arriveAt: 86.67,
     accent: { chip: 'bg-violet-100 border-violet-300', avatar: 'bg-violet-500', iconText: 'text-violet-700' },
   },
 };
 
-// All checks fire together right before LIVE — slight 0.1 stagger for rhythm.
+// All checks fire together right before LIVE — slight stagger for rhythm.
 const CHECKLIST = [
-  { id: 'eventPublished', label: 'Event Published', icon: <Mail className="w-4 h-4 text-cyan-700" />, checkAt: 71 },
-  { id: 'sound', label: 'Sound system & microphones', checkAt: 78 },
-  { id: 'snacks', label: 'Snacks & drinks', checkAt: 79.5 },
-  { id: 'volunteers', label: 'Stage volunteers (4)', checkAt: 81 },
-  { id: 'tickets', label: '20 tickets sold', checkAt: 82.5, icon: <Ticket className="w-4 h-4 text-cyan-700" />, isTickets: true },
-  { id: 'venue', label: 'Venue setup', checkAt: 84 },
-  { id: 'playlist', label: 'Music playlist', checkAt: 84.5 },
+  { id: 'eventPublished', label: 'Event Published', icon: <Mail className="w-4 h-4 text-cyan-700" />, checkAt: 76.83 },
+  { id: 'sound', label: 'Sound system & microphones', checkAt: 81.67 },
+  { id: 'snacks', label: 'Snacks & drinks', checkAt: 82.92 },
+  { id: 'volunteers', label: 'Stage volunteers (4)', checkAt: 84.17 },
+  { id: 'tickets', label: '20 tickets sold', checkAt: 85.42, icon: <Ticket className="w-4 h-4 text-cyan-700" />, isTickets: true },
+  { id: 'venue', label: 'Venue setup', checkAt: 86.67 },
+  { id: 'playlist', label: 'Music playlist', checkAt: 87.08 },
 ];
 
 const CONFETTI = [
-  { dx: -180, dy: -180, color: 'rgb(244 114 182)', t: 88.5 },
-  { dx: 180, dy: -180, color: 'rgb(34 211 238)', t: 88.6 },
-  { dx: -200, dy: 100, color: 'rgb(167 139 250)', t: 88.7 },
-  { dx: 200, dy: 100, color: 'rgb(251 191 36)', t: 88.8 },
-  { dx: 0, dy: -220, color: 'rgb(52 211 153)', t: 88.9 },
-  { dx: 0, dy: 200, color: 'rgb(244 114 182)', t: 89 },
+  { dx: -180, dy: -180, color: 'rgb(244 114 182)', t: 90.42 },
+  { dx: 180, dy: -180, color: 'rgb(34 211 238)', t: 90.5 },
+  { dx: -200, dy: 100, color: 'rgb(167 139 250)', t: 90.58 },
+  { dx: 200, dy: 100, color: 'rgb(251 191 36)', t: 90.67 },
+  { dx: 0, dy: -220, color: 'rgb(52 211 153)', t: 90.75 },
+  { dx: 0, dy: 200, color: 'rgb(244 114 182)', t: 90.83 },
 ];
 
 // ============================================================
@@ -317,16 +314,16 @@ export const OutgoingProject = ({ progressMotionValue }) => {
                 <Typewriter
                   progress={activeProgress}
                   text="Neighborhood Karaoke Night"
-                  startTiming={72}
-                  duration={2}
+                  startTiming={76.67}
+                  duration={1.67}
                 />
               </h4>
               <div className="text-[11px] text-slate-500 mb-3 min-h-[1rem]">
                 <Typewriter
                   progress={activeProgress}
                   text="Tonight, 7PM at Maple Lane Park"
-                  startTiming={88.5}
-                  duration={2.8}
+                  startTiming={90.42}
+                  duration={2.33}
                   className="text-cyan-700 font-medium"
                 />
               </div>
@@ -352,8 +349,8 @@ export const OutgoingProject = ({ progressMotionValue }) => {
                             progress={activeProgress}
                             from={0}
                             to={20}
-                            startTiming={76}
-                            duration={5}
+                            startTiming={80}
+                            duration={4.17}
                           />
                           /20
                         </motion.span>

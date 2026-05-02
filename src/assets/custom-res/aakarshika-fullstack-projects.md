@@ -56,3 +56,20 @@
 - Built a **cross-platform mobile application** with shared business logic across Android and iOS.
 
 - Integrated LLM-based systems to generate **personalized task recommendations based on user behavior.**
+
+---
+
+### ProcureWin — [procurewin.com](https://www.procurewin.com)  
+*Full-Stack Product · E-commerce & Inventory Systems*
+
+- Designed and developed a **fresh produce e-commerce and inventory management platform**, handling procurement, stock tracking, and distribution workflows.
+
+- Built end-to-end system across **frontend, backend, and database layers**, modeling real-world constraints such as perishability, supplier variability, and demand fluctuations.
+
+- Designed **product browsing, ordering, and inventory visibility flows**, balancing business requirements with user experience.
+
+- Implemented dynamic UI patterns for **inventory-driven rendering**, ensuring users interact only with valid, in-stock data.
+
+- Owned **core architectural decisions**, including data modeling, workflow design, and system scalability.
+
+- Translated business processes into **scalable technical workflows**, enabling operational efficiency and system consistency.

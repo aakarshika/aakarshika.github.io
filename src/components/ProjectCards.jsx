@@ -8,6 +8,7 @@ import portfolioImg from '../assets/portfolio_img.png';
 import { useAnimationValue } from '../hooks/useAnimationValue';
 export { TwirlyProject } from './TwirlyProject';
 export { OutgoingProject } from './OutgoingProject';
+export { ProcureWinProject } from './ProcureWinProject';
 
 const WRITERVERSE_SENTENCE_1 = 'She pushed open the door and-';
 const WRITERVERSE_SENTENCE_2 = ' a thousand fireflies poured out, painting her path with starlight. She quickly stepped through the portal, leaving behind the world she knew.';
@@ -30,83 +31,86 @@ const Typewriter = ({ progress, text, startTiming, duration, className = '' }) =
   return <span className={className}>{shown}</span>;
 };
 
+// Timings rescaled by T_new = T_old * 5/6 + 16.67 to fit the 7-card layout
+// (ProcureWin inserted between Twirly and Daywise).
+// Daywise center moved from 40 → 50, Writerverse 60 → 66.67, NotAResume 100 → 100.
 const DAYWISE_1_SLIDE_ANIM = [
-  { initialValue: 220, startTiming: 28 },
-  { initialValue: 0, finalValue: -320, startTiming: 40, duration: 10 },
+  { initialValue: 220, startTiming: 40 },
+  { initialValue: 0, finalValue: -320, startTiming: 50, duration: 8.33 },
 ];
 const DAYWISE_2_SLIDE_ANIM = [
-  { initialValue: 220, startTiming: 30 },
-  { initialValue: 0, finalValue: -320, startTiming: 40, duration: 10 },
+  { initialValue: 220, startTiming: 41.67 },
+  { initialValue: 0, finalValue: -320, startTiming: 50, duration: 8.33 },
 ];
 const DAYWISE_3_SLIDE_ANIM = [
-  { initialValue: 220, startTiming: 32 },
-  { initialValue: 0, finalValue: -320, startTiming: 40, duration: 10 },
+  { initialValue: 220, startTiming: 43.33 },
+  { initialValue: 0, finalValue: -320, startTiming: 50, duration: 8.33 },
 ];
 const DAYWISE_1_FADE_ANIM = [
-  { initialValue: 0, finalValue: 1, startTiming: 28 },
-  { initialValue: 1, startTiming: 44, duration: 10 },
+  { initialValue: 0, finalValue: 1, startTiming: 40 },
+  { initialValue: 1, startTiming: 53.33, duration: 8.33 },
 ];
-const DAYWISE_1_SCALE_ANIM = [{ initialValue: 0.8, finalValue: 1, startTiming: 28 }];
+const DAYWISE_1_SCALE_ANIM = [{ initialValue: 0.8, finalValue: 1, startTiming: 40 }];
 const WRITERVERSE_TITLE_SLIDE_ANIM = [
-  { initialValue: -100, finalValue: 0, startTiming: 47, duration: 9 },
+  { initialValue: -100, finalValue: 0, startTiming: 55.83, duration: 7.5 },
 ];
-const WRITERVERSE_DESCRIPTION_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 48, duration: 4 }];
-const WRITERVERSE_DESCRIPTION_SLIDE_ANIM = [{ initialValue: -40, startTiming: 51, duration: 4 }];
-const WRITERVERSE_REST_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 53, duration: 4 }];
-const WRITERVERSE_REST_SLIDE_ANIM = [{ initialValue: -28, startTiming: 54, duration: 4 }];
+const WRITERVERSE_DESCRIPTION_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 56.67, duration: 3.33 }];
+const WRITERVERSE_DESCRIPTION_SLIDE_ANIM = [{ initialValue: -40, startTiming: 59.17, duration: 3.33 }];
+const WRITERVERSE_REST_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 60.83, duration: 3.33 }];
+const WRITERVERSE_REST_SLIDE_ANIM = [{ initialValue: -28, startTiming: 61.67, duration: 3.33 }];
 
-const WRITERVERSE_NOTEBOOK_SLIDE_ANIM = [{ initialValue: 320, startTiming: 43, duration: 3 }];
-const WRITERVERSE_NOTEBOOK_SCALE_ANIM = [{ initialValue: 0.85, finalValue: 1, startTiming: 43, duration: 3 }];
-const WRITERVERSE_NOTEBOOK_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 43, duration: 2 }];
+const WRITERVERSE_NOTEBOOK_SLIDE_ANIM = [{ initialValue: 320, startTiming: 52.5, duration: 2.5 }];
+const WRITERVERSE_NOTEBOOK_SCALE_ANIM = [{ initialValue: 0.85, finalValue: 1, startTiming: 52.5, duration: 2.5 }];
+const WRITERVERSE_NOTEBOOK_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 52.5, duration: 1.67 }];
 
 const buildBranchAnim = (start) => [
-  { initialValue: 0, finalValue: 1, startTiming: start, duration: 2.4 },
-  { initialValue: 1, finalValue: 0, startTiming: 63, duration: 2.2 },
+  { initialValue: 0, finalValue: 1, startTiming: start, duration: 2 },
+  { initialValue: 1, finalValue: 0, startTiming: 69.17, duration: 1.83 },
 ];
-const WRITERVERSE_BRANCH_1_ANIM = buildBranchAnim(53);
-const WRITERVERSE_BRANCH_2_ANIM = buildBranchAnim(53.8);
-const WRITERVERSE_BRANCH_3_ANIM = buildBranchAnim(54.6);
-const WRITERVERSE_BRANCH_4_ANIM = buildBranchAnim(55.4);
+const WRITERVERSE_BRANCH_1_ANIM = buildBranchAnim(60.83);
+const WRITERVERSE_BRANCH_2_ANIM = buildBranchAnim(61.5);
+const WRITERVERSE_BRANCH_3_ANIM = buildBranchAnim(62.17);
+const WRITERVERSE_BRANCH_4_ANIM = buildBranchAnim(62.83);
 
 const buildBoxScaleAnim = (start) => [
-  { initialValue: 0, finalValue: 1.5, startTiming: start, duration: 0.8 },
-  { initialValue: 1.5, finalValue: 1.3, startTiming: start + 0.8, duration: 0.8 },
-  { initialValue: 1.3, finalValue: 0, startTiming: 63.2, duration: 2.2 },
+  { initialValue: 0, finalValue: 1.5, startTiming: start, duration: 0.67 },
+  { initialValue: 1.5, finalValue: 1.3, startTiming: start + 0.67, duration: 0.67 },
+  { initialValue: 1.3, finalValue: 0, startTiming: 69.33, duration: 1.83 },
 ];
 const buildBoxFadeAnim = (start) => [
-  { initialValue: 0, finalValue: 1, startTiming: start, duration: 1 },
-  { initialValue: 1, finalValue: 0, startTiming: 63.4, duration: 1.8 },
+  { initialValue: 0, finalValue: 1, startTiming: start, duration: 0.83 },
+  { initialValue: 1, finalValue: 0, startTiming: 69.5, duration: 1.5 },
 ];
-const WRITERVERSE_BOX_1_SCALE_ANIM = buildBoxScaleAnim(54);
-const WRITERVERSE_BOX_1_FADE_ANIM = buildBoxFadeAnim(54);
-const WRITERVERSE_BOX_2_SCALE_ANIM = buildBoxScaleAnim(55);
-const WRITERVERSE_BOX_2_FADE_ANIM = buildBoxFadeAnim(55);
-const WRITERVERSE_BOX_3_SCALE_ANIM = buildBoxScaleAnim(56);
-const WRITERVERSE_BOX_3_FADE_ANIM = buildBoxFadeAnim(56);
-const WRITERVERSE_BOX_4_SCALE_ANIM = buildBoxScaleAnim(57);
-const WRITERVERSE_BOX_4_FADE_ANIM = buildBoxFadeAnim(57);
+const WRITERVERSE_BOX_1_SCALE_ANIM = buildBoxScaleAnim(61.67);
+const WRITERVERSE_BOX_1_FADE_ANIM = buildBoxFadeAnim(61.67);
+const WRITERVERSE_BOX_2_SCALE_ANIM = buildBoxScaleAnim(62.5);
+const WRITERVERSE_BOX_2_FADE_ANIM = buildBoxFadeAnim(62.5);
+const WRITERVERSE_BOX_3_SCALE_ANIM = buildBoxScaleAnim(63.33);
+const WRITERVERSE_BOX_3_FADE_ANIM = buildBoxFadeAnim(63.33);
+const WRITERVERSE_BOX_4_SCALE_ANIM = buildBoxScaleAnim(64.17);
+const WRITERVERSE_BOX_4_FADE_ANIM = buildBoxFadeAnim(64.17);
 
-const WRITERVERSE_STAR_ORBIT_ANIM = [{ initialValue: -120, finalValue: 240, startTiming: 62, duration: 3.4 }];
+const WRITERVERSE_STAR_ORBIT_ANIM = [{ initialValue: -120, finalValue: 240, startTiming: 68.33, duration: 2.83 }];
 const WRITERVERSE_STAR_FADE_ANIM = [
-  { initialValue: 0, finalValue: 1, startTiming: 62, duration: 0.6 },
-  { initialValue: 1, finalValue: 0, startTiming: 65.1, duration: 0.7 },
+  { initialValue: 0, finalValue: 1, startTiming: 68.33, duration: 0.5 },
+  { initialValue: 1, finalValue: 0, startTiming: 70.92, duration: 0.58 },
 ];
-const WRITERVERSE_STAR_ROTATE_ANIM = [{ initialValue: 0, finalValue: 720, startTiming: 62, duration: 3.4 }];
+const WRITERVERSE_STAR_ROTATE_ANIM = [{ initialValue: 0, finalValue: 720, startTiming: 68.33, duration: 2.83 }];
 const WRITERVERSE_STAR_SCALE_ANIM = [
-  { initialValue: 0.65, finalValue: 1.25, startTiming: 62, duration: 1 },
-  { initialValue: 1.25, finalValue: 0.82, startTiming: 64, duration: 1.2 },
+  { initialValue: 0.65, finalValue: 1.25, startTiming: 68.33, duration: 0.83 },
+  { initialValue: 1.25, finalValue: 0.82, startTiming: 70, duration: 1 },
 ];
 const WRITERVERSE_FAIRY_FADE_ANIM = [
-  { initialValue: 0, finalValue: 1, startTiming: 61, duration: 1 },
-  { initialValue: 1, finalValue: 0, startTiming: 70, duration: 0.5 }
+  { initialValue: 0, finalValue: 1, startTiming: 67.5, duration: 0.83 },
+  { initialValue: 1, finalValue: 0, startTiming: 75, duration: 0.42 }
 ];
 const WRITERVERSE_FAIRY_WINK_ANIM = [
-  { initialValue: 1, finalValue: 0.05, startTiming: 60.1, duration: 0.4 },
-  { initialValue: 0.2, finalValue: 1, startTiming: 61.5, duration: 0.5 },
-  { initialValue: 1, finalValue: 0.05, startTiming: 63.1, duration: 0.4 },
-  { initialValue: 0.2, finalValue: 1, startTiming: 64.5, duration: 0.5 },
+  { initialValue: 1, finalValue: 0.05, startTiming: 66.75, duration: 0.33 },
+  { initialValue: 0.2, finalValue: 1, startTiming: 67.92, duration: 0.42 },
+  { initialValue: 1, finalValue: 0.05, startTiming: 69.25, duration: 0.33 },
+  { initialValue: 0.2, finalValue: 1, startTiming: 70.42, duration: 0.42 },
 ];
-const NOT_A_RESUME_IMAGE_SLIDE_ANIM = [{ initialValue: -320, startTiming: 85, duration: 10 }];
+const NOT_A_RESUME_IMAGE_SLIDE_ANIM = [{ initialValue: -320, startTiming: 87.5, duration: 8.33 }];
 export const ProjectTitle = () => {
   return (
     <div className="w-screen min-h-screen md:h-screen px-4 sm:px-6 flex bg-gradient-to-b from-gray-900 to-purple-900 items-center justify-center flex-shrink-0">
@@ -125,8 +129,8 @@ export const DaywiseProject = ({ progressMotionValue, isMobile = false }) => {
   const fallbackProgress = useMotionValue(0);
   // On mobile we don't have horizontal scroll, so freeze progress at a value
   // where every Daywise element has slid in but not yet started sliding back out
-  // (slide-ins finish ~38, slide-outs start at 40).
-  const mobileStaticProgress = useMotionValue(39);
+  // (slide-ins finish ~48, slide-outs start at 50 in the 7-card layout).
+  const mobileStaticProgress = useMotionValue(49);
   const activeProgress = isMobile
     ? mobileStaticProgress
     : (progressMotionValue ?? fallbackProgress);
@@ -313,14 +317,14 @@ export const WriterverseProject = ({ progressMotionValue }) => {
               <Typewriter
                 progress={activeProgress}
                 text={WRITERVERSE_SENTENCE_1}
-                startTiming={46}
-                duration={7}
+                startTiming={55}
+                duration={5.83}
               />
               <Typewriter
                 progress={activeProgress}
                 text={WRITERVERSE_SENTENCE_2}
-                startTiming={66}
-                duration={3}
+                startTiming={71.67}
+                duration={2.5}
                 className="text-slate-600"
               />
             </div>

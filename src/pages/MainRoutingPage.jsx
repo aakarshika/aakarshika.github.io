@@ -8,8 +8,8 @@ const MainRoutingPage = () => {
   return (
     <Routes>
       <Route path="/" element={<Portfolio />} />
-      <Route path="/resume" element={<ResumePage />} />
-      <Route path="/custom-resume" element={<CustomResumePage />} />
+      <Route path="/resume-default" element={<ResumePage />} />
+      <Route path="/resume" element={<CustomResumePage />} />
     </Routes>
   );
 };

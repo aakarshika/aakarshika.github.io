@@ -10,40 +10,42 @@ const OptionTwirly = ({ val, className = '' }) => (
   </div>
 );
 
+// Timings rescaled by 5/6 for the 7-card layout (ProcureWin inserted after Twirly).
+// Twirly's card center moved from progress 20 → 16.67.
 const TWIRLY_PREV_ANIM = [
-  { initialValue: 220, startTiming: 9 },
-  { initialValue: 0, finalValue: -320, startTiming: 20, duration: 16 },
+  { initialValue: 220, startTiming: 7.5 },
+  { initialValue: 0, finalValue: -320, startTiming: 16.67, duration: 13.33 },
 ];
 const TWIRLY_IMAGE1_ANIM = [
-  { initialValue: 220, startTiming: 10 },
-  { initialValue: 0, finalValue: -320, startTiming: 20, duration: 16 },
+  { initialValue: 220, startTiming: 8.33 },
+  { initialValue: 0, finalValue: -320, startTiming: 16.67, duration: 13.33 },
 ];
 const TWIRLY_IMAGE2_ANIM = [
-  { initialValue: 220, startTiming: 10.5 },
-  { initialValue: 0, finalValue: -320, startTiming: 20, duration: 16 },
+  { initialValue: 220, startTiming: 8.75 },
+  { initialValue: 0, finalValue: -320, startTiming: 16.67, duration: 13.33 },
 ];
 const TWIRLY_IMAGE3_ANIM = [
-  { initialValue: 220, startTiming: 11 },
-  { initialValue: 0, finalValue: -320, startTiming: 20, duration: 16 },
+  { initialValue: 220, startTiming: 9.17 },
+  { initialValue: 0, finalValue: -320, startTiming: 16.67, duration: 13.33 },
 ];
 const TWIRLY_IMAGE4_SLIDE_ANIM = [
-  { initialValue: 220, startTiming: 11.5 },
-  { initialValue: 0, finalValue: -320, startTiming: 20, duration: 16 },
+  { initialValue: 220, startTiming: 9.58 },
+  { initialValue: 0, finalValue: -320, startTiming: 16.67, duration: 13.33 },
 ];
-const TWIRLY_IMAGE4_SCALE_ANIM = [{ initialValue: 1, finalValue: 1.1, startTiming: 18, duration: 2 }];
-const TWIRLY_5_THUMBSUP_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 25, duration: 1 }];
-const TITLE_ANIM = [{ initialValue: 100, startTiming: 7, duration: 2 }];
-const DESCRIPTION_ANIM = [{ initialValue: 70, startTiming: 8, duration: 3 }];
-const COMMON_FADE_ANIM = [{ initialValue: 1, finalValue: 0.95, startTiming: 18, duration: 5 }];
-const THUMBSUP_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 19, duration: 1 }];
-const THUMBSUP_WIGGLE_ROTATE_ANIM = createWigglePreset(16, 'rotate', false);
-const THUMBSUP_WIGGLE_SCALE_ANIM = createWigglePreset(16, 'scale', false);
+const TWIRLY_IMAGE4_SCALE_ANIM = [{ initialValue: 1, finalValue: 1.1, startTiming: 15, duration: 1.67 }];
+const TWIRLY_5_THUMBSUP_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 20.83, duration: 0.83 }];
+const TITLE_ANIM = [{ initialValue: 100, startTiming: 5.83, duration: 1.67 }];
+const DESCRIPTION_ANIM = [{ initialValue: 70, startTiming: 6.67, duration: 2.5 }];
+const COMMON_FADE_ANIM = [{ initialValue: 1, finalValue: 0.95, startTiming: 15, duration: 4.17 }];
+const THUMBSUP_FADE_ANIM = [{ initialValue: 0, finalValue: 1, startTiming: 15.83, duration: 0.83 }];
+const THUMBSUP_WIGGLE_ROTATE_ANIM = createWigglePreset(13.33, 'rotate', false);
+const THUMBSUP_WIGGLE_SCALE_ANIM = createWigglePreset(13.33, 'scale', false);
 
 export const TwirlyProject = ({ progressMotionValue, isMobile = false }) => {
   const fallbackProgress = useMotionValue(0);
   // On mobile, freeze at a moment where the phone screen has all cards
-  // settled in view (slide-ins done at ~15, slide-outs start at 20).
-  const mobileStaticProgress = useMotionValue(17);
+  // settled in view (slide-ins done at ~12.5, slide-outs start at 16.67 in the 7-card layout).
+  const mobileStaticProgress = useMotionValue(14.17);
   const activeProgress = isMobile
     ? mobileStaticProgress
     : (progressMotionValue ?? fallbackProgress);

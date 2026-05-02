@@ -20,7 +20,7 @@ Full-stack engineer with 9+ years of experience building and deploying **AI-inte
 
 - Leveraged **AWS services (Lambda, S3, EC2)** to build scalable pipelines for **file processing, storage, and event-driven workflows.**
 
-- Built and optimized **REST APIs and data pipelines** handling complex multi-tenant workflows and large data transformations.
+- **Applied security-first development practices including JWT authentication, RBAC enforcement, and secure document workflows** across regulated government platforms. Built and optimized **REST APIs and data pipelines** handling complex multi-tenant workflows and large data transformations.
 
 - Improved **database performance (~20%)** through query optimization, schema restructuring, and efficient handling of aggregation-heavy workloads.
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import baseResumeHtml from '../assets/AakarshikaPriydarshi_resume.html?raw';
 import {
   buildCustomResumeHtml,
@@ -6,6 +6,10 @@ import {
   getAvailableResumeTypes,
   getResumeTypeMap,
 } from '../utils/customResumeBuilder';
+import { openResumePdfFromHtmlString } from '../utils/openResumePdfFromHtml';
+
+/** Base filename without extension, e.g. AakarshikaPriydarshi_resume_fullstack */
+const resumeDownloadBaseName = (type) => `AakarshikaPriydarshi_resume_${type}`;
 
 const customMarkdownFiles = import.meta.glob('../assets/custom-res/*.md', {
   eager: true,
@@ -20,6 +24,7 @@ const toOptionLabel = (value) =>
     .join(' ');
 
 const CustomResumePage = () => {
+  const resumeFrameRef = useRef(null);
   const resumeTypeMap = useMemo(() => getResumeTypeMap(customMarkdownFiles), []);
   const resumeTypes = useMemo(() => getAvailableResumeTypes(resumeTypeMap), [resumeTypeMap]);
   const [selectedType, setSelectedType] = useState('fullstack');
@@ -57,22 +62,50 @@ const CustomResumePage = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `AakarshikaPriydarshi_${selectedType}_resume.html`;
+    link.download = `${resumeDownloadBaseName(selectedType)}.html`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
-  const handleDownloadResumePdf = () => {
+  const openResumeInPrintWindow = () => {
     if (!resumeHtml) return;
-    const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+    const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     printWindow.document.open();
     printWindow.document.write(resumeHtml);
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 400);
+    const triggerPrint = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+    if (printWindow.document.readyState === 'complete') {
+      triggerPrint();
+      return;
+    }
+    printWindow.onload = triggerPrint;
+  };
+
+  const triggerResumePrint = () => {
+    const framePrintWindow = resumeFrameRef.current?.contentWindow;
+    if (framePrintWindow) {
+      framePrintWindow.focus();
+      framePrintWindow.print();
+      return;
+    }
+
+    openResumeInPrintWindow();
+  };
+
+  const handleDownloadResumePdf = () => {
+    if (!resumeHtml || !selectedType) return;
+
+    const filename = `${resumeDownloadBaseName(selectedType)}.pdf`;
+    const opened = openResumePdfFromHtmlString(resumeHtml, filename);
+    if (!opened) {
+      console.warn('PDF: popup blocked — allow pop-ups for this site, or use Print → Save as PDF.');
+    }
   };
 
   const handleDownloadResumeMd = () => {
@@ -82,7 +115,7 @@ const CustomResumePage = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `AakarshikaPriydarshi_${selectedType}_resume.md`;
+    link.download = `${resumeDownloadBaseName(selectedType)}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -90,14 +123,7 @@ const CustomResumePage = () => {
   };
 
   const handlePrintResume = () => {
-    if (!resumeHtml) return;
-    const printWindow = window.open('', '_blank', 'noopener,noreferrer');
-    if (!printWindow) return;
-    printWindow.document.open();
-    printWindow.document.write(resumeHtml);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 300);
+    triggerResumePrint();
   };
 
   return (
@@ -120,8 +146,10 @@ const CustomResumePage = () => {
             ))}
           </select>
           <button
+            type="button"
+            disabled={!resumeHtml}
             onClick={handleDownloadResumePdf}
-            className="px-6 py-2 rounded-lg bg-black/10 border border-black/20 m-2 mr-1 text-white hover:border-white hover:text-white transition-all duration-300"
+            className="px-6 py-2 rounded-lg bg-black/10 border border-black/20 m-2 mr-1 text-white hover:border-white hover:text-white transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
           >
             Download PDF
           </button>
@@ -147,6 +175,7 @@ const CustomResumePage = () => {
         <div className="flex justify-center">
           <div className="w-[210mm] bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
             <iframe
+              ref={resumeFrameRef}
               srcDoc={resumeHtml}
               title="Aakarshika Priydarshi Custom Resume"
               className="w-[210mm] h-screen bg-white"

@@ -4,6 +4,7 @@ import {
   ProjectTitle,
   DaywiseProject,
   TwirlyProject,
+  ProcureWinProject,
   WriterverseProject,
   OutgoingProject,
   NotAResumeProject,
@@ -118,6 +119,7 @@ const ProjectsSection = () => {
         <div ref={trackRef} className="flex h-full w-max will-change-transform">
           <ProjectTitle />
           <TwirlyProject progressMotionValue={horizontalProgress} />
+          <ProcureWinProject progressMotionValue={horizontalProgress} />
           <DaywiseProject progressMotionValue={horizontalProgress} />
           <WriterverseProject progressMotionValue={horizontalProgress} />
           <OutgoingProject progressMotionValue={horizontalProgress} />
