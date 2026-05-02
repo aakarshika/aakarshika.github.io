@@ -819,30 +819,6 @@ Microservices</div>
                         </div>
                     </div>
 
-                <!-- EDUCATION -->
-                    <div class="section">
-                        <div class="section-header">
-                            <div class="section-label">Education</div>
-                            <div class="section-rule"></div>
-                        </div>
-                        <div class="two-col">
-                            <div class="edu-item">
-                                <div>
-                                    <div class="edu-degree">Master of Science — Computer Science</div>
-                                    <div class="edu-school">George Mason University, Virginia</div>
-                                </div>
-                                <div class="edu-date">2016 — 2018</div>
-                            </div>
-                            <div class="edu-item">
-                                <div>
-                                    <div class="edu-degree">B.Tech — Computer Science & Engineering</div>
-                                    <div class="edu-school">JSS Academy of Technical Education, India</div>
-                                </div>
-                                <div class="edu-date">2012 — 2016</div>
-                            </div>
-                        </div>
-                </div>
-
                 <div class="page-num">01 / 02</div>
             </div>
 
@@ -970,6 +946,30 @@ Microservices</div>
                     </div>
                 </div>
 
+                <!-- EDUCATION -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-label">Education</div>
+                        <div class="section-rule"></div>
+                    </div>
+                    <div class="two-col">
+                        <div class="edu-item">
+                            <div>
+                                <div class="edu-degree">Master of Science — Computer Science</div>
+                                <div class="edu-school">George Mason University, Virginia</div>
+                            </div>
+                            <div class="edu-date">2016 — 2018</div>
+                        </div>
+                        <div class="edu-item">
+                            <div>
+                                <div class="edu-degree">B.Tech — Computer Science & Engineering</div>
+                                <div class="edu-school">JSS Academy of Technical Education, India</div>
+                            </div>
+                            <div class="edu-date">2012 — 2016</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ADDITIONAL SIGNALS -->
                 <div class="section additional-section">
                     <div class="section-header">
@@ -1023,7 +1023,7 @@ Microservices</div>
 
                 const options = {
                     margin: [0, 0, 0, 0],
-                    filename: 'Aakarshika_Priydarshi_Resume.pdf',
+                    filename: window.__RESUME_PDF_FILENAME__ || 'Aakarshika_Priydarshi_Resume.pdf',
                     image: { type: 'jpeg', quality: 0.95 },
                     html2canvas: { scale: 2, useCORS: true, backgroundColor: '#faf8f5' },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -1043,7 +1043,7 @@ Microservices</div>
             };
 
             const downloadAction = new URLSearchParams(window.location.search).get('download');
-            if (downloadAction === 'pdf') {
+            if (downloadAction === 'pdf' || window.__FORCE_RESUME_PDF_DOWNLOAD__) {
                 buildResumePdf();
             } else if (downloadAction === 'html') {
                 downloadResumeHtml();
