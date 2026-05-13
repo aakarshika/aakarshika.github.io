@@ -2,3 +2,8 @@ node_modules
 
 # Build output
 /dist/
+
+# Env (secrets) — set variables in Vercel → Project → Settings → Environment Variables
+.env
+.env.local
+.env.*.local

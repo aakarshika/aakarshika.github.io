@@ -1,0 +1,33 @@
+-- Future: all portfolio interactions (likes, outbound link clicks, etc.)
+-- Replace email pipeline in src/services/analytics/backends/analyticsBackendClient.js
+-- with Supabase insert + optional dual-write to email.
+--
+-- CREATE TABLE IF NOT EXISTS public.visitor_interactions (
+--   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+--   visitor_id text NOT NULL,
+--   device_type text NOT NULL CHECK (device_type IN ('mobile', 'tablet', 'desktop')),
+--   timezone text NOT NULL DEFAULT '',
+--   locale text NOT NULL DEFAULT '',
+--   utc_offset_minutes smallint,
+--   action text NOT NULL,
+--   metadata jsonb NOT NULL DEFAULT '{}',
+--   page_href text,
+--   created_at timestamptz NOT NULL DEFAULT now()
+-- );
+--
+-- CREATE INDEX IF NOT EXISTS idx_visitor_interactions_visitor_id
+--   ON public.visitor_interactions (visitor_id);
+-- CREATE INDEX IF NOT EXISTS idx_visitor_interactions_action_created
+--   ON public.visitor_interactions (action, created_at DESC);
+--
+-- Optional: enforce at most one like per visitor (when you move like off session-only):
+-- CREATE UNIQUE INDEX IF NOT EXISTS uniq_visitor_like
+--   ON public.visitor_interactions (visitor_id)
+--   WHERE action = 'contact.click.like';
+--
+-- ALTER TABLE public.visitor_interactions ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "anon insert visitor_interactions" ON public.visitor_interactions
+--   FOR INSERT TO public WITH CHECK (true);
+-- -- SELECT policies: restrict to service role or omit public SELECT.
+
+-- Contact form messages: existing table public.contact_messages (see contact-messages-table.sql).

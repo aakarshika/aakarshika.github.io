@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useSectionScrollProgress } from '../hooks/useSectionScrollProgress';
+import {
+  getVisitorContext,
+  trackVisitorInteraction,
+} from '../services/analytics';
+import {
+  hasSessionLikeForFingerprint,
+  setSessionLikeForFingerprint,
+} from '../utils/likeSessionPersistence';
 import { GithubIcon, LinkedinIcon, ThumbsUp } from 'lucide-react';
 
 const ContactSection = React.memo(() => {
@@ -12,32 +20,52 @@ const ContactSection = React.memo(() => {
     email: '',
     message: ''
   });
-  console.log("ContactSection");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
   const [isLikeAnimating, setIsLikeAnimating] = useState(false);
-  const [likeClicks, setLikeClicks] = useState(0);
+  const [visitorFingerprint, setVisitorFingerprint] = useState(null);
+  const [hasAlreadyLiked, setHasAlreadyLiked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const ctx = await getVisitorContext();
+      if (cancelled) return;
+      setVisitorFingerprint(ctx.visitorId);
+      if (hasSessionLikeForFingerprint(ctx.visitorId)) {
+        setHasAlreadyLiked(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleOpenForm = () => {
+    void trackVisitorInteraction('contact.click.work_together');
     setIsFormOpen(true);
     setSubmitStatus(null); // Reset status when opening form
   };
 
   const handleCloseForm = () => {
+    void trackVisitorInteraction('contact.form.cancel');
     setIsFormOpen(false);
     setFormData({ name: '', email: '', message: '' });
     setSubmitStatus(null);
   };
 
   const handleOpenResume = () => {
+    void trackVisitorInteraction('contact.click.view_resume');
     window.open(`${window.location.origin}${window.location.pathname}#/resume`, '_blank', 'noopener,noreferrer');
   };
 
   const handleOpenLinkedin = () => {
+    void trackVisitorInteraction('contact.click.linkedin');
     window.open('https://www.linkedin.com/in/aakarshikap', '_blank', 'noopener,noreferrer');
   };
 
   const handleOpenGithub = () => {
+    void trackVisitorInteraction('contact.click.github');
     window.open('https://github.com/aakarshika', '_blank', 'noopener,noreferrer');
   };
 
@@ -50,8 +78,10 @@ const ContactSection = React.memo(() => {
   };
 
   const handleSendLike = () => {
-    console.log('Sending like');
-    setLikeClicks(prev => prev + 1);
+    if (hasAlreadyLiked || !visitorFingerprint) return;
+    void trackVisitorInteraction('contact.click.like');
+    setSessionLikeForFingerprint(visitorFingerprint);
+    setHasAlreadyLiked(true);
     setIsLikeAnimating(true);
     setTimeout(() => {
       setIsLikeAnimating(false);
@@ -86,6 +116,12 @@ const ContactSection = React.memo(() => {
 
       // console.log('Contact message saved successfully:', data);
       setSubmitStatus('success');
+
+      void trackVisitorInteraction('contact.message.sent', {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        message: formData.message.trim(),
+      });
 
       // Clear form and close after a short delay
       setTimeout(() => {
@@ -140,10 +176,22 @@ const ContactSection = React.memo(() => {
             </div>
 
             <button
+                type="button"
                 onClick={handleSendLike}
-                className={`relative inline-block bg-gradient-to-r from-purple-600 to-pink-600 max-w-[400px] mx-auto px-8 py-4 rounded-full text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 active:scale-95 ${
-                  isLikeAnimating ? 'scale-105 shadow-xl shadow-pink-400/40' : ''
-                }`}
+                disabled={!visitorFingerprint || hasAlreadyLiked}
+                aria-disabled={!visitorFingerprint || hasAlreadyLiked}
+                title={
+                  hasAlreadyLiked
+                    ? 'You already sent a like from this browser'
+                    : !visitorFingerprint
+                      ? 'Preparing…'
+                      : undefined
+                }
+                className={`relative inline-block bg-gradient-to-r from-purple-600 to-pink-600 max-w-[400px] mx-auto px-8 py-4 rounded-full text-white transition-all duration-300 ${
+                  !visitorFingerprint || hasAlreadyLiked
+                    ? 'opacity-70 cursor-not-allowed'
+                    : 'hover:shadow-lg hover:shadow-purple-500/25 active:scale-95'
+                } ${isLikeAnimating ? 'scale-105 shadow-xl shadow-pink-400/40' : ''}`}
               >
                 {isLikeAnimating && (
                   <>
@@ -154,7 +202,14 @@ const ContactSection = React.memo(() => {
                     <span className="pointer-events-none absolute -top-2 right-1/3 h-2 w-2 rounded-full bg-rose-300 animate-ping" />
                   </>
                 )}
-                Send a simple <span className="text-white font-bold">Like</span>
+                {!visitorFingerprint ? (
+                  <>One moment…</>
+                ) : hasAlreadyLiked ? (
+                  <>Thanks for the </>
+                ) : (
+                  <>Send a simple </>
+                )}
+                {visitorFingerprint && <span className="text-white font-bold">Like</span>}
                 <span className="text-sm">
                   <ThumbsUp
                     className={`w-5 h-5 inline-block ml-2 transition-transform duration-300 ${
@@ -162,9 +217,9 @@ const ContactSection = React.memo(() => {
                     }`}
                   />
                 </span>
-                {likeClicks > 0 && (
+                {hasAlreadyLiked && (
                   <span className="ml-2 inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold">
-                    +{likeClicks}
+                    +1
                   </span>
                 )}
               </button>
