@@ -8,7 +8,7 @@ const escapeHtml = (value = '') =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
 
-const renderInlineMarkdown = (value = '') => {
+export const renderInlineMarkdown = (value = '') => {
   const escaped = escapeHtml(value);
   return escaped
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -414,6 +414,33 @@ export const buildCustomResumeHtml = ({ baseHtml, expMarkdown, projectsMarkdown,
   }
 
   return `<!DOCTYPE html>\n${doc.documentElement.outerHTML}`;
+};
+
+export const parseResumeBundle = ({ baseHtml, expMarkdown, projectsMarkdown, skillsMarkdown }) => {
+  if (!baseHtml || !expMarkdown || !projectsMarkdown || !skillsMarkdown) {
+    return null;
+  }
+
+  const { titleTag, summary, experiences } = parseExperienceMarkdown(expMarkdown);
+  const projects = parseProjectsMarkdown(projectsMarkdown);
+  const skillGroups = parseMarkdownSkillsSection(skillsMarkdown);
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(baseHtml, 'text/html');
+  const baseMeta = parseBaseResumeMeta(doc);
+  const education = parseEducation(doc);
+  const additional = parseAdditionalSections(doc);
+
+  return {
+    name: baseMeta.name,
+    titleTag: titleTag || baseMeta.titleTag,
+    summary: summary || baseMeta.tagline,
+    experiences,
+    projects,
+    skillGroups,
+    education,
+    additional,
+  };
 };
 
 export const buildCustomResumeMarkdown = ({ baseHtml, expMarkdown, projectsMarkdown, skillsMarkdown }) => {

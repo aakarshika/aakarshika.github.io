@@ -1,0 +1,479 @@
+/* ============================================================
+   Animated Resume — scoped styles
+   Mirrors src/assets/AakarshikaPriydarshi_resume.html exactly,
+   prefixed under .animated-resume-root so the live React render
+   matches the downloadable HTML pixel-for-pixel.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+.animated-resume-root {
+  --ink: #1a1714;
+  --ink-mid: #3d3830;
+  --ink-light: #6b6358;
+  --ink-faint: #a09890;
+  --accent: #c0392b;
+  --accent-warm: #d4531f;
+  --rule: #d9d0c8;
+  --bg: #faf8f5;
+  --page-w: 210mm;
+  --page-h: 297mm;
+  --margin-x: 10mm;
+  --margin-y: 9mm;
+
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+  text-rendering: optimizeLegibility;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.animated-resume-root,
+.animated-resume-root * {
+  box-sizing: border-box;
+}
+
+.animated-resume-root .page {
+  width: var(--page-w);
+  min-height: var(--page-h);
+  background: var(--bg);
+  padding: var(--margin-y) var(--margin-x);
+  position: relative;
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.animated-resume-root .page + .page {
+  margin-top: 10mm;
+}
+
+.animated-resume-root .page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23faf8f5'/%3E%3Crect x='0' y='0' width='1' height='1' fill='%23f0ebe4' opacity='0.4'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.animated-resume-root .page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* HEADER */
+.animated-resume-root .header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  padding-bottom: 9px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 11px;
+  gap: 12px;
+}
+
+.animated-resume-root .name {
+  font-family: 'Playfair Display', serif;
+  font-size: 32pt;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.animated-resume-root .name span {
+  color: var(--accent);
+}
+
+.animated-resume-root .title-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 7pt;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-top: 3px;
+  display: inline-block;
+}
+
+.animated-resume-root .contact-block {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 2px;
+}
+
+.animated-resume-root .contact-block a,
+.animated-resume-root .contact-block span {
+  font-size: 7.2pt;
+  color: var(--ink-mid);
+  text-decoration: none;
+  display: block;
+  font-weight: 400;
+}
+
+.animated-resume-root .contact-block a:hover {
+  color: var(--accent);
+}
+
+.animated-resume-root .contact-social {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.animated-resume-root .contact-social svg {
+  width: 9px;
+  height: 9px;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+
+/* TAGLINE */
+.animated-resume-root .tagline {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 9pt;
+  color: var(--ink-light);
+  line-height: 1.45;
+  margin-bottom: 11px;
+  letter-spacing: 0.01em;
+  max-width: 175mm;
+}
+
+/* SECTION */
+.animated-resume-root .section {
+  margin-bottom: 10px;
+}
+
+.animated-resume-root .section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.animated-resume-root .section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.5pt;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.animated-resume-root .section-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* EXPERIENCE */
+.animated-resume-root .experience {
+  margin-bottom: 14px;
+}
+
+.animated-resume-root .exp-item {
+  margin-bottom: 7px;
+}
+
+.animated-resume-root .exp-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.animated-resume-root .exp-company {
+  font-family: 'Playfair Display', serif;
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.animated-resume-root .exp-stack {
+  font-family: 'DM Mono', monospace;
+  font-size: 6pt;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+  text-align: right;
+  line-height: 1.4;
+  max-width: 52mm;
+}
+
+.animated-resume-root .exp-role-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.animated-resume-root .exp-role {
+  font-size: 8pt;
+  font-weight: 600;
+  color: var(--accent-warm);
+  letter-spacing: 0.01em;
+}
+
+.animated-resume-root .exp-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.5pt;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+}
+
+.animated-resume-root .exp-sub-role {
+  font-size: 7.8pt;
+  font-weight: 500;
+  color: var(--ink-light);
+  font-style: italic;
+}
+
+.animated-resume-root ul.bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.animated-resume-root ul.bullets li {
+  font-size: 8pt;
+  line-height: 1.48;
+  color: var(--ink-mid);
+  padding-left: 10px;
+  position: relative;
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+
+.animated-resume-root ul.bullets li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--rule);
+  font-weight: 300;
+}
+
+.animated-resume-root ul.bullets li strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* PROJECTS */
+.animated-resume-root .proj-item {
+  margin-bottom: 8px;
+}
+
+.animated-resume-root .proj-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.animated-resume-root .proj-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 9.5pt;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.animated-resume-root .proj-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 6pt;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.animated-resume-root .proj-tech {
+  font-family: 'DM Mono', monospace;
+  font-size: 5.8pt;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+
+.animated-resume-root .proj-summary {
+  font-size: 7pt;
+  color: var(--ink-light);
+  margin-bottom: 4px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* SKILLS */
+.animated-resume-root .skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 10px;
+}
+
+.animated-resume-root .skill-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.8pt;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 2px;
+}
+
+.animated-resume-root .skill-value {
+  font-size: 7.4pt;
+  color: var(--ink-mid);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* EDUCATION */
+.animated-resume-root .edu-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.animated-resume-root .edu-degree {
+  font-size: 8pt;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.animated-resume-root .edu-school {
+  font-size: 7.8pt;
+  color: var(--ink-light);
+  font-style: italic;
+}
+
+.animated-resume-root .edu-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.8pt;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  margin-right: 10px;
+}
+
+/* ACCENT CORNER */
+.animated-resume-root .corner-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18mm;
+  height: 18mm;
+  background: var(--accent);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  opacity: 0.08;
+  z-index: 0;
+}
+
+/* PAGE NUMBER */
+.animated-resume-root .page-num {
+  position: absolute;
+  bottom: 7mm;
+  right: var(--margin-x);
+  font-family: 'DM Mono', monospace;
+  font-size: 6pt;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+}
+
+.animated-resume-root .two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 14px;
+}
+
+.animated-resume-root .divider-thin {
+  height: 1px;
+  background: var(--rule);
+  margin: 8px 0 16px;
+}
+
+.animated-resume-root .subsection {
+  margin-top: 5px;
+}
+
+.animated-resume-root .page-mini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+
+.animated-resume-root .page-mini-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 11pt;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.animated-resume-root .page-mini-title span {
+  color: var(--ink-faint);
+  font-size: 8pt;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+}
+
+.animated-resume-root .page-mini-contact {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.5pt;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+}
+
+.animated-resume-root .inline-code {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.5pt;
+  background: #f0ebe4;
+  padding: 0 2px;
+}
+
+.animated-resume-root .additional-section {
+  margin-top: 4px;
+}
+
+.animated-resume-root .additional-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px 10px;
+}
+
+/* ── Animation-only helpers ─────────────────────────────────── */
+
+/* Each animated word/bullet sits in its own inline span so layout
+   transitions can offset it independently. */
+.animated-resume-root .morph-word {
+  display: inline-block;
+  white-space: pre;
+  will-change: transform, opacity, filter;
+}
+
+.animated-resume-root .morph-bullet {
+  display: list-item;
+  list-style: none;
+}
+
+/* Lock the live and printed widths to the same value so font metrics,
+   wrapping, and page-fit stay identical between the React render and
+   the downloadable HTML. */
+@media (max-width: 230mm) {
+  .animated-resume-root {
+    transform-origin: top center;
+  }
+}
