@@ -1,8 +1,8 @@
 # Aakarshika Priydarshi
 
-**Full-Stack Engineer · AI Systems · Cloud-Native Architecture (AWS)**
+**Full-Stack Engineer · AI-Integrated Systems · Data Pipelines · Cloud-Native**
 
-Full-stack engineer with 9+ years of experience building and deploying **AI-integrated applications and scalable cloud systems**, combining **frontend architecture, backend services, and AI pipelines** across production environments serving 50K+ users.
+Full-stack engineer with 9+ years of experience building AI-adjacent and data-intensive production systems — from chatbot platform backends and analytics ingestion pipelines to event-driven cloud architectures and ML research. Comfortable across the full stack from frontend integration to distributed data processing, with a focus on systems where data volume, correctness, and pipeline reliability are central.
 
 ---
 
@@ -10,65 +10,77 @@ Full-stack engineer with 9+ years of experience building and deploying **AI-inte
 
 ### Senior Software Engineer — MdThink, Maryland  
 *2022 — Present*  
-*Stack: Node.js · Python · Angular · React · PostgreSQL · AWS*
+*Stack: Node.js · Python · Angular · React · Aurora PostgreSQL · AWS Lambda · S3 · EKS*
 
-- Led **end-to-end development of cloud-native platforms** serving ~50K users, integrating **frontend systems, backend services, and asynchronous processing pipelines on AWS.**
+- Built **event-driven and asynchronous processing pipelines** using AWS Lambda and scheduled triggers for report generation, document workflows, and notification dispatch — designed to handle bursty, data-heavy workloads without impacting request-serving APIs.
 
-- Designed and built **data-intensive backend systems** supporting reporting, notifications, compliance workflows, and real-time features across distributed services.
+- Architected **large file processing workflows** using S3 multipart upload and streaming, enabling reliable ingestion and downstream processing of large document payloads in regulated workflows.
 
-- Developed **asynchronous processing pipelines** using API triggers and schedulers, enabling large-scale document generation, audit workflows, and background processing.
+- Designed **data-heavy backend systems** with complex multi-tenant data models, audit trails, and compliance-driven state machines across regulatory workflows serving ~50K users.
 
-- Leveraged **AWS services (Lambda, S3, EC2)** to build scalable pipelines for **file processing, storage, and event-driven workflows.**
+- Developed **REST APIs and async pipelines in Node.js (Loopback)** handling multi-tenant business logic, workflow orchestration, and integration with external enterprise systems.
 
-- **Applied security-first development practices including JWT authentication, RBAC enforcement, and secure document workflows** across regulated government platforms. Built and optimized **REST APIs and data pipelines** handling complex multi-tenant workflows and large data transformations.
+- Implemented **real-time systems using WebSockets** for chat and live process tracking, with connection lifecycle management and stateful UI synchronization across concurrent users.
 
-- Improved **database performance (~20%)** through query optimization, schema restructuring, and efficient handling of aggregation-heavy workloads.
+- Optimized **Aurora PostgreSQL schemas and queries** for analytics-adjacent reporting workloads, achieving ~20% performance improvement through indexing, query restructuring, and aggregation strategy.
 
-- Designed frontend architecture using **Angular and React**, enabling scalable UI systems that integrate seamlessly with backend APIs and real-time services.
+- Built **Python Lambda automation** for file processing hooks, scheduled jobs, and S3-triggered event handlers integrated into the platform's cloud processing layer.
 
-- Implemented **real-time features using WebSockets**, enabling interactive systems such as chat and live process tracking.
-
-- Built secure systems using **JWT authentication and RBAC**, enforcing role-based access across workflows and services.
-
-- Integrated multiple enterprise systems and workflows, handling **data transformation, orchestration, and cross-system communication.**
-
-- Collaborated with DevOps on **cloud deployment pipelines and containerized environments**, ensuring reliable production releases.
-
-- Debugged and resolved **complex production issues across full stack layers**, including data inconsistencies and workflow failures.
+- Deployed and operated services on **AWS EKS (Kubernetes)** with Jenkins CI/CD, supporting reliable multi-environment promotion and containerized service management.
 
 ---
 
 ### Full Stack Developer — MdThink  
 *Apr 2019 — Aug 2022*
 
-- Developed full-stack features across **Angular frontend, Node.js backend, and PostgreSQL**, supporting enterprise-scale applications.
+- Built full-stack features across **Angular frontend, Node.js backend, and PostgreSQL** for enterprise regulatory applications, growing into broader ownership of data workflows and API design.
 
-- Built APIs and data workflows enabling **real-time and batch-driven processing systems.**
+- Developed **batch and event-triggered processing features**, improving data handling efficiency across high-volume backend operations.
 
-- Improved performance across frontend and backend layers through **query optimization and efficient data handling.**
+- Collaborated with product, QA, and DevOps teams to deliver **end-to-end features** reliably and on schedule.
 
 ---
 
 ### Backend Developer — Neuron Inc  
-*Dec 2017 — Jan 2019*
+*Dec 2017 — Jan 2019*  
+*Stack: Django · Spring Boot · Python · Java · PostgreSQL*
 
-- Developed backend systems for a **multi-tenant AI chatbot platform**, supporting conversational interfaces and analytics.
+- Built the backend infrastructure for a **multi-tenant AI chatbot platform**, designing REST APIs that powered conversational interfaces, session tracking, and structured analytics ingestion.
 
-- Built APIs enabling **session tracking, messaging workflows, and data ingestion for AI-driven applications.**
+- Architected the platform's **analytics data ingestion layer** — collecting structured interaction events from chatbot sessions, storing them in PostgreSQL for downstream reporting and model evaluation workflows.
 
-- Implemented **JWT authentication and RBAC**, ensuring secure multi-user access.
+- Designed **multi-tenant data isolation patterns** in Django ORM and Spring Boot service layers, ensuring secure, scoped data access across client accounts on shared infrastructure.
 
-- Improved system performance through **validation layers, rate limiting, and scalable backend design.**
+- Implemented **JWT authentication and RBAC** across both Django and Spring Boot service layers, maintaining consistent access control throughout the platform.
+
+- Built **session continuity and conversation state management** APIs that maintained user context across chatbot interactions — a core requirement for coherent AI-driven conversation flows.
+
+- Improved platform reliability through **input validation, rate limiting, and structured error handling**, supporting consistent behavior under varying client load.
 
 ---
 
 ### Backend Engineer — Delhivery  
-*Dec 2016 — Sep 2017*
+*Dec 2016 — Sep 2017*  
+*Stack: Java · PySpark · Python · Apache Spark · AWS EMR · Kinesis · Redshift · S3 · Airflow*
 
-- Engineered **large-scale data pipelines (TB-scale)** using Python, Java, and Spark on AWS EMR.
+- Engineered **TB-scale data pipelines for logistics analytics** using Java, PySpark, and Spark on AWS EMR — processing raw operational event streams into structured, analytics-ready datasets.
 
-- Built **streaming and batch processing systems** using Kinesis and queue-based architectures.
+- Built **Kinesis consumer applications** for real-time event ingestion, routing streaming records into both immediate analytics paths and batch staging areas in S3.
 
-- Developed distributed data processing workflows supporting **analytics and downstream AI/ML systems.**
+- Designed **Airflow DAGs** to orchestrate complex multi-stage pipeline workflows, with dependency management, retry handling, and Redshift load coordination.
 
-- Improved reliability of data pipelines by introducing **fault-tolerant processing and recovery mechanisms.**
+- Implemented **fault-tolerant processing with idempotent writes and checkpointing**, eliminating 6-hour full-pipeline restarts that had been triggered by mid-run failures.
+
+- Developed **JSON-to-Parquet transformation pipelines** with schema enforcement and partition management optimized for downstream ML feature extraction and analytics query patterns.
+
+---
+
+### ML Research — George Mason University, Virginia  
+*2016 — 2018*  
+*Stack: Python · PyTorch · OpenCV · NLTK · Conda*
+
+- Conducted research in **CNN-based image classification** using PyTorch and OpenCV, exploring architecture variants for feature extraction and transfer learning applications.
+
+- Built **NLP preprocessing pipelines using NLTK** for text normalization, tokenization, and feature engineering on research corpora.
+
+- Managed **reproducible ML experiment environments** using Conda, versioning model configurations and training dependencies across research iterations.

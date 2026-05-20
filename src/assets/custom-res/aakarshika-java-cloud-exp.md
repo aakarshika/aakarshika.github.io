@@ -1,8 +1,8 @@
 # Aakarshika Priydarshi
 
-**Backend Engineer · Java · Spring Boot · Cloud & Distributed Systems**
+**Backend Engineer · Java · Cloud-Native Systems · AWS · Kubernetes**
 
-Backend engineer with 9+ years of experience building **scalable microservices, data pipelines, and cloud-native systems**. Strong foundation in **Java, distributed architectures, and AWS**, with hands-on experience in **event-driven systems, containerized deployments, and production system reliability.**
+Backend engineer with 9+ years of experience building cloud-native microservices, distributed data pipelines, and production-grade platform systems. Deep hands-on experience with AWS (Lambda, EKS, EMR, Kinesis, S3, Redshift), container orchestration with Kubernetes, and CI/CD delivery pipelines — applied across both government platform development and large-scale data engineering.
 
 ---
 
@@ -10,59 +10,65 @@ Backend engineer with 9+ years of experience building **scalable microservices, 
 
 ### Senior Software Engineer — MdThink, Maryland  
 *2022 — Present*  
-*Stack: Java · Spring Boot · Node.js · PostgreSQL · AWS · Kubernetes*
+*Stack: Node.js · Java · Angular · Aurora PostgreSQL · AWS Lambda · EKS · S3 · EC2 · Jenkins · Docker · Kubernetes*
 
-- Designed and implemented **backend services for reporting and data processing workflows**, using **Java-based service layers** integrated with PostgreSQL and cloud storage systems.
+- Led **cloud-native platform development** for government regulatory systems serving ~50K users, owning backend architecture, AWS service integration, and containerized deployment pipelines.
 
-- Built **on-demand and scheduled processing systems**, leveraging asynchronous execution patterns to handle large data workloads and report generation.
+- Designed and operated **AWS Lambda functions** for event-driven and scheduled workflows — report triggering, file processing, notification dispatch — decoupling heavy workloads from request-serving APIs.
 
-- Developed and maintained **RESTful microservices**, applying **SOLID principles and layered architecture (controller/service/repository)**.
+- Architected a **large file upload system using S3 multipart upload and streaming**, enabling reliable handling of large document submissions without overloading application servers.
 
-- Worked with **event-driven and streaming systems (AWS Kinesis)**, designing data pipelines and processing flows transferable to Kafka-based architectures.
+- Deployed and maintained services on **AWS EKS (Kubernetes)**, managing container orchestration, rolling deployments, and service-level configuration across environments.
 
-- Collaborated on **containerized deployments using Docker and AWS EKS (Kubernetes)**, supporting scalable service orchestration and deployment pipelines.
+- Built and maintained **CI/CD pipelines using Jenkins**, including build automation, integration test execution, Docker image publishing, and environment promotion workflows.
 
-- Participated in **CI/CD pipelines (Jenkins)**, contributing to build, test, and deployment automation.
+- Integrated cloud services including **S3, EC2, Lambda, and CloudWatch** into platform workflows, ensuring reliable event routing, storage, and observability across production systems.
 
-- Designed and optimized **PostgreSQL queries and schemas**, improving performance by ~20% for data-heavy operations.
+- Designed **Aurora PostgreSQL schemas and query patterns** to handle multi-tenant data isolation and high-volume transactional workloads with ~20% performance improvement through indexing and query restructuring.
 
-- Implemented **RBAC-based security and session management**, ensuring secure service access across distributed systems.
+- Led **architecture reviews and code review processes**, establishing patterns for microservice design, API contracts, and cloud resource usage across engineering teams.
 
-- Led **production debugging and incident resolution**, identifying bottlenecks and improving system reliability under load.
-
-- Contributed to **service resiliency improvements**, including retry mechanisms, failure handling, and improved logging/monitoring.
+- Drove **operational reliability improvements**: introduced structured logging via CloudWatch, defined retry and circuit-breaker patterns, and resolved critical production incidents across distributed service layers.
 
 ---
 
 ### Full Stack Developer — MdThink  
 *Apr 2019 — Aug 2022*
 
-- Developed backend APIs and services supporting **enterprise workflows**, with exposure to **Java-based components and distributed service design.**
+- Built backend services and APIs integrated with **AWS cloud infrastructure**, supporting enterprise-scale regulatory workflows across Angular frontend, Node.js API, and PostgreSQL database layers.
 
-- Built and maintained **data-driven applications**, optimizing performance and ensuring reliability across backend systems.
+- Contributed to **deployment and infrastructure workflows**, collaborating with DevOps to improve release pipelines and backend service stability.
 
-- Collaborated with DevOps and engineering teams on **deployment workflows and service integration.**
+- Designed and optimized **data models and database queries** for high-volume transactional systems, reducing latency and improving throughput.
 
 ---
 
 ### Backend Developer — Neuron Inc  
-*Dec 2017 — Jan 2019*
+*Dec 2017 — Jan 2019*  
+*Stack: Spring Boot · Java · Django · Python · PostgreSQL*
 
-- Built backend systems for a **multi-tenant AI platform**, designing APIs for messaging, session tracking, and analytics ingestion.
+- Built backend services for a **multi-tenant AI chatbot platform** using Spring Boot and Django, designing REST APIs for messaging, session tracking, and analytics ingestion.
 
-- Implemented **secure authentication (JWT) and role-based access control**, ensuring scalable multi-user access.
+- Implemented **JWT authentication and role-based access control** across the platform's dual-framework backend, maintaining consistent security behavior across service layers.
 
-- Applied **validation, rate limiting, and structured error handling** to improve API reliability.
+- Applied **multi-tenant data isolation patterns** in PostgreSQL, ensuring correct scoping of data access in a shared infrastructure environment.
+
+- Improved system reliability through **rate limiting, input validation, and structured exception handling** across Spring Boot service endpoints.
 
 ---
 
 ### Backend Engineer — Delhivery  
-*Dec 2016 — Sep 2017*
+*Dec 2016 — Sep 2017*  
+*Stack: Java · PySpark · Apache Spark · AWS EMR · Kinesis · Redshift · S3 · Airflow*
 
-- Engineered **large-scale data pipelines (TB-scale)** using Java, Python, and Spark on AWS.
+- Engineered **TB-scale data pipelines on AWS EMR** using Java Spark and PySpark, processing logistics telemetry into structured Parquet datasets loaded into Amazon Redshift.
 
-- Built distributed processing jobs for **data transformation and ingestion into analytics systems (Redshift).**
+- Built **Kinesis consumer applications** for real-time event ingestion, routing streaming records into both hot-path analytics and cold-path S3 staging for batch pipeline pickup.
 
-- Worked with **streaming and batch processing systems (Kinesis, queues)** to handle real-time and offline data flows.
+- Designed **Airflow DAGs** to orchestrate multi-stage pipeline execution: dependency tracking, scheduling, retry policies, and downstream Redshift load coordination.
 
-- Improved pipeline resilience by introducing **fault-tolerant processing**, reducing failure recovery time from hours to near real-time.
+- Implemented **fault-tolerant processing patterns** including idempotent writes and job-level checkpointing, eliminating 6-hour full-restart cycles caused by mid-pipeline failures.
+
+- Tuned **EMR cluster configuration and Spark executor settings** to maximize throughput and minimize shuffle overhead across TB-scale processing jobs.
+
+- Maintained **S3 data lake organization** including partitioning strategies, lifecycle policies, and staging area management for multi-stage pipeline workflows.

@@ -1,8 +1,8 @@
 # Aakarshika Priydarshi
 
-**Lead Frontend Engineer · React · Angular · Scalable UI Systems**
+**Senior Frontend Engineer · Angular · React · TypeScript · Scalable UI Systems**
 
-Frontend-focused engineer with 9+ years of experience building **high-performance, scalable user interfaces** for enterprise and consumer applications. Expertise in **React, Angular, TypeScript**, and **UI architecture**, with strong backend awareness enabling seamless full-stack integration.
+Frontend-focused engineer with 9+ years of experience building high-performance, maintainable user interfaces for enterprise-scale applications. Deep expertise in Angular architecture, React component systems, and TypeScript — with strong backend awareness that enables effective API contract design and seamless full-stack collaboration.
 
 ---
 
@@ -10,55 +10,53 @@ Frontend-focused engineer with 9+ years of experience building **high-performanc
 
 ### Senior Software Engineer — MdThink, Maryland  
 *2022 — Present*  
-*Stack: Angular · React · TypeScript · Node.js · PostgreSQL · AWS*
+*Stack: Angular · React · TypeScript · Node.js · WebSockets · AWS*
 
-- Led **frontend architecture and development** of multi-tenant government platforms serving **~50K users**, focusing on **scalable UI systems, performance, and maintainability.**
+- Led **frontend architecture and development** for multi-tenant government platforms serving ~50K users, designing scalable UI systems from component hierarchy through routing strategy and shared library organization.
 
-- Designed and implemented **modular Angular architecture**, including **component hierarchy, routing strategies, and shared UI libraries** to support complex enterprise workflows.
+- Designed and implemented a **modular Angular architecture** with feature-based module boundaries, lazy-loaded route trees, and a centralized shared UI library — dramatically reducing duplication across application surfaces.
 
-- Built **reusable component systems** (address forms, payment modules, notification systems), significantly reducing development time and improving UI consistency across applications.
+- Built **reusable, highly configurable UI component systems** (dynamic forms, data grids, address input, file upload, notification overlays) that became platform standards and cut feature delivery time for new modules.
 
-- Improved **frontend performance** by implementing **lazy loading, DOM restructuring, and optimized rendering strategies**, reducing initial load time and improving user experience.
+- Owned **Angular version upgrades and major refactors**, migrating deprecated patterns, improving bundle size, and unblocking compiler-level performance improvements across the application.
 
-- Led **Angular upgrades and modernization efforts**, ensuring compatibility, performance improvements, and long-term maintainability.
+- Implemented **real-time UI features using WebSockets** — including a live chat system and streaming file upload progress — managing connection lifecycle, reconnection handling, and UI state synchronization.
 
-- Collaborated closely with backend teams to define **clean API contracts**, enabling parallel frontend/backend development and reducing integration issues.
+- Improved **frontend performance** through lazy loading, OnPush change detection, DOM restructuring, and strategic memoization — measurably reducing initial load time and runtime rendering cost.
 
-- Integrated **real-time features using WebSockets** (chat systems, file upload progress tracking), enhancing interactivity and responsiveness.
+- Defined and enforced **clean API contracts with backend teams**, enabling parallel development cycles and significantly reducing integration-time surprises and rework.
 
-- Implemented **secure authentication flows (JWT + session-based)** and worked with RBAC systems to enforce role-based UI rendering.
+- Implemented **role-based UI rendering tied to JWT + session auth**, ensuring users see only the actions and data their RBAC permissions allow, across complex multi-role workflows.
 
-- Debugged and resolved **complex UI issues spanning frontend, backend, and data layers**, ensuring production stability and consistent user experience.
+- Debugged and resolved **cross-layer UI issues** involving state desync, race conditions in async data flows, and rendering failures under complex permission-state combinations.
 
-- Participated in **code reviews, sprint planning, and cross-functional collaboration** with QA and product teams to deliver high-quality UI features.
+- Led **frontend code reviews, established component design standards**, and mentored engineers on Angular patterns, accessibility basics, and UI testing practices.
 
 ---
 
 ### Full Stack Developer — MdThink  
 *Apr 2019 — Aug 2022*
 
-- Developed **production-grade Angular applications** with dynamic forms, workflows, and real-time data integration.
+- Built **production Angular application features** including dynamic forms, multi-step workflows, and data-heavy table views integrated with Node.js APIs.
 
-- Built UI components integrated with **Node.js APIs and PostgreSQL backends**, ensuring efficient data flow and responsiveness.
+- Implemented **state management patterns** across Angular services and component trees, improving data consistency and reducing redundant API calls.
 
-- Optimized frontend performance and usability through **state management improvements and rendering optimizations.**
+- Optimized **frontend rendering and load performance** through lazy loading, change detection tuning, and elimination of unnecessary DOM operations.
 
-- Collaborated with product and QA teams to deliver **user-friendly and scalable UI features** across enterprise applications.
+- Collaborated with product and QA teams to ship **accessible, user-tested UI features** across enterprise regulatory applications.
 
 ---
 
 ### Backend Developer — Neuron Inc  
 *Dec 2017 — Jan 2019*
 
-- Built backend APIs for an AI chatbot platform, working closely with frontend teams to support **real-time messaging interfaces and session-based interactions.**
+- Designed REST APIs with **frontend usability as a first-class concern**, working directly with UI developers to define response shapes, pagination contracts, and error formats that simplified client-side rendering.
 
-- Designed APIs that enabled **dynamic UI rendering for chatbot workflows and analytics dashboards.**
+- Built APIs enabling **real-time chatbot interaction interfaces and analytics dashboards**, supporting dynamic UI rendering for conversational and reporting workflows.
 
 ---
 
 ### Backend Engineer — Delhivery  
 *Dec 2016 — Sep 2017*
 
-- Developed backend systems supporting **data-driven dashboards and analytics interfaces**, enabling frontend applications to visualize large-scale logistics data.
-
-- Built data pipelines and APIs that powered **real-time and batch-driven UI reporting systems.**
+- Developed data APIs and pipeline outputs that fed **logistics analytics dashboards**, providing frontend applications with structured, query-optimized data for real-time and batch reporting views.

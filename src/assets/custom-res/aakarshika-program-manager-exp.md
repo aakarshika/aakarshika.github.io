@@ -1,8 +1,8 @@
 # Aakarshika Priydarshi
 
-**Technical Program Manager · Systems & Compliance · Full-Stack Background**
+**Technical Program Manager · Platform Delivery · Cross-Team Coordination · Regulated Systems**
 
-Technical program leader with 6+ years of experience driving **cross-functional initiatives, system implementations, and compliance-driven workflows** across enterprise platforms. Strong ability to translate **business and policy requirements into scalable technical systems**, while coordinating across stakeholders, engineering teams, and external integrations.
+Technical program leader with 9+ years driving cross-functional delivery of complex, compliance-driven platforms. Combines deep engineering fluency with structured program management — translating ambiguous policy requirements into executable plans, coordinating across stakeholders and engineering teams, and maintaining delivery momentum while managing risk in regulated environments.
 
 ---
 
@@ -11,61 +11,53 @@ Technical program leader with 6+ years of experience driving **cross-functional 
 ### Senior Software Engineer — MdThink, Maryland  
 *2022 — Present*
 
-- Led **end-to-end delivery of multiple platform initiatives**, owning design, implementation, and rollout of systems supporting regulatory workflows for ~50K users.
+- Led **end-to-end delivery of multiple concurrent platform initiatives** for government regulatory systems serving ~50K users — from initial requirements through design, implementation, QA, and production rollout.
 
-- Drove development and adoption of **key platform modules**, including: **Compliance and inspection workflows**, **Reporting and analytics systems**, **Notifications and communication pipelines**, **Contracting and budgeting workflows**, 
+- Drove delivery of **high-impact platform modules** across compliance and inspection workflows, on-demand and scheduled reporting, notification systems, contracting and budgeting workflows, and document processing pipelines.
 
-- Conducted **cross-system impact analysis** for new features, identifying dependencies across services, databases, and integrations before implementation.
+- Conducted **cross-system impact analysis** before every major feature, identifying dependencies across services, databases, and third-party integrations — preventing scope creep and downstream integration failures.
 
-- Acted as a **technical liaison between business stakeholders and engineering teams**, translating requirements into executable system designs and pushing back on infeasible or conflicting requirements.
+- Served as **technical liaison between business stakeholders and engineering teams**, translating regulatory and policy requirements into clear technical specifications and pushing back constructively on infeasible or conflicting requirements.
 
-- Led **stakeholder discussions and requirement refinement sessions**, ensuring alignment across product, QA, engineering, and client teams.
+- Led **stakeholder alignment sessions and requirement refinement workshops**, ensuring shared understanding across product, QA, engineering, and client-facing teams before development started.
 
-- Supported **policy-driven system behavior** through integration with rule engines (e.g., Corticon), ensuring business rules were consistently enforced across workflows.
+- Supported **policy-driven system configuration** through integration with business rule engines (Corticon) and identity systems (SailPoint), ensuring business rules were consistently enforced across regulated workflows.
 
-- Defined and tracked **operational metrics**, including:, **System performance** (query latency, API response times), **Workflow completion** efficiency, **Production issue** frequency and resolution time
+- Defined and tracked **operational metrics** across system performance (query latency, API response time), workflow completion rates, and production incident frequency and resolution time.
 
-- Led **production incident triage and root cause analysis**, coordinating cross-team resolution and implementing long-term fixes to prevent recurrence.
+- Led **production incident triage and cross-team resolution coordination**, driving root cause analysis and implementing systemic fixes to prevent recurrence — with clear stakeholder communication throughout.
 
-- Introduced **process improvements**: **Integration testing** in CI/CD pipelines to reduce regression risk,   **Structured logging** and monitoring using CloudWatch and dashboards,   **Modularization** of backend systems to improve development velocity  
+- Introduced **process improvements** including integration testing in CI/CD pipelines to reduce regression risk, structured monitoring and alerting via CloudWatch, and backend modularization to improve team development velocity.
 
-- Coordinated with external systems and vendors (e.g., identity management, workflow engines, support pipelines), ensuring **smooth integration and operational reliability.**
+- Managed **sprint planning, backlog prioritization, and release coordination**, maintaining predictable delivery cadences and transparent status reporting to stakeholders.
 
-- Participated in **sprint planning, backlog prioritization, and release coordination**, ensuring timely and predictable delivery of features.
+- Coordinated with **external vendors and system integrators** (identity management, workflow engines, support pipelines) to ensure smooth onboarding and sustained operational reliability.
 
 ---
 
 ### Full Stack Developer — MdThink  
 *Apr 2019 — Aug 2022*
 
-- Delivered full-stack features while working closely with stakeholders to **translate business requirements into system functionality.**
+- Delivered full-stack features while working closely with stakeholders to **translate business requirements into testable system functionality** across frontend, backend, and database layers.
 
-- Performed **data validation and system verification using SQL**, ensuring correctness of workflows and outputs.
+- Contributed to **process alignment across product, QA, and engineering teams**, improving requirements clarity and reducing rework from misunderstood specifications.
 
-- Supported **production stability** by identifying and resolving issues across integrated systems.
-
-- Contributed to **process alignment across teams**, improving clarity in requirements and delivery expectations.
+- Supported **production stability and incident resolution**, coordinating fixes across system layers and communicating impact to relevant teams.
 
 ---
 
 ### Backend Developer — Neuron Inc  
 *Dec 2017 — Jan 2019*
 
-- Supported onboarding of new clients by **analyzing external systems and mapping integration requirements** into platform capabilities.
+- Supported **client onboarding by analyzing external system requirements** and mapping them to platform capabilities, managing integration scope and surfacing gaps early.
 
-- Designed backend APIs enabling **structured workflows for conversational systems**, aligning technical behavior with business use cases.
-
-- Collaborated with product teams to refine requirements and ensure **correct system behavior across edge cases.**
+- Collaborated with product teams to refine requirements and define **acceptance criteria for API behavior and system correctness** across edge cases and client-specific configurations.
 
 ---
 
 ### Backend Engineer — Delhivery  
 *Dec 2016 — Sep 2017*
 
-- Built and maintained **large-scale data pipelines**, supporting analytics and operational decision-making systems.
+- Improved **operational reliability of large-scale data pipelines**, investigating failures and implementing fault-tolerant mechanisms that eliminated 6-hour restart cycles.
 
-- Investigated and resolved **pipeline failures**, reducing downtime and improving reliability of batch processing systems.
-
-- Introduced **fault-tolerant mechanisms**, eliminating full pipeline restarts (~6 hours) and improving operational efficiency.
-
-- Validated data accuracy across transformations, ensuring **reliable inputs for downstream reporting systems.**
+- Coordinated pipeline recovery and validated data accuracy across transformations, ensuring **reliable outputs for downstream analytics and operations reporting.**
