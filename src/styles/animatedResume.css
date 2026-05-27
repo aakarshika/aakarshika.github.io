@@ -151,6 +151,12 @@
   max-width: 175mm;
 }
 
+.animated-resume-root .tagline strong {
+  font-weight: 600;
+  color: var(--ink);
+  font-style: normal;
+}
+
 /* SECTION */
 .animated-resume-root .section {
   margin-bottom: 10px;

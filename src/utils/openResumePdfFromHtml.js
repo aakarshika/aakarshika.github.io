@@ -15,13 +15,15 @@ export function openResumePdfFromHtmlString(html, pdfFilename) {
     htmlWithBootstrap = bootstrap + html;
   }
 
-  const blob = new Blob([htmlWithBootstrap], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, '_blank', 'noopener,noreferrer');
+  const win = window.open('', '_blank');
   if (!win) {
-    URL.revokeObjectURL(url);
     return false;
   }
-  setTimeout(() => URL.revokeObjectURL(url), 120_000);
+
+  win.opener = null;
+  win.document.open();
+  win.document.write(htmlWithBootstrap);
+  win.document.close();
+
   return true;
 }

@@ -54,6 +54,20 @@ const MorphText = ({ text, className, as: Tag = 'span' }) => {
  * put (no animation). Different bullets fade + slide while the list height
  * smoothly reflows.
  * ───────────────────────────────────────────────────────────────────────── */
+const AnimatedTagline = ({ text = '' }) => (
+  <AnimatePresence mode="wait" initial={false}>
+    <motion.div
+      key={text}
+      className="tagline"
+      initial={{ opacity: 0, y: -4, filter: 'blur(2px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, y: 4, filter: 'blur(2px)' }}
+      transition={BULLET_TRANSITION}
+      dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(text) }}
+    />
+  </AnimatePresence>
+);
+
 const AnimatedBullets = ({ bullets = [] }) => (
   <motion.ul layout className="bullets" transition={LAYOUT_TRANSITION}>
     <AnimatePresence mode="popLayout" initial={false}>
@@ -199,7 +213,7 @@ const AnimatedResume = ({ bundle }) => {
             <ContactBlock />
           </div>
 
-          <MorphText className="tagline" text={summary} as="div" />
+          <AnimatedTagline text={summary} />
 
           <Section label="Experience">
             <AnimatePresence mode="popLayout" initial={false}>

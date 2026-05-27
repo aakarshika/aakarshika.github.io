@@ -1,8 +1,8 @@
 # Aakarshika Priydarshi
 
-**Backend Engineer · Java · Spring Boot · Distributed Systems**
+**Backend Engineer · Java · Spring Boot · AWS & Distributed Systems**
 
-Backend-focused engineer with 9+ years of experience building **scalable services, data pipelines, and enterprise systems**, with hands-on experience in **Java, Spring Boot, and distributed architectures** across cloud environments. 
+Backend-focused engineer with 9+ years of experience building **scalable Java services, data pipelines, and cloud-native enterprise systems**. Strong foundation in **Spring Boot, OOP, SOLID design, multithreading/concurrency, distributed architecture, and AWS**, with hands-on experience across **Angular frontends, PostgreSQL data layers, event-driven processing, and production system reliability.**
 
 ---
 
@@ -10,38 +10,46 @@ Backend-focused engineer with 9+ years of experience building **scalable service
 
 ### Senior Software Engineer — MdThink, Maryland  
 *2022 — Present*  
-*Stack: Java · Spring Boot · Node.js · PostgreSQL · AWS*
+*Stack: Java · Spring Boot · PostgreSQL · AWS · Angular · Node.js · Kubernetes*
 
-- Designed and developed a **reporting system using Java-based services**, supporting **on-demand and scheduled report generation (PDF + analytics)** for enterprise regulatory workflows.
+- Designed and developed **Java-based reporting services** for regulatory workflow systems, supporting **on-demand and scheduled report generation (PDF + analytics)** for enterprise users.
 
-- Built backend services handling **large data processing and report generation pipelines**, integrating with Aurora PostgreSQL and external storage systems (S3).
+- Built **large-scale data processing and report generation pipelines** with Java service layers, Aurora PostgreSQL, and AWS storage integrations including S3.
 
-- Implemented **secure authentication and session management** using JWT and RBAC patterns, with exposure to **OAuth-based integration** flows across enterprise systems. Developed and optimized **REST APIs** supporting multi-tenant workflows and complex business logic across regulatory platforms.
+- Designed a **large file upload service** using streaming-oriented backend workflows and S3-backed storage patterns, supporting reliable upload, validation, and downstream processing for enterprise documents.
 
-- Improved **database performance (~20%)** by optimizing PostgreSQL queries, restructuring schemas, and refining aggregation-heavy operations.
+- Developed and optimized **RESTful microservices** using **OOP, SOLID principles, design patterns, Java collections, exception handling, and layered architecture**, supporting multi-tenant workflows and complex business rules.
 
-- Implemented **asynchronous processing workflows** using API triggers and schedulers to decouple heavy backend workloads from user-facing services.
+- Implemented **asynchronous and concurrent processing workflows** using API triggers, schedulers, background execution patterns, and thread-safe service design to decouple heavy workloads from user-facing services.
 
-- Designed and enforced **RBAC-based access control** and authentication flows (JWT + session), ensuring secure backend operations.
+- Designed **secure authentication, session management, and RBAC authorization** using JWT and role-based access patterns across distributed backend services.
+
+- Improved **database performance (~20%)** by optimizing PostgreSQL queries, restructuring schemas, adding indexes, and refining aggregation-heavy operations.
+
+- Collaborated with DevOps on **AWS deployments (EC2, Lambda, S3) and containerized environments**, supporting scalable service orchestration and reliable production releases.
+
+- Worked with **event-driven and streaming systems (AWS Kinesis)** for data processing flows, applying patterns transferable to Kafka-based architectures.
+
+- Built and integrated **Angular frontend modules** with backend API contracts, enabling scalable UI workflows for reporting, compliance, and role-based enterprise features.
+
+- Maintained select **Node.js backend APIs** for platform workflows while primarily leading Java/Spring Boot service design, integration, and production support.
 
 - Integrated multiple enterprise systems (Corticon, SailPoint, Jira), handling **data mapping, transformation, and service orchestration.**
 
-- Collaborated with DevOps on **cloud deployments (AWS EC2, Lambda, S3)** and backend service integration within containerized environments.
-
-- Debugged and resolved **production backend issues**, including data inconsistencies, workflow failures, and performance bottlenecks across services.
-
-- Led backend-focused **code reviews, architecture discussions, and system design decisions** for new features and platform improvements.
+- Led **production debugging, incident resolution, code reviews, and architecture discussions**, improving reliability, observability, and service resiliency under load.
 
 ---
 
 ### Full Stack Developer — MdThink  
 *Apr 2019 — Aug 2022*
 
-- Developed backend services and APIs supporting **enterprise workflows**, with exposure to **Java-based service layers and data processing components.**
+- Developed backend APIs and service components supporting **enterprise workflows**, with exposure to **Java-based service layers, distributed service design, and data processing components.**
 
-- Designed data models and optimized queries in PostgreSQL for **high-volume transactional systems.**
+- Built full-stack features across **Angular frontend, backend services, and PostgreSQL database layers**, ensuring reliable data flow and maintainable API contracts.
 
-- Built integrations between backend services and frontend applications, ensuring **reliable data flow and system stability.**
+- Designed data models and optimized PostgreSQL queries for **high-volume transactional systems** and data-heavy workflow operations.
+
+- Collaborated with product, QA, and DevOps teams to deliver **end-to-end features across frontend, backend, database, and deployment workflows.**
 
 ---
 
@@ -54,7 +62,7 @@ Backend-focused engineer with 9+ years of experience building **scalable service
 
 - Implemented **JWT authentication and RBAC**, securing platform access across user roles.
 
-- Improved API reliability and performance through **validation, rate limiting, and scalable backend design patterns.**
+- Improved API reliability and performance through **validation, rate limiting, structured error handling, and scalable backend design patterns.**
 
 ---
 
@@ -65,6 +73,6 @@ Backend-focused engineer with 9+ years of experience building **scalable service
 
 - Built and optimized **distributed Spark jobs (Java/PySpark)** for data transformation (JSON → Parquet) and ingestion into Amazon Redshift.
 
-- Developed **streaming and batch pipelines** using Kinesis and queue-based architectures.
+- Developed **streaming and batch pipelines** using Kinesis and queue-based architectures for real-time and offline logistics data flows.
 
 - Improved **pipeline robustness** by introducing fault-tolerant processing, eliminating full-batch restart cycles (~6 hours) caused by pipeline failures.
