@@ -2,13 +2,13 @@
 Java, Spring Boot, Node.js, REST APIs, Microservices
 
 **Data & Persistence**
-PostgreSQL, MySQL, JPA/Hibernate (conceptual), Query Optimization
+Oracle, MySQL, Hibernate/JPA, Query Optimization
 
 **Distributed Systems**
-Service Design, Asynchronous Processing, API Design
+Service Design, Kafka, Kubernetes, API Design
 
 **Cloud & DevOps**
-AWS (EC2, S3, Lambda, RDS), Docker, CI/CD
+AWS (EC2, S3, Lambda, RDS), Docker, Jenkins, CI/CD, Git
 
 **Other**
 Agile, JIRA

@@ -2,7 +2,7 @@
 
 **Backend Engineer · Java · Spring Boot · AWS & Distributed Systems**
 
-Backend-focused engineer with 9+ years of experience building **scalable Java services, data pipelines, and cloud-native enterprise systems**. Strong foundation in **Spring Boot, OOP, SOLID design, multithreading/concurrency, distributed architecture, and AWS**, with hands-on experience across **Angular frontends, PostgreSQL data layers, event-driven processing, and production system reliability.**
+Backend-focused engineer with 9+ years of experience building **scalable Java services, data pipelines, and cloud-native enterprise systems**. Strong foundation in **Spring Boot, OOP, SOLID design, multithreading/concurrency, distributed architecture, and AWS**, with hands-on experience across **enterprise web UIs, Oracle data layers, event-driven processing, and production system reliability.**
 
 ---
 
@@ -10,46 +10,47 @@ Backend-focused engineer with 9+ years of experience building **scalable Java se
 
 ### Senior Software Engineer — MdThink, Maryland  
 *2022 — Present*  
-*Stack: Java · Spring Boot · PostgreSQL · AWS · Angular · Node.js · Kubernetes*
+*Stack: Java/J2EE · Spring Framework · REST · Oracle · Hibernate · Kubernetes · Kafka · Jenkins · Git*
 
-- Designed and developed **Java-based reporting services** for regulatory workflow systems, supporting **on-demand and scheduled report generation (PDF + analytics)** for enterprise users.
+- Designed and developed **Java/J2EE reporting services** (Spring Framework) for regulatory **enterprise web and batch** workflows, supporting **on-demand and scheduled report generation (PDF + analytics)**.
 
-- Built **large-scale data processing and report generation pipelines** with Java service layers, Aurora PostgreSQL, and AWS storage integrations including S3.
+- Built **large-scale batch and streaming data pipelines** with **Java service layers, Hibernate/JPA, Oracle DB**, and AWS S3 integrations for report generation and document processing.
 
-- Designed a **large file upload service** using streaming-oriented backend workflows and S3-backed storage patterns, supporting reliable upload, validation, and downstream processing for enterprise documents.
+- Designed a **large file upload microservice** using **Spring Boot**, streaming-oriented backend workflows, and S3-backed storage for validation and downstream batch processing.
 
-- Developed and optimized **RESTful microservices** using **OOP, SOLID principles, design patterns, Java collections, exception handling, and layered architecture**, supporting multi-tenant workflows and complex business rules.
+- Developed and optimized **RESTful APIs and microservices** with **Spring**, OOP/SOLID design patterns, and layered architecture for multi-tenant regulatory workflows.
 
-- Implemented **asynchronous and concurrent processing workflows** using API triggers, schedulers, background execution patterns, and thread-safe service design to decouple heavy workloads from user-facing services.
+- Implemented **asynchronous batch jobs and concurrent processing** via schedulers, API triggers, and thread-safe Spring services to decouple heavy workloads from user-facing apps.
 
-- Designed **secure authentication, session management, and RBAC authorization** using JWT and role-based access patterns across distributed backend services.
+- Designed **JWT authentication, session management, and RBAC** across distributed Java services.
 
-- Improved **database performance (~20%)** by optimizing PostgreSQL queries, restructuring schemas, adding indexes, and refining aggregation-heavy operations.
+- Improved **Oracle performance (~20%)** by tuning SQL/Hibernate queries, restructuring schemas, adding indexes, and optimizing aggregation-heavy operations.
 
-- Collaborated with DevOps on **AWS deployments (EC2, Lambda, S3) and containerized environments**, supporting scalable service orchestration and reliable production releases.
+- Partnered with DevOps on **Kubernetes deployments, Jenkins CI/CD pipelines, and AWS (EC2, Lambda, S3)** for production releases.
 
-- Worked with **event-driven and streaming systems (AWS Kinesis)** for data processing flows, applying patterns transferable to Kafka-based architectures.
+- Implemented **Kafka-based event-driven processing** for streaming and batch data flows across enterprise workflow systems.
 
-- Built and integrated **Angular frontend modules** with backend API contracts, enabling scalable UI workflows for reporting, compliance, and role-based enterprise features.
+- Delivered **full-stack enterprise web features** with **HTML, CSS, JSON, jQuery, and Angular** modules wired to REST API contracts for reporting and compliance UIs.
 
-- Maintained select **Node.js backend APIs** for platform workflows while primarily leading Java/Spring Boot service design, integration, and production support.
+- Maintained select **Node.js APIs** while leading **Java/Spring Boot** service design; used **Git**, **Agile**, and **GitHub Copilot** for delivery and AI-assisted development.
 
-- Integrated multiple enterprise systems (Corticon, SailPoint, Jira), handling **data mapping, transformation, and service orchestration.**
+- Integrated enterprise systems (Corticon, SailPoint, Jira/VersionOne), with **data mapping, transformation, and orchestration** across services.
 
-- Led **production debugging, incident resolution, code reviews, and architecture discussions**, improving reliability, observability, and service resiliency under load.
+- Supported **Playwright test automation** with QA; led production debugging, code reviews, and architecture discussions under **Git/Agile** delivery.
 
 ---
 
 ### Full Stack Developer — MdThink  
-*Apr 2019 — Aug 2022*
+*Apr 2019 — Aug 2022*  
+*Stack: Java/J2EE · Spring · REST · Oracle · Hibernate · HTML/CSS/jQuery · Jenkins · Git · Agile*
 
-- Developed backend APIs and service components supporting **enterprise workflows**, with exposure to **Java-based service layers, distributed service design, and data processing components.**
+- Developed **RESTful APIs** and **Java/J2EE + Spring** service components with **Hibernate/JPA** over **Oracle** for enterprise workflow and data processing systems.
 
-- Built full-stack features across **Angular frontend, backend services, and PostgreSQL database layers**, ensuring reliable data flow and maintainable API contracts.
+- Built **enterprise web applications** across **HTML, CSS, JSON, jQuery, and Angular** frontends, **Spring/Java backends**, and **Oracle** persistence with maintainable API contracts.
 
-- Designed data models and optimized PostgreSQL queries for **high-volume transactional systems** and data-heavy workflow operations.
+- Designed **Oracle schemas and Hibernate mappings** and tuned queries for high-volume transactional and data-heavy regulatory operations.
 
-- Collaborated with product, QA, and DevOps teams to deliver **end-to-end features across frontend, backend, database, and deployment workflows.**
+- Collaborated in **Agile** delivery with product, QA (**Playwright** automation), and DevOps (**Jenkins CI/CD, Git**) on end-to-end web, API, and database features.
 
 ---
 
