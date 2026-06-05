@@ -236,7 +236,7 @@ export const WriterverseProject = ({ progressMotionValue }) => {
             Writerverse
           </motion.h3>
           <motion.p className="text-base sm:text-lg md:text-xl text-white mb-6" style={{ opacity: writerverseDescriptionFade, x: writerverseDescriptionSlideX }}>
-          An AI co-writer that actually reads your story first. Retrieves your characters, world rules, and plot beats before writing a single word.
+          An AI reader that actually reads your story first. Retrieves your characters, world rules, and plot beats, analyzes them, and reports inconsistencies in your story.
            <span className="text-fuchsia-400">RAG</span> for your own novel.
           </motion.p>
           <motion.div className="flex flex-wrap gap-3 mb-6" style={{ opacity: writerverseRestFade, x: writerverseRestSlideX }}>
@@ -245,13 +245,13 @@ export const WriterverseProject = ({ progressMotionValue }) => {
             <span className="px-3 py-1 bg-violet-600 rounded-full text-sm">Agentic Workflows</span>
           </motion.div>
           <motion.a
-            href="https://github.com/aakarshika"
+            href="https://writerverse.info"
             target="_blank"
             rel="noreferrer"
             className="text-fuchsia-300 hover:text-fuchsia-200 font-semibold"
             style={{ opacity: writerverseRestFade, x: writerverseRestSlideX }}
           >
-            Explore Project Notes →
+            Join Waitlist →
           </motion.a>
         </div>
         {/* Notebook scene */}
