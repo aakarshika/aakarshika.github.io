@@ -2,75 +2,55 @@
 
 ---
 
-### WriterVerse  
-*Django · REST APIs · LangGraph · pgvector · Redis*
+### WriterVerse — https://writerverse.info
+*Django · REST APIs · LangGraph · pgvector · Redis · Docker*
 
-- **Built** an **AI-driven writing platform** using a **multi-agent LangGraph architecture** and REST API layer for structured, long-form content generation with cross-document consistency guarantees.
+- **AI writing platform for long-form fiction**, built on a **Django backend** with a **multi-agent LangGraph architecture** (ContinueAgent, ConsistencyAgent, OutlineAlignAgent) — each agent runs deterministic tools first and calls the LLM only when local checks are insufficient, cutting token cost.
 
-- **Designed** a **hybrid RAG retrieval system** combining **pgvector** cosine similarity, **Okapi BM25** keyword search, and **LLM listwise reranking** — boosting accuracy on domain-specific and long-context queries via config-tunable fusion weights.
+- Designed a **hybrid RAG retrieval pipeline** — **pgvector** cosine similarity + **Okapi BM25** keyword scoring + **cross-encoder LLM reranking** — with config-tunable fusion weights; pure vector search fails on fiction's proper nouns and invented terms.
 
-- **Implemented stateful workflows** and **memory-aware asynchronous pipelines** with per-call AI usage instrumentation, enforcing **factual and narrative consistency** across multi-thousand-word documents.
+- Built **stateful, memory-aware async workflows** with per-call AI usage instrumentation, enforcing **factual and narrative consistency** across multi-thousand-word documents.
 
-- **Architected** a **provider-agnostic AI layer** with **role-based model abstraction** (small/draft/expert roles), enabling drop-in **model switching** between **OpenAI** and **Anthropic** and a clean separation between application logic and inference.
-
+- Architected a **provider-agnostic AI layer** with **role-based model abstraction** (draft / small / expert) — drop-in model switching between **OpenAI and Anthropic** via one config line, with a hard boundary between Django story data (`ai_bridge`) and the inference engine (`ai_engine`).
 
 ---
 
-### Twirly — https://twirlyapp.com  
+### Brainboard
+*React · TypeScript · Django · FastAPI · LangChain · WebSockets*
+
+- Architected a **dual-backend system**: **Django for synchronous CRUD**, **FastAPI for async LLM streaming** — chosen on each framework's real concurrency model, not convention.
+
+- Built a **React frontend** with a fully extensible **widget system** — self-contained, config-driven widgets where new widget types require **zero changes to the dashboard layer**.
+
+- Implemented **WebSocket streaming** for real-time widget updates and live LLM responses.
+
+---
+
+### Outgoing
+*React · TypeScript · Django · PostgreSQL · JWT*
+
+- Built an **event discovery & skill-based ticketing platform** end-to-end on **React + Django + PostgreSQL** — a chip-in ticketing model with an auto-generated social graph from shared attendance history.
+
+- Designed a **context-aware card layout system** — one component promotes different fields to hero across **6 browse modes** with zero layout duplication.
+
+- Enforced a **full quality pipeline** (Pylint 10/10, Black, isort, ESLint, TypeScript strict) via pre-push hooks.
+
+---
+
+### Twirly — https://twirlyapp.com
 *React · TypeScript · Supabase · PLpgSQL · Capacitor*
 
-- Designed and built a **full-stack cross-platform application** deployed to web, iOS, and Android from a single TypeScript/React codebase.
+- **Sole engineer on a live, deployed product** — ships from a single **React/TypeScript** codebase to web, iOS, and Android via Capacitor.
 
-- Implemented backend logic in **PLpgSQL stored procedures** for voting integrity, deduplication, and ranking, ensuring consistency and preventing client-side manipulation.
+- Moved **voting integrity, deduplication, and ranking into PLpgSQL stored procedures** to enforce consistency and prevent client-side manipulation.
 
-- Built a **scalable frontend architecture with a token-driven design system**, enabling multiple UI themes without component changes.
-
-- Integrated **real-time updates, offline support, and analytics pipelines** across web and mobile clients.
+- Built an **8-theme, token-driven design system** where adding a theme touches zero component code; integrated Sentry, offline support, and Supabase edge functions.
 
 ---
 
-### Brainboard  
-*React · FastAPI · REST APIs · WebSockets*
+### Daywise
+*Kotlin Multiplatform · Compose · GPT · Hugging Face*
 
-- Built a **modular full-stack dashboard system** with independently configurable widgets.
+- Built a **cross-platform mobile app** with shared business logic across Android and iOS via Kotlin Multiplatform.
 
-- Designed backend services using **FastAPI REST APIs for async processing and WebSocket streaming**, enabling real-time UI updates.
-
-- Implemented frontend architecture supporting **dynamic widget composition without modifying core application logic.**
-
----
-
-### Outgoing  
-*React · Django · PostgreSQL*
-
-- Developed a **full-stack event platform** with dynamic UI rendering and backend-driven content personalization.
-
-- Built a **flexible component system** capable of supporting multiple browsing contexts without duplication.
-
-- Designed backend APIs supporting **user-driven workflows, relational data models, and real-time interactions.**
-
----
-
-### Daywise  
-*Kotlin Multiplatform · GPT APIs*
-
-- Built a **cross-platform mobile application** with shared business logic across Android and iOS.
-
-- Integrated LLM-based systems to generate **personalized task recommendations based on user behavior.**
-
----
-
-### ProcureWin — [procurewin.com](https://www.procurewin.com)  
-*Full-Stack Product · E-commerce & Inventory Systems*
-
-- Designed and developed a **fresh produce e-commerce and inventory management platform**, handling procurement, stock tracking, and distribution workflows.
-
-- Built end-to-end system across **frontend, backend REST API, and database layers**, modeling real-world constraints such as perishability, supplier variability, and demand fluctuations.
-
-- Designed **product browsing, ordering, and inventory visibility flows**, balancing business requirements with user experience.
-
-- Implemented dynamic UI patterns for **inventory-driven rendering**, ensuring users interact only with valid, in-stock data.
-
-- Owned **core architectural decisions**, including data modeling, workflow design, and system scalability.
-
-- Translated business processes into **scalable technical workflows**, enabling operational efficiency and system consistency.
+- Integrated **LLM-powered predictive scheduling** — personalized task suggestions generated from user behavioral patterns.

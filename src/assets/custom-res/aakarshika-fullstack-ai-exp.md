@@ -1,74 +1,72 @@
 # Aakarshika Priydarshi
 
-**Full-Stack Engineer · AI Systems · Cloud-Native Architecture (AWS)**
+**Senior Full-Stack Engineer · AI Systems · Django + React**
 
-Full-stack engineer with 9+ years of experience building and deploying **AI-integrated applications and scalable cloud systems**, combining **frontend architecture, backend services, and AI pipelines** across production environments serving 50K+ users.
-
----
-
-## Experience
-
-### Senior Software Engineer — MdThink, Maryland  
-*2022 — Present*  
-*Stack: Node.js · Python · Angular · React · PostgreSQL · AWS*
-
-- Led **end-to-end development of cloud-native platforms** serving ~50K users, integrating **frontend systems, backend services, and asynchronous processing pipelines on AWS.**
-
-- Designed and built **data-intensive backend systems** supporting reporting, notifications, compliance workflows, and real-time features across distributed services.
-
-- Developed **asynchronous processing pipelines** using API triggers and schedulers, enabling large-scale document generation, audit workflows, and background processing.
-
-- Leveraged **AWS services (Lambda, S3, EC2)** to build scalable pipelines for **file processing, storage, and event-driven workflows.**
-
-- **Applied security-first development practices including JWT authentication, RBAC enforcement, and secure document workflows** across regulated government platforms. Built and optimized **REST APIs and data pipelines** handling complex multi-tenant workflows and large data transformations.
-
-- Improved **database performance (~20%)** through query optimization, schema restructuring, and efficient handling of aggregation-heavy workloads.
-
-- Designed frontend architecture using **Angular and React**, enabling scalable UI systems that integrate seamlessly with backend APIs and real-time services.
-
-- Implemented **real-time features using WebSockets**, enabling interactive systems such as chat and live process tracking.
-
-- Built secure systems using **JWT authentication and RBAC**, enforcing role-based access across workflows and services.
-
-- Integrated multiple enterprise systems and workflows, handling **data transformation, orchestration, and cross-system communication.**
-
-- Collaborated with DevOps on **cloud deployment pipelines and containerized environments**, ensuring reliable production releases.
-
-- Debugged and resolved **complex production issues across full stack layers**, including data inconsistencies and workflow failures.
+Full-stack engineer with 9+ years building and operating production systems end-to-end — **React/TypeScript** frontends, **Python/Django** and Node REST backends, **PostgreSQL**, and **AWS**. Recent focus on **AI-integrated products**: multi-agent **LangGraph** systems, **hybrid RAG** retrieval, and provider-agnostic LLM architecture. Shipped multi-tenant platforms serving **50K+ users** and multiple **live AI/full-stack products**.
 
 ---
 
-### Full Stack Developer — MdThink  
+### Senior Software Engineer — MdThink, Maryland
+*2022 — Present*
+*Stack: TypeScript · PostgreSQL (Aurora) · REST APIs · WebSockets · AWS · SPA Architecture*
+
+- Led **end-to-end architecture and delivery** of multi-tenant regulatory platforms serving **~50K users**, spanning single-page frontend, REST API layer, relational database, and AWS cloud.
+
+- Designed and owned **core platform modules**: on-demand + scheduled **Reporting**, **Notifications**, **real-time chat (WebSockets)**, **RBAC authorization**, **large file upload (S3 + streaming)**, and compliance/inspection workflows.
+
+- Architected **asynchronous, scheduled processing pipelines** that isolate heavy report-generation and audit workloads from request-path services, improving maintainability and developer velocity.
+
+- Built **scalable, multi-tenant REST APIs** modeling complex business workflows, with consistent envelope design and validation across services.
+
+- Designed and optimized **PostgreSQL / Aurora schemas and queries**, improving performance **~20%** through query restructuring, indexing, and aggregation tuning.
+
+- Implemented **JWT + session authentication and platform-wide RBAC**, enforcing secure role-based access across tenants.
+
+- Built **real-time features over WebSockets** — chat, live progress tracking, and streaming upload status.
+
+- Introduced **integration testing into CI/CD pipelines**, improving release stability and reducing regressions.
+
+- Deployed and operated applications on **AWS (Lambda, S3, EC2, IAM, Aurora RDS)** with containerized environments and DevOps collaboration.
+
+- Led **technical decision-making, code reviews, and sprint planning**, mentoring engineers and guiding system design across teams.
+
+---
+
+### Full Stack Developer — MdThink, Maryland
 *Apr 2019 — Aug 2022*
 
-- Developed full-stack features across **Angular frontend, Node.js backend, and PostgreSQL**, supporting enterprise-scale applications.
+- Built full-stack features across **single-page web UIs, REST API services, and PostgreSQL data layers** for enterprise regulatory systems.
 
-- Built APIs and data workflows enabling **real-time and batch-driven processing systems.**
+- Designed **APIs and data models** supporting complex workflows and high-volume transactional systems.
 
-- Improved performance across frontend and backend layers through **query optimization and efficient data handling.**
+- Improved system performance through **query optimization and backend refactoring**.
+
+- Partnered with product, QA, and DevOps teams to deliver **end-to-end features across frontend, backend, database, and cloud deployment layers**.
 
 ---
 
-### Backend Developer — Neuron Inc  
+### Backend Developer — Neuron Inc
 *Dec 2017 — Jan 2019*
+*Stack: Python · Django · PostgreSQL · REST APIs · AWS*
 
-- Developed backend systems for a **multi-tenant AI chatbot platform**, supporting conversational interfaces and analytics.
+- Built backend systems for a **multi-tenant AI chatbot platform using Django and PostgreSQL**, deployed on AWS (EC2, S3, RDS).
 
-- Built APIs enabling **session tracking, messaging workflows, and data ingestion for AI-driven applications.**
+- Designed **REST APIs for messaging, session tracking, and analytics ingestion**, supporting real-time conversational data flows.
 
-- Implemented **JWT authentication and RBAC**, ensuring secure multi-user access.
+- Implemented **JWT authentication and RBAC**, securing multi-tenant access across user and admin roles.
 
-- Improved system performance through **validation layers, rate limiting, and scalable backend design.**
+- Improved API performance and reliability through **validation, rate limiting, and scalable design patterns**.
 
 ---
 
-### Backend Engineer — Delhivery  
+### Backend Engineer — Delhivery
 *Dec 2016 — Sep 2017*
+*Stack: Python · Java · Spark · AWS EMR · Redshift*
 
-- Engineered **large-scale data pipelines (TB-scale)** using Python, Java, and Spark on AWS EMR.
+- Engineered **TB-scale data pipelines** using Python, Java, and Spark on AWS EMR.
 
-- Built **streaming and batch processing systems** using Kinesis and queue-based architectures.
+- Built and optimized **distributed Spark jobs** for large-scale transformation (JSON → Parquet) and analytics ingestion into Amazon Redshift.
 
-- Developed distributed data processing workflows supporting **analytics and downstream AI/ML systems.**
+- Developed **streaming and batch pipelines** using Kinesis and queue-based architectures, applying event-driven patterns transferable to Kafka/RabbitMQ systems.
 
-- Improved reliability of data pipelines by introducing **fault-tolerant processing and recovery mechanisms.**
+- Improved **pipeline reliability** with fault-tolerant processing, eliminating costly ~6-hour full-batch restarts from S3 dumps.

@@ -75,7 +75,7 @@ const CustomResumePage = () => {
   const resumeTypeMap  = useMemo(() => getResumeTypeMap(customMarkdownFiles), []);
   const resumeTypes    = useMemo(() => getAvailableResumeTypes(resumeTypeMap), [resumeTypeMap]);
 
-  const [selectedType, setSelectedType] = useState('fullstack');
+  const [selectedType, setSelectedType] = useState('fullstack-ai');
 
   const handleTypeChange = (newType) => {
     if (newType === selectedType) return;

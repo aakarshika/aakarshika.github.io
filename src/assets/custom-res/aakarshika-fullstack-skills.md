@@ -1,17 +1,23 @@
+**Languages**
+Python, TypeScript, JavaScript, SQL, Java, Kotlin
+
 **Frontend**
-React, TypeScript, JavaScript, Angular, SPA/MPA UI Development, TailwindCSS
+React, TypeScript, SPA Architecture, TailwindCSS, Design Systems
 
 **Backend**
-Node.js, Django, FastAPI, REST APIs, WebSockets, Microservices, Async Processing
+Django, FastAPI, Node.js, REST APIs, WebSockets, Async Processing, Microservices
 
 **Databases**
-PostgreSQL, MySQL, MongoDB, NoSQL, PLpgSQL, Query Optimization, Aurora RDS
+PostgreSQL, Aurora RDS, MySQL, MongoDB, PLpgSQL, Query Optimization
 
 **Cloud & DevOps**
-AWS (Lambda, ECS, EC2, S3, IAM, Kinesis, RDS), Docker, Kubernetes, CI/CD, Jenkins
+AWS (Lambda, EC2, S3, RDS, IAM, Kinesis), Docker, CI/CD, Redis
 
 **Architecture**
-API Design, Cloud Software Architecture, Distributed Systems, Event-Driven Systems, Kafka/RabbitMQ Concepts
+API Design, Distributed Systems, Event-Driven Pipelines, Microservices, Scalability
 
-**Other**
-Agile, JIRA
+**AI / ML**
+LangGraph, LangChain, RAG Pipelines, pgvector, OpenAI, Anthropic
+
+**Practices**
+Agile, Code Review, Testing, Pre-push Quality Gates
