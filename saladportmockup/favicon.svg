@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The lighthouse t from the logo (LIGHTHOUSE_T in src/components/bits.tsx), rising out of a
+       pomegranate circle. Deep leaf on light tabs, paper on dark tabs so the top doesn't vanish. -->
+  <style>
+    .lh { fill: #17301F; }
+    @media (prefers-color-scheme: dark) { .lh { fill: #F7F7F0; } }
+  </style>
+  <circle cx="32" cy="45" r="18.5" fill="#D2452F"/>
+  <g transform="translate(18.8 56) scale(0.04)">
+    <path class="lh" fill-rule="evenodd" d="M548 -265L510 -766H580Q640 -766 640 -826V-890Q640 -950 580 -950H460V-1130H478Q498 -1130 498 -1150Q498 -1170 478 -1170H470A140 125 0 0 0 190 -1170H182Q162 -1170 162 -1150Q162 -1130 182 -1130H200V-950H80Q20 -950 20 -890V-826Q20 -766 80 -766H150L112 -265Q112 -215 100 -197Q88 -180 70 -170L56 -162Q32 -147 20 -128Q7 -108 7 -79Q7 -42 30 -21Q53 0 93 0H567Q607 0 630 -21Q653 -42 653 -79Q653 -108 640 -128Q628 -147 604 -162L590 -170Q572 -180 560 -197Q548 -215 548 -265ZM290 -990V-1060A40 40 0 0 1 370 -1060V-990Z"/>
+    <!-- two bands on the tower, the colour of the circle behind -->
+    <path fill="#D2452F" d="M115 -300 538 -400 530 -500 122 -400ZM131 -520 521 -620 514 -720 139 -620Z"/>
+    <circle cx="330" cy="-1045" r="24" fill="#D2452F"/>
+  </g>
+</svg>
